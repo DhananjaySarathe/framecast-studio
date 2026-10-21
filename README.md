@@ -1,54 +1,115 @@
-# Framecast
+<p align="center">
+  <img src="docs/media/icon.png" width="112" alt="Framecast app icon">
+</p>
 
-A native macOS live-streaming and recording studio.
-One show, two formats at once: a 16:9 and a 9:16 canvas rendered on one clock, recorded side by side and streamed
-to any RTMP/RTMPS destination, with layouts, overlay elements, live chat and browser guests.
+<h1 align="center">Framecast</h1>
 
-- What was tested, the results, and what is missing: [docs/VERIFICATION.md](docs/VERIFICATION.md)
-- Guests (this Mac, your Wi-Fi, or anywhere through your LiveKit Cloud project): [docs/GUESTS.md](docs/GUESTS.md)
+<p align="center">
+  A free live-streaming and recording studio for the Mac, with an AI director that runs the show while you talk.
+</p>
 
-No account, subscription, trial, paywall, analytics or update checks. Everything stays on this Mac except the
-streams you send to destinations you add.
+<p align="center">
+  <a href="https://github.com/DhananjaySarathe/framecast-studio/releases/latest/download/Framecast.dmg"><b>Download for Mac</b></a>
+  &nbsp;·&nbsp; <a href="https://dhananjaysarathe.github.io/framecast-site/"><b>Website</b></a>
+</p>
 
-## Requirements
+<p align="center">
+  macOS 14 or later (the AI director needs macOS 26) &nbsp;·&nbsp; Apple silicon and Intel &nbsp;·&nbsp; free and open source (MIT)
+</p>
 
-- macOS 14 or later on Apple silicon.
-- Xcode Command Line Tools (Swift 6.x). Full Xcode is not needed.
-- Optional, free and open source, via Homebrew:
-  - `brew install livekit` for guests (Framecast starts it on 127.0.0.1 when you open the guest room).
-  - `brew install mediamtx` to test streaming against a local RTMP server.
-  - `brew install ffmpeg` for the verification scripts.
+![Framecast showing the same scene on its 16:9 and 9:16 canvases, with sample viewer comments on the right](docs/screenshots/S03-both-canvases.png)
 
-## Build and run
+## What Framecast does
 
-```bash
-./scripts/build_app.sh
-```
+Going live on your own means talking while you switch layouts, put graphics up and take them down. Framecast takes
+the switching off your hands.
 
-```bash
-open build/Framecast.app
-```
+<p align="center">
+  <img src="docs/media/alone-vs-with-framecast.gif" width="640" alt="Two panels: alone, a stick figure juggles layouts, charts and chat; with Framecast, it sits back while the stream switches by itself">
+</p>
 
-`build_app.sh` builds with SwiftPM in release mode, assembles `build/Framecast.app` (Info.plist with usage
-descriptions, generated icon, embedded `LiveKitWebRTC.framework`, guest web page) and signs it.
+- **It runs the show while you talk.** Before the stream, you write a short brief and Claude (Anthropic's AI, on
+  your own Claude plan) turns it into an outline and graphics. During the stream, Framecast listens on your Mac,
+  works out which topic you're on and changes what viewers see: a graphic, your screen, your camera in a circle or a
+  square. Topics can come in any order, and ⌃⌥⌘U, from any app, undoes the AI's last change.
+- **One show, two shapes.** Every scene is drawn on a 16:9 and a 9:16 canvas at the same moment, so one show gives
+  you a landscape stream for YouTube and a vertical one for Instagram, plus vertical recordings to cut into Shorts
+  and Reels. Record both at once, as two files, and stream each canvas to YouTube, Twitch, X, Instagram or any
+  RTMP/RTMPS server (X and Instagram allow streaming software only on some accounts).
+- **A full studio when you want the controls.** Scenes and layouts, 60 backgrounds, name tags and other overlays,
+  guests who join from a browser link, YouTube and Twitch comments on screen (with your own free OAuth app), video
+  and music files, a sound pad, markers that turn into a YouTube chapter list, and clips of the last 30 seconds in
+  both shapes.
+- **Your notes stay off the stream.** Framecast leaves the presenter view (your topics and points) and the Rundown
+  tab out of what it captures, and asks macOS to keep them out of other apps' screen shares too.
+- **It runs on your Mac.** No Framecast account, subscription, analytics or update checks. The AI director is
+  optional and uses your own Claude plan and API key. Framecast only connects where you point it: your stream
+  destinations and, if you turn them on, the AI on your key, guests from anywhere, YouTube or Twitch chat and the
+  upload speed test ([details](#privacy-and-security)).
 
-Signing: by default the app is signed ad hoc. macOS then forgets camera, microphone and screen permissions after
-every rebuild. To keep them, create a local self-signed identity once (stored in `build/signing`, nothing is added
-to your login keychain or trust settings):
+## How a live show works
 
-```bash
-./scripts/make_signing_identity.sh
-```
+![Brief, then Prepare, Listen, Decide and Switch](docs/media/how-it-works.png)
 
-The first launch shows onboarding (permissions, devices, format, destinations). macOS asks for Camera, Microphone
-and Screen Recording access when a source first needs it. If macOS keeps asking for Screen Recording although
-Framecast is switched on in System Settings, clear its old entries and allow again on the next launch:
+1. **Brief.** Open the **Rundown** tab in the right-hand panel, click **New show** and describe the stream: the
+   topics, what you want people to take away, a few lines you might say. Not a script.
+2. **Prepare.** Click **Copy for Claude** and paste it into Claude Desktop, or click **Claude Code** and paste the
+   command into Terminal. (Once, first: turn on the control link in Settings › AI and add Framecast to Claude; that
+   page shows the text to copy.) On your Claude plan, Claude writes the outline, topics with three to six points
+   each, and has Framecast draw graphics from data in its own style: motion graphics (roadmaps, checklists, bar
+   charts, gauges, step-by-step pipelines, stick-figure scenes), title, list and quote cards, and reference
+   pictures. Everything is saved in the show's folder.
+3. **Listen.** Go live and turn on **Listen**. Apple's speech recognition turns what you say into text, on your Mac.
+   For Hinglish, choose **Hinglish (English + Hindi)** in Settings › AI.
+4. **Decide.** About every 6 seconds while you talk, a fast model on your own API key (Claude Haiku 5.5 or OpenAI's
+   gpt-6-luna) gets the outline, your scene and graphic names, what's on air and the last 90 seconds of what you
+   said, as text. It works out which topic you're on and whether to change one thing: put a graphic up, take it
+   down, or change the layout. At list prices that's about $0.10–0.50 per hour of show (an estimate).
+5. **Switch.** In **Auto**, Framecast makes the change. In **Suggest**, it shows the change for 12 seconds and you
+   take it with ⌃⌥⌘T. Either way ⌃⌥⌘U puts the last change back. In Auto, switching a scene yourself or undoing
+   pauses the AI for 30 seconds.
 
-```bash
-tccutil reset All app.framecast.studio
-```
+The presenter view (toolbar › **Presenter**) shows your topics and ticks off points as you cover them. Prefer a
+script? Rundown also turns a written script into parts with cue lines (**Split by paragraphs**, or **Write it for
+me** with your own key), suggests or makes the switch when you say each cue, and has a prompter and a rehearsal
+mode. More in [docs/RUNDOWN.md](docs/RUNDOWN.md).
 
-## Using it
+## Download and install
+
+1. Download **[Framecast.dmg](https://github.com/DhananjaySarathe/framecast-studio/releases/latest/download/Framecast.dmg)**. Every version and its notes are on
+   [Releases](https://github.com/DhananjaySarathe/framecast-studio/releases).
+2. Open it and drag Framecast onto Applications.
+3. The first time you open Framecast, macOS says it can't verify the app, because it isn't notarized with a paid
+   Apple Developer ID. Allow it once:
+   - macOS 15 or later: try to open it once, then open System Settings › Privacy & Security, scroll down to
+     Security and click **Open Anyway** next to Framecast. Confirm with your password or Touch ID, then click
+     **Open**.
+   - macOS 14: Control-click Framecast in Applications, choose **Open**, then click **Open**.
+4. Framecast asks for the camera, microphone and screen recording the first time it needs them. After you allow
+   Screen Recording, quit and reopen it.
+
+**What you need.** macOS 14 (Sonoma) or later. Following your voice (**Listen**) needs macOS 26 or later: that
+covers the AI director, cue lines, the prompter following you and Rehearse. The AI director's changes on screen also
+need your own Anthropic or OpenAI API key (Settings › AI); preparing a show from a brief uses Claude Desktop or
+Claude Code on your Claude plan. Recording, streaming, scenes, overlays and the rest work on macOS 14 with no key.
+The download is a universal app for Apple silicon and Intel; so far it has been run on Apple silicon with macOS 27.
+
+**Guests** join from a browser link. For guests on your Wi-Fi (macOS 15 or later), install the free LiveKit server
+with Homebrew (`brew install livekit`). For guests anywhere, you need your own LiveKit Cloud project and the guest
+page on a static host such as Cloudflare Pages (both have free plans). See [docs/GUESTS.md](docs/GUESTS.md).
+
+## Screenshots
+
+| Guests | Mixer |
+|---|---|
+| ![The guest room with an invite link and a conversation scene](docs/screenshots/S07-guests.png) | ![The mixer: microphone, desktop sound, master and headphone levels](docs/screenshots/S02-mixer.png) |
+| **Destinations** | **Creator pack** |
+| ![Adding a destination: YouTube, Twitch, X, Instagram or a custom server, with the stream key kept in the Keychain](docs/screenshots/S04-destinations.png) | ![Ready-made starting soon, be right back and thank-you scenes with a countdown](docs/screenshots/S05-add-creator-pack.png) |
+
+What was tested, with results and what's missing: [docs/VERIFICATION.md](docs/VERIFICATION.md) for the studio,
+streaming and guests, and the end of [docs/RUNDOWN.md](docs/RUNDOWN.md) for the AI director.
+
+## Everything in the studio
 
 The window has three columns: **Scenes** on the left, the canvases in the middle with the control bar under them,
 and the inspector on the right (Comments · Green room · Guests · Mixer · Overlays · Layer · Rundown). The toolbar switches
@@ -75,21 +136,15 @@ between the **16:9**, **9:16** or **Both** canvases and opens Destinations, Add 
   destinations and disk space, plus an optional 10-second test recording and upload speed test.
 - **Backgrounds**: Layer tab › Change background… (or ⇧⌘B) opens a picker with all 60 backgrounds (gradients,
   aurora, abstract, textures, rooms, nature, neon, basic), Dark/Light filters and large 16:9 and 9:16 previews. Add your own with `scripts/add_backgrounds.swift`
-  (docs/BACKGROUNDS.md, which also has a prompt for generating them).
+  ([docs/BACKGROUNDS.md](docs/BACKGROUNDS.md), which also has a prompt for generating them).
 - **Creator pack**: Add to scene › Creator pack. Card scenes (intro with a live countdown, break, outro; four
   styles), frame scenes (camera, screen or guest placed in each opening), 20 backgrounds and 9 annotations.
   Every piece has its own 16:9 and 9:16 artwork. Countdowns restart from the Layer tab.
 - **Comments**: click a comment to show it on screen. YouTube/Twitch connections need your own OAuth apps (see
-  docs/VERIFICATION.md).
-- **Show from a brief**: tell Claude about your next stream (Rundown › Brief › **Copy for Claude** for Claude
-  Desktop, or **Claude Code** for the show folder). On your Claude plan it writes the outline (topics and points),
-  makes motion graphics (roadmaps, stick-figure scenes, bar charts, gauges, pipelines, checklists), cards and
-  website references, and saves them into the show's folder. Live, with **Listen** and **Auto**, a small model on
-  your API key (about $0.10–0.50 per show-hour) follows whichever topic you're on, in any order, ticks off what
-  you've covered, puts each asset on screen when you talk about it and keeps changing the look (camera circle
-  bottom right, camera square beside the asset, screen share); ⌃⌥⌘U undoes. The **Presenter view** (toolbar ›
-  **Presenter**) shows your topics, ticking off points as you cover them, and only you see it. The Rundown tab is private as well: anyone watching your shared screen sees a
-  "private" placeholder there. Listen understands Hinglish (Settings › AI › Language). Details: docs/RUNDOWN.md.
+  [docs/VERIFICATION.md](docs/VERIFICATION.md)).
+- **Show from a brief**: the AI director from [How a live show works](#how-a-live-show-works). Write the brief in
+  Rundown › New show; Claude saves the outline, motion graphics, cards and reference pictures in the show's folder.
+  Details: [docs/RUNDOWN.md](docs/RUNDOWN.md).
 - **Rundown**: plan a show from a rough script. **Write it for me** (your own Claude or OpenAI API key, Settings ›
   AI) or **Split by paragraphs** (no AI) turns it into parts, each with a scene and the words that start it.
   **Listen** follows your voice on this Mac and, when you say the next part's cue, suggests the switch (take it
@@ -98,10 +153,10 @@ between the **16:9**, **9:16** or **Both** canvases and opens Destinations, Add 
   **Prompter** shows the script in large type that follows you (said words dim, cue lines highlighted, mirror
   for teleprompter glass). **Rehearse** a run-through, then see which cues were caught; a missed one shows what
   you said instead, with one click to accept it, and likely mishearings ("opa" for "opus") get a Fix button.
-  Details: docs/RUNDOWN.md.
+  Details: [docs/RUNDOWN.md](docs/RUNDOWN.md).
 - **Guests**: choose who can join (this Mac, your Wi-Fi, or anyone through your own LiveKit Cloud project), open
   the guest room in the Guests tab, send the invite link, let people in, then **Put on air** in the
-  Conversation, Panel or Screen with guests scenes. Guests only need a browser. Set-up: docs/GUESTS.md.
+  Conversation, Panel or Screen with guests scenes. Guests only need a browser. Set-up: [docs/GUESTS.md](docs/GUESTS.md).
 
 ## Privacy and security
 
@@ -117,8 +172,8 @@ point it:
 | Guests: anywhere | your LiveKit Cloud project; guests load the page from your static host | LiveKit (not your guests) |
 | Upload speed test (only when you click it) | 8 MB of random data to speed.cloudflare.com | Cloudflare |
 | Write it for me (only when you click it) | the script, show title and scene names to Anthropic or OpenAI, with your own API key | that service |
-| Live brain (topic shows, while listening in Suggest or Auto) | the outline and the last 90 s of what you said, as text, every few seconds, with your own API key | that service |
-| Listen (rundown director) | nothing leaves the Mac: Apple's on-device speech recognition | nobody |
+| AI director (while Listen is on, in Suggest or Auto) | the outline, scene and graphic names, what's on air and the last 90 s of what you said, as text, at most every 6 s, with your own API key | that service |
+| Listen (speech to text) | nothing leaves the Mac: Apple's on-device speech recognition | nobody |
 | Control link (off by default) | nothing leaves the Mac: 127.0.0.1 only, token required | nobody |
 
 - Stream keys, AI API keys, the LiveKit API secret and the optional Google client secret are kept in the macOS
@@ -132,6 +187,46 @@ point it:
   a public address.
 - `FRAMECAST_UI` and its `test-control` mode exist for automated tests: they let local scripts press buttons.
   Don't set them for normal use.
+
+## Build from source
+
+### Requirements
+
+- macOS 14 or later on Apple silicon.
+- Xcode Command Line Tools (Swift 6.x). Full Xcode is not needed.
+- Optional, free and open source, via Homebrew:
+  - `brew install livekit` for guests (Framecast starts it on 127.0.0.1 when you open the guest room).
+  - `brew install mediamtx` to test streaming against a local RTMP server.
+  - `brew install ffmpeg` for the verification scripts.
+
+### Build and run
+
+```bash
+./scripts/build_app.sh
+```
+
+```bash
+open build/Framecast.app
+```
+
+`build_app.sh` builds with SwiftPM in release mode for this Mac's chip (the downloadable app is a universal build), assembles `build/Framecast.app` (Info.plist with usage
+descriptions, generated icon, embedded `LiveKitWebRTC.framework`, guest web page) and signs it.
+
+Signing: by default the app is signed ad hoc. macOS then forgets camera, microphone and screen permissions after
+every rebuild. To keep them, create a local self-signed identity once (stored in `build/signing`, nothing is added
+to your login keychain or trust settings):
+
+```bash
+./scripts/make_signing_identity.sh
+```
+
+The first launch shows onboarding (permissions, devices, format, destinations). macOS asks for Camera, Microphone
+and Screen Recording access when a source first needs it. If macOS keeps asking for Screen Recording although
+Framecast is switched on in System Settings, clear its old entries and allow again on the next launch:
+
+```bash
+tccutil reset All app.framecast.studio
+```
 
 ## Command-line verification
 
@@ -165,7 +260,7 @@ The packaged app also accepts test hooks through `FRAMECAST_UI` (for example
 `open --env FRAMECAST_UI="onboarded,test-control,mask-devices" build/Framecast.app`) and, when launched with
 `test-control`, takes commands from `build/fcctl` (built from `scripts/fcctl.swift`): `record-start`,
 `record-stop`, `golive`, `endstream`, `admit-all`, `stage-all`, `layout:N`, `dump-state:/path.json` and more.
-These exist because this Mac had no Accessibility permission for UI automation. They are off unless requested.
+They let scripts drive the app without granting Accessibility permission for UI automation, and they are off unless requested.
 
 ## Layout
 
