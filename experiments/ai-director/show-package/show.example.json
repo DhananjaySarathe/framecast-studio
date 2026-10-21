@@ -1,0 +1,53 @@
+{
+  "format": "framecast-show/0.1",
+  "title": "Opus 5.5 vs Sonnet 5.5",
+  "created": "2026-10-21",
+  "script": "script.md",
+  "sources": [
+    { "id": "src-pricing", "url": "https://platform.claude.com/docs/en/about-claude/pricing", "snapshot": "sources/pricing.html",
+      "sha256": "…", "fetched": "2026-10-21" }
+  ],
+  "data": [
+    { "id": "price-input", "label": "Input price, $ per million tokens",
+      "values": { "Opus 5.5": 4, "Sonnet 5.5": 2 },
+      "source": "src-pricing", "quote": "exact sentence copied from the snapshot",
+      "checked": { "numberInQuote": true, "quoteInSnapshot": true }, "approvedBy": null }
+  ],
+  "assets": [
+    { "id": "chart-price", "kind": "chart", "template": "bar-compare", "data": "price-input",
+      "render": "renders/chart-price.mov", "sourceLine": "Source: Anthropic pricing page, 21 Oct 2026" },
+    { "id": "name-opus", "kind": "wordmark", "text": "Claude Opus 5.5", "rights": "typeset name, no logo" },
+    { "id": "shot-timer", "kind": "screenshot", "file": "assets/screenshots/timer.png", "rights": "own screenshot",
+      "credit": null }
+  ],
+  "rundown": [
+    { "segment": "Intro", "parts": [
+      { "id": "open", "scene": "Camera", "overlays": ["name-opus"], "expectedSeconds": 15 }
+    ] },
+    { "segment": "Price", "parts": [
+      { "id": "chart", "scene": "Screen + camera", "asset": "chart-price",
+        "cue": { "say": "now let me show you the benchmark chart", "alsoAccept": ["here are the benchmark numbers"] },
+        "transition": "slide", "minSeconds": 6 }
+    ] },
+    { "segment": "Demo", "parts": [
+      { "id": "screen", "scene": "Split", "cue": { "say": "let me switch to my screen" }, "transition": "cut" }
+    ] },
+    { "segment": "Verdict", "parts": [
+      { "id": "verdict", "scene": "Camera", "cue": { "say": "so which one should you pick" } },
+      { "id": "outro", "scene": "Outro", "cue": { "say": "thanks for watching" }, "then": "propose-end-stream" }
+    ] }
+  ],
+  "adlibs": [
+    { "id": "applause", "kind": "sound", "pad": 3 },
+    { "id": "timer-shot", "kind": "overlay", "asset": "shot-timer" }
+  ],
+  "aliases": { "opa": "opus", "sonic": "sonnet", "prize": "price" },
+  "director": {
+    "mode": "suggest",
+    "minShotSeconds": 3,
+    "cooldownSeconds": 2,
+    "maxAutoSwitchesPerMinute": 6,
+    "advisor": "on-device",
+    "neverAutomatic": ["end-stream", "stop-recording", "go-live", "audio"]
+  }
+}

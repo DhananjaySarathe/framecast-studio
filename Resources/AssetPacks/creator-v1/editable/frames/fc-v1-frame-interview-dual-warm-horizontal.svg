@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+
+  <!-- Drop Shadow Collar (evenodd hole) -->
+  <path d="M 235,245 L 1800,245 A 65,65 0 0 1 1865,310 L 1865,1866 A 65,65 0 0 1 1800,1931 L 235,1931 A 65,65 0 0 1 170,1866 L 170,310 A 65,65 0 0 1 235,245 Z M 235,259 L 1800,259 A 43,43 0 0 1 1843,302 L 1843,1858 A 43,43 0 0 1 1800,1901 L 235,1901 A 43,43 0 0 1 192,1858 L 192,302 A 43,43 0 0 1 235,259 Z" fill="#120906" fill-opacity="0.34" fill-rule="evenodd"/>
+  <!-- Bezel Collar (evenodd hole) -->
+  <path d="M 235,237 L 1800,237 A 65,65 0 0 1 1865,302 L 1865,1858 A 65,65 0 0 1 1800,1923 L 235,1923 A 65,65 0 0 1 170,1858 L 170,302 A 65,65 0 0 1 235,237 Z M 235,259 L 1800,259 A 43,43 0 0 1 1843,302 L 1843,1858 A 43,43 0 0 1 1800,1901 L 235,1901 A 43,43 0 0 1 192,1858 L 192,302 A 43,43 0 0 1 235,259 Z" fill="#2E1A13" fill-opacity="0.94" fill-rule="evenodd" stroke="#683D2E" stroke-width="3.5"/>
+  <!-- Inner Crisp Accent Hairline around Aperture -->
+  <rect x="190" y="257" width="1655" height="1646" rx="45" fill="none" stroke="#E59872" stroke-width="4"/>
+  <!-- Top Specular Highlight -->
+  <line x1="235" y1="239" x2="1800" y2="239" stroke="#F4C095" stroke-opacity="0.72" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Drop Shadow Collar (evenodd hole) -->
+  <path d="M 2040,245 L 3605,245 A 65,65 0 0 1 3670,310 L 3670,1866 A 65,65 0 0 1 3605,1931 L 2040,1931 A 65,65 0 0 1 1975,1866 L 1975,310 A 65,65 0 0 1 2040,245 Z M 2040,259 L 3605,259 A 43,43 0 0 1 3648,302 L 3648,1858 A 43,43 0 0 1 3605,1901 L 2040,1901 A 43,43 0 0 1 1997,1858 L 1997,302 A 43,43 0 0 1 2040,259 Z" fill="#120906" fill-opacity="0.34" fill-rule="evenodd"/>
+  <!-- Bezel Collar (evenodd hole) -->
+  <path d="M 2040,237 L 3605,237 A 65,65 0 0 1 3670,302 L 3670,1858 A 65,65 0 0 1 3605,1923 L 2040,1923 A 65,65 0 0 1 1975,1858 L 1975,302 A 65,65 0 0 1 2040,237 Z M 2040,259 L 3605,259 A 43,43 0 0 1 3648,302 L 3648,1858 A 43,43 0 0 1 3605,1901 L 2040,1901 A 43,43 0 0 1 1997,1858 L 1997,302 A 43,43 0 0 1 2040,259 Z" fill="#2E1A13" fill-opacity="0.94" fill-rule="evenodd" stroke="#683D2E" stroke-width="3.5"/>
+  <!-- Inner Crisp Accent Hairline around Aperture -->
+  <rect x="1995" y="257" width="1655" height="1646" rx="45" fill="none" stroke="#E59872" stroke-width="4"/>
+  <!-- Top Specular Highlight -->
+  <line x1="2040" y1="239" x2="3605" y2="239" stroke="#F4C095" stroke-opacity="0.72" stroke-width="3" stroke-linecap="round"/>
+
+</svg>

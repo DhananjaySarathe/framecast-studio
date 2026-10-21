@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Framecast guest room</title>
+<style>
+  :root { --bg:#0B0D11; --panel:#12151B; --ctl:#1A1E27; --sel:#262C3A; --line:#232733; --text:#EEF0F6; --text2:#A8AFBF; --text3:#7F8798;
+          --accent:#7D6BFF; --ink:#FFFFFF; --live:#FF4D5E; --ok:#3DD68C; }
+  * { box-sizing: border-box; }
+  body { margin:0; background: radial-gradient(1200px 600px at 50% -10%, rgba(125,107,255,.12), transparent), var(--bg); color:var(--text);
+         font: 14px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; min-height:100vh; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+  .card { background: var(--panel); border:1px solid var(--line); border-radius: 18px; padding: 24px; }
+  h1 { font-size: 22px; margin: 0 0 6px; } p.sub { color: var(--text2); margin: 0 0 18px; }
+  input { width:100%; background:#161412; border:1px solid #37322D; color:var(--text); border-radius:10px; padding:11px 13px; font:inherit; }
+  label { display:block; font-size:12px; font-weight:600; color:var(--text2); margin:14px 0 6px; }
+  button { font: inherit; font-weight: 700; border-radius: 999px; border: 1px solid var(--line); background: var(--sel); color: var(--text); padding: 10px 16px; cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--ink); border-color: transparent; }
+  button.danger { background: #2A1A18; color: #F2B8B4; border-color: #5A2A26; }
+  button.off { color: var(--live); }
+  video { width:100%; border-radius: 12px; background:#0F0E0D; display:block; }
+  .join { display:grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; max-width: 900px; margin: 6vh auto 0; }
+  .meter { height:5px; background:#1F1C1A; border-radius:99px; overflow:hidden; margin-top:10px; } .meter > i { display:block; height:100%; width:0; background:var(--ok); }
+  .room { display:grid; grid-template-columns: 1fr 320px; gap: 16px; }
+  .chip { display:inline-block; font-size:11px; font-weight:800; letter-spacing:.4px; padding:4px 9px; border-radius:7px; background:var(--sel); color:var(--text); }
+  .chip.stage { background: var(--live); color:#fff; }
+  .bar { display:flex; gap:10px; margin-top:14px; flex-wrap: wrap; }
+  .side { display:flex; flex-direction:column; height: calc(100vh - 120px); }
+  .msgs { flex:1; overflow:auto; padding: 8px 2px; }
+  .msg { margin: 0 0 12px; } .msg b { font-size:12.5px; } .msg div { color:#E3DDD4; }
+  .self { position: relative; margin-top: 12px; } .self video { max-width: 220px; }
+  .muted { color: var(--text3); font-size: 12px; }
+  .hidden { display:none !important; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; margin-bottom: 18px; }
+  .logo { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(#2a2360, #0d0b20); border:2px solid var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="logo"></span>Framecast</div>
+
+  <section id="joinView" class="join">
+    <div class="card">
+      <video id="preview" autoplay muted playsinline></video>
+      <div class="meter"><i id="level"></i></div>
+      <p class="muted" style="margin-top:8px">Say something. The bar should move.</p>
+    </div>
+    <div class="card">
+      <h1 id="roomTitle">Join the show</h1>
+      <p class="sub">You let the host know you're here; they let you in.</p>
+      <label>Your name</label>
+      <input id="name" maxlength="60" placeholder="Your name">
+      <label>What they do · where they're joining from (optional)</label>
+      <input id="detail" maxlength="80" placeholder="Synth nerd · Lisbon">
+      <div class="bar"><button id="joinBtn" class="primary">Ask to join</button></div>
+      <p id="joinStatus" class="muted"></p>
+    </div>
+  </section>
+
+  <section id="roomView" class="room hidden">
+    <div>
+      <div class="card" style="padding:14px">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px">
+          <span id="stageChip" class="chip">Off air · the host brings you on</span>
+          <span class="muted" id="roomInfo"></span>
+        </div>
+        <video id="program" autoplay playsinline></video>
+        <p id="programHint" class="muted">The host's show appears here.</p>
+      </div>
+      <div class="bar">
+        <button id="micBtn">Mute microphone</button>
+        <button id="camBtn">Turn camera off</button>
+        <button id="shareBtn">Share screen</button>
+        <button id="leaveBtn" class="danger">Leave</button>
+      </div>
+      <div class="self"><video id="selfView" autoplay muted playsinline></video></div>
+    </div>
+    <div class="card side">
+      <b>Green room</b>
+      <p class="muted" style="margin:4px 0 0">Messages with the host. Viewers never see them.</p>
+      <div id="msgs" class="msgs"></div>
+      <div style="display:flex; gap:8px">
+        <input id="chatInput" placeholder="Message the host…">
+        <button id="chatSend" class="primary">Send</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="livekit-client.umd.js"></script>
+<script>
+// Two ways in:
+//  • served by Framecast (this Mac or Wi-Fi): /invite/<code>, knocking through Framecast's join API;
+//  • hosted anywhere (LiveKit Cloud): #u=<LiveKit URL>&t=<invite token>&n=<show title>. The token can only
+//    knock; the host lets the guest in by changing their permissions. The fragment never reaches the web host.
+const LK = window.LivekitClient;
+const code = location.pathname.split('/').filter(Boolean).pop() || '';
+const hash = new URLSearchParams(location.hash.slice(1));
+const remote = hash.get('t') ? { url: hash.get('u'), token: hash.get('t'), title: hash.get('n') || '' } : null;
+const $ = (id) => document.getElementById(id);
+let localStream, room, onStage = false, ticket = null, entered = false, knockTimer = null, removedByHost = false;
+
+async function api(path, body) {
+  const r = await fetch(path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {});
+  if (!r.ok) throw new Error((await r.text()) || r.statusText);
+  return r.json();
+}
+
+// ?test=1 uses a synthetic picture and tone instead of a real camera and mic (for testing).
+function testStream(label) {
+  const c = document.createElement('canvas'); c.width = 1280; c.height = 720; const g = c.getContext('2d'); let n = 0;
+  setInterval(() => { g.fillStyle = 'hsl(' + (n * 3 % 360) + ',55%,35%)'; g.fillRect(0, 0, 1280, 720);
+    g.fillStyle = '#fff'; g.font = 'bold 72px sans-serif'; g.fillText(label, 60, 380); g.fillRect((n * 12) % 1280, 600, 80, 40); n++; }, 33);
+  const v = c.captureStream(30);
+  const ac = new AudioContext(); const o = ac.createOscillator(); o.frequency.value = 440; const gain = ac.createGain(); gain.gain.value = 0.15;
+  const dst = ac.createMediaStreamDestination(); o.connect(gain).connect(dst); o.start();
+  return new MediaStream([...v.getVideoTracks(), ...dst.stream.getAudioTracks()]);
+}
+const params = new URLSearchParams(location.search);
+
+async function startPreview() {
+  try {
+    localStream = params.get('test') ? testStream(params.get('name') || 'Test guest')
+                                     : await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: true });
+    $('preview').srcObject = localStream;
+    const ctx = new AudioContext(); const src = ctx.createMediaStreamSource(localStream); const an = ctx.createAnalyser(); an.fftSize = 512; src.connect(an);
+    const buf = new Uint8Array(an.fftSize);
+    (function tick() { an.getByteTimeDomainData(buf); let p = 0; for (const v of buf) p = Math.max(p, Math.abs(v - 128)); $('level').style.width = Math.min(100, p * 1.6) + '%'; requestAnimationFrame(tick); })();
+  } catch (e) {
+    $('joinStatus').textContent = 'In a browser, allow camera access for the site the first time. You can still join without it. (' + e.message + ')';
+  }
+}
+
+async function loadRoom() {
+  if (remote) { $('roomTitle').textContent = remote.title || 'Join the show'; return; }
+  try {
+    const info = await api('/api/room?code=' + encodeURIComponent(code));
+    $('roomTitle').textContent = info.title || 'Join the show';
+    if (!info.open) $('joinStatus').textContent = 'This link has expired. Ask the host for a new one.';
+  } catch (e) { $('joinStatus').textContent = 'Bad link from server.'; }
+}
+
+$('joinBtn').onclick = async () => {
+  const name = $('name').value.trim();
+  if (!name) { $('joinStatus').textContent = 'Add your name to continue.'; return; }
+  $('joinBtn').disabled = true;
+  if (remote) { knockRemote(name, $('detail').value.trim()); return; }
+  try {
+    const r = await api('/api/knock', { code, name, detail: $('detail').value.trim() });
+    ticket = r.ticket;
+    $('joinStatus').textContent = r.state === 'admitted' ? 'Joining…' : 'Waiting for the host to let you in…';
+    poll();
+  } catch (e) { $('joinStatus').textContent = e.message; $('joinBtn').disabled = false; }
+};
+
+async function poll() {
+  const t = await api('/api/ticket?id=' + encodeURIComponent(ticket));
+  if (t.state === 'waiting') { setTimeout(poll, 1000); return; }
+  if (t.state === 'denied') { $('joinStatus').textContent = 'The host didn’t let you in this time.'; $('joinBtn').disabled = false; return; }
+  // Over https (Wi-Fi) the LiveKit connection goes through the same address as this page.
+  const url = location.protocol === 'https:' ? 'wss://' + location.host : t.url;
+  room = makeRoom();
+  try { await room.connect(url, t.token); } catch (e) { $('joinStatus').textContent = 'Couldn’t reach the guest room (' + e.message + ').'; $('joinBtn').disabled = false; return; }
+  enterRoom(t.title);
+}
+
+async function knockRemote(name, detail) {
+  room = makeRoom();
+  try { await room.connect(remote.url, remote.token); }
+  catch (e) { $('joinStatus').textContent = 'This link doesn’t work any more. Ask the host for a new one. (' + e.message + ')'; $('joinBtn').disabled = false; return; }
+  try { await room.localParticipant.setName(name); } catch (e) {}
+  const knock = () => room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({ name, detail })),
+                                                       { reliable: true, topic: 'knock', destinationIdentities: ['host'] }).catch(() => {});
+  knock(); knockTimer = setInterval(() => { if (!entered) knock(); }, 3000);
+  $('joinStatus').textContent = 'Waiting for the host to let you in…';
+}
+
+// Let in: reconnect with the full token the host sent (a new identity, so the used link can't push us out).
+async function admitted(token) {
+  if (entered) return;
+  entered = true; clearInterval(knockTimer);
+  const lobby = room; room = makeRoom(); lobby.disconnect();
+  try { await room.connect(remote.url, token); enterRoom(remote.title); }
+  catch (e) { entered = false; $('joinStatus').textContent = 'Couldn’t join after all (' + e.message + '). Ask the host for a new link.'; }
+}
+
+function makeRoom() {
+  const r = new LK.Room({ adaptiveStream: true, dynacast: true });
+  const room = r;
+  room.on(LK.RoomEvent.TrackSubscribed, (track, pub, participant) => {
+    if (participant.identity === 'host' && track.kind === 'video') { track.attach($('program')); $('programHint').classList.add('hidden'); }
+    if (track.kind === 'audio') { const el = track.attach(); document.body.appendChild(el); }
+  });
+  room.on(LK.RoomEvent.DataReceived, (payload, participant, kind, topic) => {
+    const msg = JSON.parse(new TextDecoder().decode(payload));
+    if (topic === 'backstage') addMsg(msg.from || 'Host', msg.text);
+    if (topic === 'control') control(msg);
+  });
+  room.on(LK.RoomEvent.Disconnected, (reason) => {
+    if (r !== window.currentRoom()) return;   // the lobby connection we left on purpose
+    clearInterval(knockTimer);
+    // The server's removal can arrive before the host's goodbye message, so read the reason too.
+    const removed = removedByHost || reason === 4 /* DisconnectReason.PARTICIPANT_REMOVED */;
+    if (!entered) { $('joinStatus').textContent = 'The host didn’t let you in this time.'; $('joinBtn').disabled = false; }
+    else $('stageChip').textContent = removed ? 'The host removed you from the room.' : 'Not connected to the guest room';
+  });
+  return room;
+}
+window.currentRoom = () => room;
+
+async function enterRoom(title) {
+  entered = true;
+  $('joinView').classList.add('hidden'); $('roomView').classList.remove('hidden');
+  $('roomInfo').textContent = title || '';
+  // Remote guests are let in after joining: pick up the show and the host's voice now.
+  for (const p of room.remoteParticipants.values())
+    for (const pub of p.trackPublications.values()) if (!pub.isSubscribed) pub.setSubscribed(true);
+  if (localStream) {
+    for (const t of localStream.getTracks()) await room.localParticipant.publishTrack(t, { name: t.kind === 'video' ? 'camera' : 'microphone', simulcast: true });
+    $('selfView').srcObject = new MediaStream(localStream.getVideoTracks());
+  }
+}
+
+function control(m) {
+  if (m.type === 'admit' && remote) { admitted(m.token); return; }
+  if (m.type === 'stage') { onStage = m.on; $('stageChip').textContent = m.on ? 'On air' : 'Off air · the host brings you on'; $('stageChip').className = 'chip' + (m.on ? ' stage' : ''); }
+  if (m.type === 'mute') { setMic(false); addMsg('Framecast', 'The host muted your microphone.'); }
+  if (m.type === 'remove') { removedByHost = true; room.disconnect(); }
+}
+
+function setMic(on) { const t = localStream?.getAudioTracks()[0]; if (t) t.enabled = on; $('micBtn').textContent = on ? 'Mute microphone' : 'Unmute microphone'; $('micBtn').classList.toggle('off', !on); }
+function setCam(on) { const t = localStream?.getVideoTracks()[0]; if (t) t.enabled = on; $('camBtn').textContent = on ? 'Turn camera off' : 'Turn camera on'; $('camBtn').classList.toggle('off', !on); }
+$('micBtn').onclick = () => setMic(!(localStream?.getAudioTracks()[0]?.enabled));
+$('camBtn').onclick = () => setCam(!(localStream?.getVideoTracks()[0]?.enabled));
+$('shareBtn').onclick = async () => {
+  const sharing = room.localParticipant.isScreenShareEnabled;
+  await room.localParticipant.setScreenShareEnabled(!sharing);
+  $('shareBtn').textContent = sharing ? 'Share screen' : 'Stop sharing your screen';
+};
+$('leaveBtn').onclick = () => { room?.disconnect(); location.reload(); };
+
+function addMsg(from, text) {
+  const d = document.createElement('div'); d.className = 'msg';
+  const b = document.createElement('b'); b.textContent = from; const t = document.createElement('div'); t.textContent = text;
+  d.append(b, t); $('msgs').append(d); $('msgs').scrollTop = 1e9;
+}
+async function sendChat() {
+  const text = $('chatInput').value.trim(); if (!text || !room) return;
+  $('chatInput').value = '';
+  await room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({ text })), { reliable: true, topic: 'backstage' });
+  addMsg('You', text);
+}
+$('chatSend').onclick = sendChat;
+$('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+
+startPreview(); loadRoom();
+if (params.get('name')) $('name').value = params.get('name');
+// Test hook: ?test=1&auto=1 asks to join by itself (headless browser tests).
+if (params.get('test') && params.get('auto')) setTimeout(() => $('joinBtn').click(), 1500);
+</script>
+</body>
+</html>

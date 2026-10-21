@@ -1,0 +1,967 @@
+{
+  "assets" : [
+    {
+      "category" : "backgrounds",
+      "description" : "Light blush with soft pink waves along the bottom.",
+      "dominantColors" : [
+        "#FEF4F5",
+        "#FEF4F5"
+      ],
+      "id" : "fc-bg-abstract-blush-curves",
+      "name" : "Blush Curves",
+      "subcategory" : "abstract",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-abstract-blush-curves/horizontal.heic",
+          "previewPath" : "previews/fc-bg-abstract-blush-curves-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-abstract-blush-curves/vertical.heic",
+          "previewPath" : "previews/fc-bg-abstract-blush-curves-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Cream with butter-yellow and lilac light streaks in the corners.",
+      "dominantColors" : [
+        "#FDF9F2",
+        "#FDF8F0"
+      ],
+      "id" : "fc-bg-abstract-butter-ribbons",
+      "name" : "Butter Ribbons",
+      "subcategory" : "abstract",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-abstract-butter-ribbons/horizontal.heic",
+          "previewPath" : "previews/fc-bg-abstract-butter-ribbons-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-abstract-butter-ribbons/vertical.heic",
+          "previewPath" : "previews/fc-bg-abstract-butter-ribbons-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Dark frosted glass panels with cyan and pink edge light.",
+      "dominantColors" : [
+        "#151921",
+        "#101319"
+      ],
+      "id" : "fc-bg-abstract-glass-prism",
+      "name" : "Glass Prism",
+      "subcategory" : "abstract",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-abstract-glass-prism/horizontal.heic",
+          "previewPath" : "previews/fc-bg-abstract-glass-prism-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-abstract-glass-prism/vertical.heic",
+          "previewPath" : "previews/fc-bg-abstract-glass-prism-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Near-black with fine violet wave lines along the bottom.",
+      "dominantColors" : [
+        "#0D0E16",
+        "#0C0E15"
+      ],
+      "id" : "fc-bg-abstract-obsidian-waves",
+      "name" : "Obsidian Waves",
+      "subcategory" : "abstract",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-abstract-obsidian-waves/horizontal.heic",
+          "previewPath" : "previews/fc-bg-abstract-obsidian-waves-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-abstract-obsidian-waves/vertical.heic",
+          "previewPath" : "previews/fc-bg-abstract-obsidian-waves-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Light lilac with layered paper waves along the bottom.",
+      "dominantColors" : [
+        "#F4EFF9",
+        "#F4EFF9"
+      ],
+      "id" : "fc-bg-abstract-paper-waves",
+      "name" : "Paper Waves",
+      "subcategory" : "abstract",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-abstract-paper-waves/horizontal.heic",
+          "previewPath" : "previews/fc-bg-abstract-paper-waves-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-abstract-paper-waves/vertical.heic",
+          "previewPath" : "previews/fc-bg-abstract-paper-waves-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Two violet ribbons sweeping through the corners of a dark frame.",
+      "dominantColors" : [
+        "#1B1A32",
+        "#1C1B35"
+      ],
+      "id" : "fc-bg-abstract-soft-ribbons",
+      "name" : "Soft Ribbons",
+      "subcategory" : "abstract",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-abstract-soft-ribbons/horizontal.heic",
+          "previewPath" : "previews/fc-bg-abstract-soft-ribbons-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-abstract-soft-ribbons/vertical.heic",
+          "previewPath" : "previews/fc-bg-abstract-soft-ribbons-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Dark, with tall arches and a violet glow at both sides.",
+      "dominantColors" : [
+        "#10111D",
+        "#0E0F17"
+      ],
+      "id" : "fc-bg-abstract-violet-arches",
+      "name" : "Violet Arches",
+      "subcategory" : "abstract",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-abstract-violet-arches/horizontal.heic",
+          "previewPath" : "previews/fc-bg-abstract-violet-arches-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-abstract-violet-arches/vertical.heic",
+          "previewPath" : "previews/fc-bg-abstract-violet-arches-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Defocused daylight room: white walls, plants at the edges.",
+      "dominantColors" : [
+        "#E3E4D8",
+        "#E9E9DE"
+      ],
+      "id" : "fc-bg-environmental-bright-loft",
+      "name" : "Bright Loft",
+      "subcategory" : "environmental",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-environmental-bright-loft/horizontal.heic",
+          "previewPath" : "previews/fc-bg-environmental-bright-loft-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-environmental-bright-loft/vertical.heic",
+          "previewPath" : "previews/fc-bg-environmental-bright-loft-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Defocused city lights at night through a large window.",
+      "dominantColors" : [
+        "#292434",
+        "#23202E"
+      ],
+      "id" : "fc-bg-environmental-city-window",
+      "name" : "City Window",
+      "subcategory" : "environmental",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-environmental-city-window/horizontal.heic",
+          "previewPath" : "previews/fc-bg-environmental-city-window-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-environmental-city-window/vertical.heic",
+          "previewPath" : "previews/fc-bg-environmental-city-window-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Defocused desk at night with warm lamp light at the sides.",
+      "dominantColors" : [
+        "#45311D",
+        "#382818"
+      ],
+      "id" : "fc-bg-environmental-lamp-lit-desk",
+      "name" : "Lamp-lit Desk",
+      "subcategory" : "environmental",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-environmental-lamp-lit-desk/horizontal.heic",
+          "previewPath" : "previews/fc-bg-environmental-lamp-lit-desk-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-environmental-lamp-lit-desk/vertical.heic",
+          "previewPath" : "previews/fc-bg-environmental-lamp-lit-desk-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Defocused dark studio with a violet light on one side and a warm lamp on the other.",
+      "dominantColors" : [
+        "#352A3C",
+        "#2D2432"
+      ],
+      "id" : "fc-bg-environmental-neon-studio",
+      "name" : "Neon Studio",
+      "subcategory" : "environmental",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-environmental-neon-studio/horizontal.heic",
+          "previewPath" : "previews/fc-bg-environmental-neon-studio-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-environmental-neon-studio/vertical.heic",
+          "previewPath" : "previews/fc-bg-environmental-neon-studio-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Near-black with crimson light at the top left and purple at the lower right.",
+      "dominantColors" : [
+        "#1C0E19",
+        "#1A0E18"
+      ],
+      "id" : "fc-bg-mesh-aurora-crimson-eclipse",
+      "name" : "Crimson Eclipse",
+      "subcategory" : "mesh-aurora",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-mesh-aurora-crimson-eclipse/horizontal.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-crimson-eclipse-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-mesh-aurora-crimson-eclipse/vertical.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-crimson-eclipse-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Deep green-black with emerald aurora in opposite corners.",
+      "dominantColors" : [
+        "#082017",
+        "#081C15"
+      ],
+      "id" : "fc-bg-mesh-aurora-emerald-night",
+      "name" : "Emerald Night",
+      "subcategory" : "mesh-aurora",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-mesh-aurora-emerald-night/horizontal.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-emerald-night-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-mesh-aurora-emerald-night/vertical.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-emerald-night-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Dark navy with a teal aurora along the top edge.",
+      "dominantColors" : [
+        "#09252A",
+        "#082027"
+      ],
+      "id" : "fc-bg-mesh-aurora-northern-teal",
+      "name" : "Northern Teal",
+      "subcategory" : "mesh-aurora",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-mesh-aurora-northern-teal/horizontal.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-northern-teal-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-mesh-aurora-northern-teal/vertical.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-northern-teal-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Very light, with lilac, butter and mint clouds at the edges.",
+      "dominantColors" : [
+        "#F6F4F7",
+        "#F7F4F8"
+      ],
+      "id" : "fc-bg-mesh-aurora-pastel-drift",
+      "name" : "Pastel Drift",
+      "subcategory" : "mesh-aurora",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-mesh-aurora-pastel-drift/horizontal.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-pastel-drift-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-mesh-aurora-pastel-drift/vertical.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-pastel-drift-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Violet and indigo clouds around the edges of a dark frame.",
+      "dominantColors" : [
+        "#1A1733",
+        "#17152D"
+      ],
+      "id" : "fc-bg-mesh-aurora-violet-aurora",
+      "name" : "Violet Aurora",
+      "subcategory" : "mesh-aurora",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-mesh-aurora-violet-aurora/horizontal.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-violet-aurora-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-mesh-aurora-violet-aurora/vertical.heic",
+          "previewPath" : "previews/fc-bg-mesh-aurora-violet-aurora-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Soft pink blossom light, very defocused.",
+      "dominantColors" : [
+        "#F8E9EF",
+        "#F9EAF0"
+      ],
+      "id" : "fc-bg-nature-blossom-blur",
+      "name" : "Blossom Blur",
+      "subcategory" : "nature",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-nature-blossom-blur/horizontal.heic",
+          "previewPath" : "previews/fc-bg-nature-blossom-blur-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-nature-blossom-blur/vertical.heic",
+          "previewPath" : "previews/fc-bg-nature-blossom-blur-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Defocused green leaves in morning light.",
+      "dominantColors" : [
+        "#CEE3B5",
+        "#D2E5BA"
+      ],
+      "id" : "fc-bg-nature-morning-leaves",
+      "name" : "Morning Leaves",
+      "subcategory" : "nature",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-nature-morning-leaves/horizontal.heic",
+          "previewPath" : "previews/fc-bg-nature-morning-leaves-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-nature-morning-leaves/vertical.heic",
+          "previewPath" : "previews/fc-bg-nature-morning-leaves-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Soft magenta, cyan and violet haze on black.",
+      "dominantColors" : [
+        "#241D32",
+        "#1F1A2C"
+      ],
+      "id" : "fc-bg-neon-magenta-fog",
+      "name" : "Magenta Fog",
+      "subcategory" : "neon",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-neon-magenta-fog/horizontal.heic",
+          "previewPath" : "previews/fc-bg-neon-magenta-fog-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-neon-magenta-fog/vertical.heic",
+          "previewPath" : "previews/fc-bg-neon-magenta-fog-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Pink, orange and purple neon haze on black.",
+      "dominantColors" : [
+        "#2F1626",
+        "#271421"
+      ],
+      "id" : "fc-bg-neon-sunset-arcade",
+      "name" : "Sunset Arcade",
+      "subcategory" : "neon",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-neon-sunset-arcade/horizontal.heic",
+          "previewPath" : "previews/fc-bg-neon-sunset-arcade-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-neon-sunset-arcade/vertical.heic",
+          "previewPath" : "previews/fc-bg-neon-sunset-arcade-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Warm white with soft butter-yellow light in two corners.",
+      "dominantColors" : [
+        "#FEF9E3",
+        "#FEF9E6"
+      ],
+      "id" : "fc-bg-soft-gradient-butter-cloud",
+      "name" : "Butter Cloud",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-butter-cloud/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-butter-cloud-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-butter-cloud/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-butter-cloud-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Near-black with violet glows at both sides, leaving the middle clear.",
+      "dominantColors" : [
+        "#1D1B39",
+        "#181730"
+      ],
+      "id" : "fc-bg-soft-gradient-graphite-violet",
+      "name" : "Graphite Violet",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-graphite-violet/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-graphite-violet-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-graphite-violet/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-graphite-violet-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Light lilac fading to white, with a faint peach glow at the top left.",
+      "dominantColors" : [
+        "#F3ECF4",
+        "#F3ECF5"
+      ],
+      "id" : "fc-bg-soft-gradient-lilac-morning",
+      "name" : "Lilac Morning",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-lilac-morning/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-lilac-morning-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-lilac-morning/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-lilac-morning-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Near-black with an ember-orange glow at the lower left and deep red at the top right.",
+      "dominantColors" : [
+        "#3A211E",
+        "#341E1C"
+      ],
+      "id" : "fc-bg-soft-gradient-midnight-ember",
+      "name" : "Midnight Ember",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-midnight-ember/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-midnight-ember-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-midnight-ember/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-midnight-ember-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "White with a cool mint tint at the top left and a hint of lilac at the lower right.",
+      "dominantColors" : [
+        "#ECF9F6",
+        "#EEFAF7"
+      ],
+      "id" : "fc-bg-soft-gradient-mint-breeze",
+      "name" : "Mint Breeze",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-mint-breeze/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-mint-breeze-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-mint-breeze/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-mint-breeze-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Near-black with a violet glow at the top left and magenta at the lower right.",
+      "dominantColors" : [
+        "#322050",
+        "#301E4B"
+      ],
+      "id" : "fc-bg-soft-gradient-obsidian-pulse",
+      "name" : "Obsidian Pulse",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-obsidian-pulse/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-obsidian-pulse-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-obsidian-pulse/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-obsidian-pulse-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Cream with soft peach and blush glows in the corners.",
+      "dominantColors" : [
+        "#FEF0E9",
+        "#FEF1EB"
+      ],
+      "id" : "fc-bg-soft-gradient-peach-sorbet",
+      "name" : "Peach Sorbet",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-peach-sorbet/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-peach-sorbet-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-peach-sorbet/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-peach-sorbet-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Pale sky blue fading to soft white.",
+      "dominantColors" : [
+        "#EDF6FE",
+        "#EFF7FE"
+      ],
+      "id" : "fc-bg-soft-gradient-sky-wash",
+      "name" : "Sky Wash",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-sky-wash/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-sky-wash-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-sky-wash/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-sky-wash-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Near-black with a soft violet glow rising from the lower right.",
+      "dominantColors" : [
+        "#211E43",
+        "#201D41"
+      ],
+      "id" : "fc-bg-soft-gradient-violet-haze",
+      "name" : "Violet Haze",
+      "subcategory" : "soft-gradient",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-soft-gradient-violet-haze/horizontal.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-violet-haze-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-soft-gradient-violet-haze/vertical.heic",
+          "previewPath" : "previews/fc-bg-soft-gradient-violet-haze-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Dark brushed metal with a soft sheen across the top.",
+      "dominantColors" : [
+        "#292E36",
+        "#292E36"
+      ],
+      "id" : "fc-bg-tactile-texture-brushed-steel",
+      "name" : "Brushed Steel",
+      "subcategory" : "tactile-texture",
+      "tags" : [
+        "dark"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-tactile-texture-brushed-steel/horizontal.heic",
+          "previewPath" : "previews/fc-bg-tactile-texture-brushed-steel-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-tactile-texture-brushed-steel/vertical.heic",
+          "previewPath" : "previews/fc-bg-tactile-texture-brushed-steel-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Light lilac paper, almost plain.",
+      "dominantColors" : [
+        "#E9DFF1",
+        "#E9DFF1"
+      ],
+      "id" : "fc-bg-tactile-texture-lilac-paper",
+      "name" : "Lilac Paper",
+      "subcategory" : "tactile-texture",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-tactile-texture-lilac-paper/horizontal.heic",
+          "previewPath" : "previews/fc-bg-tactile-texture-lilac-paper-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-tactile-texture-lilac-paper/vertical.heic",
+          "previewPath" : "previews/fc-bg-tactile-texture-lilac-paper-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    },
+    {
+      "category" : "backgrounds",
+      "description" : "Light warm-grey concrete, very subtle.",
+      "dominantColors" : [
+        "#D6D2CC",
+        "#D6D2CC"
+      ],
+      "id" : "fc-bg-tactile-texture-warm-concrete",
+      "name" : "Warm Concrete",
+      "subcategory" : "tactile-texture",
+      "tags" : [
+        "light"
+      ],
+      "variants" : {
+        "horizontal" : {
+          "hasAlpha" : false,
+          "height" : 2160,
+          "path" : "assets/fc-bg-tactile-texture-warm-concrete/horizontal.heic",
+          "previewPath" : "previews/fc-bg-tactile-texture-warm-concrete-horizontal.jpg",
+          "width" : 3840
+        },
+        "vertical" : {
+          "hasAlpha" : false,
+          "height" : 3840,
+          "path" : "assets/fc-bg-tactile-texture-warm-concrete/vertical.heic",
+          "previewPath" : "previews/fc-bg-tactile-texture-warm-concrete-vertical.jpg",
+          "width" : 2160
+        }
+      }
+    }
+  ],
+  "name" : "Framecast backgrounds",
+  "packId" : "framecast-backgrounds",
+  "schemaVersion" : 1
+}

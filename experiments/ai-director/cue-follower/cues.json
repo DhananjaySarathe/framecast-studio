@@ -1,0 +1,10 @@
+{
+  "minShotSeconds": 3,
+  "aliases": { "opa": "opus", "sonic": "sonnet", "prize": "price" },
+  "cues": [
+    { "id": "chart",   "say": "now let me show you the benchmark chart", "scene": "Screen + camera" },
+    { "id": "screen",  "say": "let me switch to my screen",              "scene": "Split" },
+    { "id": "verdict", "say": "so which one should you pick",            "scene": "Camera" },
+    { "id": "outro",   "say": "thanks for watching",                     "scene": "Outro" }
+  ]
+}

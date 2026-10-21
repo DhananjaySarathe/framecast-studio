@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "packId": "framecast-creator-assets-v1",
+  "version": "1.0.0",
+  "coordinateConvention": {
+    "system": "normalized-top-left",
+    "origin": "top-left (0.0, 0.0)",
+    "bounds": "[0.0, 1.0] for x, y, width, height",
+    "coreImageConversionNote": "Core Image (CIImage) uses a bottom-left Cartesian origin where y_ci = (1.0 - y_top_left - height) * canvasHeight. All coordinates in manifest.json and design-tokens.json use top-left normalized coordinates [0, 1] and must be flipped on the Y axis when constructing CIVector/CGRect in the Core Image compositor."
+  },
+  "canvasStandards": {
+    "horizontal": {
+      "width": 3840,
+      "height": 2160,
+      "aspectRatio": "16:9",
+      "quietZone": { "x": 0.15, "y": 0.175, "width": 0.70, "height": 0.65 },
+      "defaultSafeInsets": { "top": 0.05, "right": 0.05, "bottom": 0.06, "left": 0.05 }
+    },
+    "vertical": {
+      "width": 2160,
+      "height": 3840,
+      "aspectRatio": "9:16",
+      "quietZone": { "x": 0.12, "y": 0.16, "width": 0.72, "height": 0.62 },
+      "defaultSafeInsets": {
+        "top": 0.08,
+        "right": 0.14,
+        "bottom": 0.18,
+        "left": 0.06,
+        "note": "Portrait safe insets reserve extra right (14%) and bottom (18%) clearance for vertical live-stream/short-form platform UI controls (like/comment rail and caption/description chrome). Platform overlays vary by service and device; these insets are recommended targets rather than universal guarantees."
+      }
+    },
+    "annotationMaxLongEdge": 2048
+  },
+  "styleFamilies": {
+    "obsidian-mint": {
+      "id": "obsidian-mint",
+      "name": "Obsidian Mint",
+      "description": "Deep charcoal and navy surfaces paired with restrained teal-mint highlights for technical presentations, coding livestreams, and architecture reviews.",
+      "palette": {
+        "surfacePrimary": "#0D131A",
+        "surfaceSecondary": "#141E28",
+        "surfaceElevated": "#1C2A38",
+        "accentPrimary": "#2DD4BF",
+        "accentSecondary": "#5EEAD4",
+        "accentMuted": "#115E59",
+        "borderSubtle": "#263849",
+        "borderAccent": "#2DD4BF",
+        "textPrimary": "#F0FDFA",
+        "textSecondary": "#94A3B8",
+        "textMuted": "#64748B",
+        "statusPositive": "#34D399",
+        "statusWarning": "#FBBF24"
+      },
+      "edgeTreatment": {
+        "frameCornerRadiusNormalized": 0.018,
+        "cardCornerRadiusNormalized": 0.014,
+        "borderThicknessPxAt4K": 4,
+        "innerHairlinePxAt4K": 2,
+        "shadowBlurPxAt4K": 36,
+        "shadowAlpha": 0.45
+      },
+      "typographySuggestions": {
+        "headingFont": "SF Pro Display Semibold",
+        "bodyFont": "SF Pro Text Regular",
+        "monoFont": "SF Mono Medium"
+      }
+    },
+    "paper-ink": {
+      "id": "paper-ink",
+      "name": "Paper & Ink",
+      "description": "Warm ivory and stone-gray tactile paper surfaces with crisp dark ink accents for high-readability tutorials, essays, and design walkthroughs.",
+      "palette": {
+        "surfacePrimary": "#FAF7F2",
+        "surfaceSecondary": "#F3EFE6",
+        "surfaceElevated": "#FFFFFF",
+        "accentPrimary": "#1C1917",
+        "accentSecondary": "#8C6D53",
+        "accentMuted": "#D6CFC2",
+        "borderSubtle": "#DDD6C7",
+        "borderAccent": "#292524",
+        "textPrimary": "#1C1917",
+        "textSecondary": "#44403C",
+        "textMuted": "#78716C",
+        "statusPositive": "#15803D",
+        "statusWarning": "#B45309"
+      },
+      "edgeTreatment": {
+        "frameCornerRadiusNormalized": 0.012,
+        "cardCornerRadiusNormalized": 0.010,
+        "borderThicknessPxAt4K": 3,
+        "innerHairlinePxAt4K": 1,
+        "shadowBlurPxAt4K": 28,
+        "shadowAlpha": 0.16
+      },
+      "typographySuggestions": {
+        "headingFont": "New York Semibold",
+        "bodyFont": "SF Pro Text Regular",
+        "monoFont": "SF Mono Regular"
+      }
+    },
+    "warm-studio": {
+      "id": "warm-studio",
+      "name": "Warm Studio",
+      "description": "Terracotta, peach, warm sand, and amber lighting crafted for welcoming creator streams, interviews, and conversational podcasts.",
+      "palette": {
+        "surfacePrimary": "#241510",
+        "surfaceSecondary": "#362018",
+        "surfaceElevated": "#4A2C22",
+        "accentPrimary": "#E59872",
+        "accentSecondary": "#F4C095",
+        "accentMuted": "#9A4E36",
+        "borderSubtle": "#5C382C",
+        "borderAccent": "#E59872",
+        "textPrimary": "#FBF0E4",
+        "textSecondary": "#E6CCB8",
+        "textMuted": "#B89984",
+        "statusPositive": "#6EE7B7",
+        "statusWarning": "#F59E0B"
+      },
+      "edgeTreatment": {
+        "frameCornerRadiusNormalized": 0.022,
+        "cardCornerRadiusNormalized": 0.018,
+        "borderThicknessPxAt4K": 5,
+        "innerHairlinePxAt4K": 2,
+        "shadowBlurPxAt4K": 42,
+        "shadowAlpha": 0.42
+      },
+      "typographySuggestions": {
+        "headingFont": "Avenir Next Demi Bold",
+        "bodyFont": "SF Pro Text Regular",
+        "monoFont": "SF Mono Regular"
+      }
+    },
+    "deep-blue": {
+      "id": "deep-blue",
+      "name": "Deep Blue",
+      "description": "Midnight blue canvases with soft cyan and restrained indigo-violet accents for product demonstrations, keynotes, and evening broadcasts.",
+      "palette": {
+        "surfacePrimary": "#080D1E",
+        "surfaceSecondary": "#0F1734",
+        "surfaceElevated": "#172554",
+        "accentPrimary": "#38BDF8",
+        "accentSecondary": "#818CF8",
+        "accentMuted": "#1E3A8A",
+        "borderSubtle": "#1E293B",
+        "borderAccent": "#38BDF8",
+        "textPrimary": "#F8FAFC",
+        "textSecondary": "#CBD5E1",
+        "textMuted": "#64748B",
+        "statusPositive": "#38BDF8",
+        "statusWarning": "#FBBF24"
+      },
+      "edgeTreatment": {
+        "frameCornerRadiusNormalized": 0.016,
+        "cardCornerRadiusNormalized": 0.014,
+        "borderThicknessPxAt4K": 4,
+        "innerHairlinePxAt4K": 2,
+        "shadowBlurPxAt4K": 40,
+        "shadowAlpha": 0.50
+      },
+      "typographySuggestions": {
+        "headingFont": "SF Pro Display Bold",
+        "bodyFont": "SF Pro Text Medium",
+        "monoFont": "SF Mono Medium"
+      }
+    }
+  }
+}

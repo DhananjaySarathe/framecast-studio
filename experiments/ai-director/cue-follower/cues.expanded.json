@@ -1,0 +1,70 @@
+{
+  "aliases" : {
+    "opa" : "opus",
+    "prize" : "price",
+    "sonic" : "sonnet"
+  },
+  "cues" : [
+    {
+      "alsoAccept" : [
+        "let me display the benchmark chart",
+        "here's the benchmark chart",
+        "look at the benchmark chart",
+        "here’s the benchmark visual",
+        "check out the benchmark chart",
+        "let’s go over the benchmark chart",
+        "here’s the benchmark breakdown",
+        "see the benchmark chart"
+      ],
+      "id" : "chart",
+      "say" : "now let me show you the benchmark chart",
+      "scene" : "Screen + camera"
+    },
+    {
+      "alsoAccept" : [
+        "I'm moving to the split view",
+        "Now I'm going to the split",
+        "Let's head to the split screen",
+        "I'm shifting to the split",
+        "Here comes the split scene",
+        "Switching to the split now",
+        "Moving into the split",
+        "Let's go with the split"
+      ],
+      "id" : "screen",
+      "say" : "let me switch to my screen",
+      "scene" : "Split"
+    },
+    {
+      "alsoAccept" : [
+        "so which path do you take",
+        "what should you choose",
+        "which option calls to you",
+        "so which direction do you go",
+        "what’s the next move for you",
+        "pick one, what’s your call",
+        "which choice feels right",
+        "so which route do you follow"
+      ],
+      "id" : "verdict",
+      "say" : "so which one should you pick",
+      "scene" : "Camera"
+    },
+    {
+      "alsoAccept" : [
+        "see you next time",
+        "take care",
+        "goodnight",
+        "stay tuned",
+        "peace out",
+        "have a great day",
+        "keep up the good work",
+        "all the best"
+      ],
+      "id" : "outro",
+      "say" : "thanks for watching",
+      "scene" : "Outro"
+    }
+  ],
+  "minShotSeconds" : 3
+}

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070C1B"/>
+      <stop offset="55%" stop-color="#0D1630"/>
+      <stop offset="100%" stop-color="#091024"/>
+    </linearGradient>
+    <linearGradient id="glass1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#1E3A8A" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="glass2" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#172554" stop-opacity="0.04"/>
+    </linearGradient>
+  </defs>
+  <rect width="3840" height="2160" fill="url(#bg)"/>
+  <g transform="rotate(-8 460.79999999999995 388.8)">
+    <rect x="-153.6" y="-86.4" width="1152.0" height="777.6" rx="54" fill="url(#glass1)" stroke="#38BDF8" stroke-opacity="0.22" stroke-width="2.5"/>
+  </g>
+  <g transform="rotate(6 3379.2 1771.1999999999998)">
+    <rect x="2764.7999999999997" y="1425.6000000000001" width="1228.8" height="820.8" rx="54" fill="url(#glass2)" stroke="#818CF8" stroke-opacity="0.22" stroke-width="2.5"/>
+  </g>
+  <g transform="rotate(-5 3302.4 302.40000000000003)">
+    <rect x="2995.2000000000003" y="-108.0" width="998.4000000000001" height="561.6" rx="54" fill="url(#glass1)" stroke="#7DD3FC" stroke-opacity="0.16" stroke-width="2"/>
+  </g>
+</svg>

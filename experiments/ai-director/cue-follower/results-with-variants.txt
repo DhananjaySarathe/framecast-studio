@@ -1,0 +1,42 @@
+=== talk / fast / lexical + semantic, cues + on-device variants
+ 17.32s  FIRE chart → Screen + camera (lexical 100%) heard: “and sonnet costs 2 now let me show you the benchmark chart”
+ 24.02s  FIRE screen → Split (lexical 100%) heard: “almost twice as fast let me switch to my screen”
+ 30.71s  FIRE verdict → Camera (lexical 100%) heard: “sonnet finished first okay so which one should you pick”
+ 38.41s  FIRE outro → Outro (lexical 100%) heard: “that's it for today thanks for watching”
+
+cue       fired     trigger spoken  delay   how
+chart      17.32s    16.56s        +0.76s  lexical 100%
+screen     24.02s    23.22s        +0.80s  lexical 100%
+verdict    30.71s    30.84s        -0.13s  lexical 100%
+outro      38.41s    37.80s        +0.61s  lexical 100%
+=== talk / default / lexical + semantic, cues + on-device variants
+ 19.22s  FIRE chart → Screen + camera (lexical 100%) heard: “and sonnet costs 2 now let me show you the benchmark chart”
+ 26.91s  FIRE screen → Split (lexical 100%) heard: “almost twice as fast let me switch to my screen”
+ 30.75s  FIRE verdict → Camera (lexical 100%) heard: “sonnet finished first okay so which one should you pick”
+ 38.48s  FIRE outro → Outro (lexical 100%) heard: “that's it for today thanks for watching”
+
+cue       fired     trigger spoken  delay   how
+chart      19.22s    16.32s        +2.90s  lexical 100%
+screen     26.91s    23.22s        +3.69s  lexical 100%
+verdict    30.75s    30.78s        -0.03s  lexical 100%
+outro      38.48s    37.74s        +0.74s  lexical 100%
+=== talk-adlib / fast / lexical + semantic, cues + on-device variants
+ 27.91s  FIRE screen → Split (semantic d=0.76) heard: “let me bring up my screen and run one prompt on both”
+ 31.71s  FIRE verdict → Camera (semantic d=0.58) heard: “so which should you go for”
+ 38.42s  FIRE outro → Outro (semantic d=0.83) heard: “all right that's all for today”
+
+cue       fired     trigger spoken  delay   how
+chart       missed    15.84s           -    
+screen     27.91s    26.10s        +1.81s  semantic d=0.76
+verdict    31.71s    31.26s        +0.45s  semantic d=0.58
+outro      38.42s    38.76s        -0.34s  semantic d=0.83
+=== talk-adlib / default / lexical + semantic, cues + on-device variants
+ 30.71s  FIRE screen → Split (semantic d=0.76) heard: “let me bring up my screen and run one prompt on both”
+ 34.62s  FIRE verdict → Camera (semantic d=0.58) heard: “so which should you go for”
+ 38.46s  FIRE outro → Outro (semantic d=0.83) heard: “all right that's all for today”
+
+cue       fired     trigger spoken  delay   how
+chart       missed    15.78s           -    
+screen     30.71s    25.98s        +4.73s  semantic d=0.76
+verdict    34.62s    31.26s        +3.36s  semantic d=0.58
+outro      38.46s    38.76s        -0.30s  semantic d=0.83

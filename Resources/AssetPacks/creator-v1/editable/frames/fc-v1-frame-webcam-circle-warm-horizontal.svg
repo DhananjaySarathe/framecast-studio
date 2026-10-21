@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+
+  <!-- Drop Shadow Ring (evenodd hole) -->
+  <path d="M 162,1669 A 375,375 0 1 0 912,1669 A 375,375 0 1 0 162,1669 Z M 192,1663 A 345,345 0 1 0 882,1663 A 345,345 0 1 0 192,1663 Z" fill="#120906" fill-opacity="0.34" fill-rule="evenodd"/>
+  <!-- Bezel Collar Ring (evenodd hole) -->
+  <path d="M 170,1663 A 367,367 0 1 0 904,1663 A 367,367 0 1 0 170,1663 Z M 192,1663 A 345,345 0 1 0 882,1663 A 345,345 0 1 0 192,1663 Z" fill="#2E1A13" fill-opacity="0.94" fill-rule="evenodd" stroke="#683D2E" stroke-width="3.5"/>
+  <!-- Inner Accent Ring -->
+  <circle cx="537" cy="1663" r="347" fill="none" stroke="#E59872" stroke-width="4.5"/>
+  <!-- Dashed Accent Ring -->
+  <circle cx="537" cy="1663" r="362" fill="none" stroke="#F4C095" stroke-opacity="0.50" stroke-width="2" stroke-dasharray="48 18"/>
+
+</svg>

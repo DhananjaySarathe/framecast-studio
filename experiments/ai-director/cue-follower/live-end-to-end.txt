@@ -1,0 +1,40 @@
+# Live run 1: ad-libbed talk
+ 27.91s  FIRE screen → Split (semantic d=0.76) heard: “let me bring up my screen and run one prompt on both”
+        sent to Framecast at wall clock 1792533203.835
+ 31.72s  FIRE verdict → Camera (semantic d=0.69) heard: “so which should you go for”
+        sent to Framecast at wall clock 1792533207.641
+ 39.38s  FIRE outro → Outro (lexical 100%) heard: “for today thanks so much for watching”
+        sent to Framecast at wall clock 1792533215.267
+
+cue       fired     trigger spoken  delay   how
+chart       missed    15.84s           -    
+screen     27.91s    26.10s        +1.81s  semantic d=0.76
+verdict    31.72s    31.26s        +0.46s  semantic d=0.69
+outro      39.38s    38.76s        +0.62s  lexical 100%
+--- on air in Framecast (wall clock, polled every 0.2 s)
+1792533177.828 Camera
+1792533204.111 Split
+1792533207.931 Camera
+1792533215.537 Outro
+
+# Live run 2: scripted talk
+ 17.32s  FIRE chart → Screen + camera (lexical 100%) heard: “and sonnet costs 2 now let me show you the benchmark chart”
+        sent to Framecast at wall clock 1792533244.356
+ 24.02s  FIRE screen → Split (lexical 100%) heard: “almost twice as fast let me switch to my screen”
+        sent to Framecast at wall clock 1792533251.057
+ 30.72s  FIRE verdict → Camera (lexical 100%) heard: “sonnet finished first okay so which one should you pick”
+        sent to Framecast at wall clock 1792533257.759
+ 38.42s  FIRE outro → Outro (lexical 100%) heard: “that's it for today thanks for watching”
+        sent to Framecast at wall clock 1792533265.453
+
+cue       fired     trigger spoken  delay   how
+chart      17.32s    16.56s        +0.76s  lexical 100%
+screen     24.02s    23.22s        +0.80s  lexical 100%
+verdict    30.72s    30.84s        -0.12s  lexical 100%
+outro      38.42s    37.80s        +0.62s  lexical 100%
+--- on air in Framecast (wall clock, polled every 0.2 s)
+1792533225.993 Camera
+1792533244.531 Screen + camera
+1792533251.135 Split
+1792533257.836 Camera
+1792533265.755 Outro

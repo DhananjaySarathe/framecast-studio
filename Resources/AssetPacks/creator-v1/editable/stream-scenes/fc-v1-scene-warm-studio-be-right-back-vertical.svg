@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 3840" width="2160" height="3840">
+  <defs>
+    <linearGradient id="stageFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2E1A13" stop-opacity="0.91"/>
+      <stop offset="100%" stop-color="#3E241B" stop-opacity="0.86"/>
+    </linearGradient>
+    <linearGradient id="stageBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E59872" stop-opacity="0.65"/>
+      <stop offset="50%" stop-color="#683D2E" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#F4C095" stop-opacity="0.45"/>
+    </linearGradient>
+  </defs>
+  <!-- Soft Drop Shadow Behind Stage -->
+  <rect x="181" y="479" width="1685" height="2611" rx="52" fill="#120906" fill-opacity="0.36"/>
+  <!-- Main Architectural Stage Card -->
+  <rect x="173" y="461" width="1685" height="2611" rx="52" fill="url(#stageFill)" stroke="url(#stageBorder)" stroke-width="4"/>
+  <!-- Top Accent Hairline Highlight -->
+  <line x1="225" y1="463" x2="1806" y2="463" stroke="#E59872" stroke-opacity="0.75" stroke-width="3"/>
+  
+    <!-- Inner Focus Frame -->
+    <rect x="291" y="774" width="1449" height="1984" rx="35" fill="#3E241B" fill-opacity="0.78" stroke="#683D2E" stroke-width="2.5"/>
+    <!-- Intermission Status Pill (Text-Free) -->
+    <rect x="696" y="953" width="638" height="129" rx="64" fill="#F4C095" fill-opacity="0.16" stroke="#F4C095" stroke-opacity="0.50" stroke-width="2.5"/>
+    <!-- Center Accent Horizon Line -->
+    <line x1="610" y1="2044" x2="1421" y2="2044" stroke="#E59872" stroke-opacity="0.45" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Reserved Return Status / Handle Dock (Text-Free) -->
+    <rect x="494" y="2282" width="1043" height="218" rx="26" fill="#4E2E23" fill-opacity="0.82" stroke="#683D2E" stroke-width="2"/>
+
+</svg>

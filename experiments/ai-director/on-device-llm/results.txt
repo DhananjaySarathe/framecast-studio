@@ -1,0 +1,66 @@
+
+scripted talk
+ 2.20s  ok     hold Hey everyone, welcome back.
+ 0.68s  ok     hold Today it's Claude Opus 5.5 against Claude Sonnet 5.5.
+ 0.71s  ok     hold Let's start with the prize, because that surprises people.
+ 0.71s  WRONG  Screen + camera Opus costs four dollars per million input tokens, and Sonnet cos
+ 0.59s  WRONG  hold Now let me show you the benchmark chart.
+ 0.66s  WRONG  Camera On the coding test, OPA solved more tasks, but Sonnet was almost
+ 0.63s  ok     Split Let me switch to my screen and run the same prompt on both model
+ 0.66s  ok     hold Watch the timer on the right.
+ 0.70s  ok     hold Sonnet finished first.
+ 0.63s  ok     Camera Okay, so which one should you pick?
+ 0.59s  ok     hold If speed matters, go with Sonnet.
+ 0.59s  ok     hold If quality matters most, pick Opus.
+ 0.63s  ok     Outro That's it for today, thanks for watching, see you next time.
+
+ad-libbed talk
+ 0.66s  ok     hold Hey folks, good to see you.
+ 0.68s  ok     hold So today it's Opus versus Sonnet, the five point five versions.
+ 0.67s  ok     hold Quick heads up, I'll put a chart up in a minute, but first, the 
+ 0.68s  WRONG  Screen + camera Opus is four dollars per million input tokens and Sonnet is two.
+ 0.60s  WRONG  hold Okay, here are the benchmark numbers.
+ 0.61s  WRONG  Camera On coding, Opus solved more tasks, though Sonnet was nearly twic
+ 0.70s  ok     hold By the way, my cat just walked across the desk, sorry about that
+ 0.65s  ok     Split Let me bring up my screen and run one prompt on both.
+ 0.71s  ok     hold Sonnet came back first.
+ 0.66s  ok     Camera So, which should you go for?
+ 0.60s  ok     hold If you need speed, Sonnet.
+ 0.54s  ok     hold If you need the best answers, Opus.
+ 0.51s  ok     Outro Alright, that's all for today, thanks so much for watching.
+
+20/26 decisions right; time per decision median 0.66 s, p90 0.71 s, max 2.20 s
+
+--- second run, chart rule reworded to: the presenter says they are showing a chart or benchmark results right now (quoting a number or a price is not a cue)
+
+scripted talk
+ 1.04s  ok     hold Hey everyone, welcome back.
+ 0.62s  ok     hold Today it's Claude Opus 5.5 against Claude Sonnet 5.5.
+ 0.64s  ok     hold Let's start with the prize, because that surprises people.
+ 0.67s  WRONG  Screen + camera Opus costs four dollars per million input tokens, and Sonnet cos
+ 0.49s  WRONG  hold Now let me show you the benchmark chart.
+ 0.49s  WRONG  Camera On the coding test, OPA solved more tasks, but Sonnet was almost
+ 0.51s  ok     Split Let me switch to my screen and run the same prompt on both model
+ 0.48s  ok     hold Watch the timer on the right.
+ 0.42s  WRONG  Camera Sonnet finished first.
+ 0.42s  WRONG  hold Okay, so which one should you pick?
+ 0.42s  ok     hold If speed matters, go with Sonnet.
+ 0.47s  ok     hold If quality matters most, pick Opus.
+ 0.47s  ok     Outro That's it for today, thanks for watching, see you next time.
+
+ad-libbed talk
+ 0.47s  ok     hold Hey folks, good to see you.
+ 0.47s  ok     hold So today it's Opus versus Sonnet, the five point five versions.
+ 0.49s  ok     hold Quick heads up, I'll put a chart up in a minute, but first, the 
+ 0.51s  ok     hold Opus is four dollars per million input tokens and Sonnet is two.
+ 0.45s  ok     Screen + camera Okay, here are the benchmark numbers.
+ 0.48s  WRONG  Camera On coding, Opus solved more tasks, though Sonnet was nearly twic
+ 0.48s  ok     hold By the way, my cat just walked across the desk, sorry about that
+ 0.48s  ok     Split Let me bring up my screen and run one prompt on both.
+ 0.41s  WRONG  Camera Sonnet came back first.
+ 0.44s  WRONG  hold So, which should you go for?
+ 0.41s  ok     hold If you need speed, Sonnet.
+ 0.47s  ok     hold If you need the best answers, Opus.
+ 0.46s  WRONG  hold Alright, that's all for today, thanks so much for watching.
+
+17/26 decisions right; time per decision median 0.48 s, p90 0.64 s, max 1.04 s

@@ -1,0 +1,19 @@
+*.mkv
+*.mov
+*.mp4
+.DS_Store
+.env
+.env.*
+!.env.example
+# Keys, certificates and keychains never belong in the repository.
+*.p12
+*.pem
+*.key
+*.keychain
+*.keychain-db
+*.mobileprovision
+.build/
+.claude/
+.swiftpm/
+build/
+local-output/

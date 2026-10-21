@@ -1,0 +1,16 @@
+initialize 14 ms; tools: get_show_state, switch_scene, preview_scene, take_preview, toggle_overlay, play_sound, add_marker, hold
+on air at start: Camera
+round 1 -> 'Screen + camera': sent in 7 ms, confirmed on air after 112 ms
+round 1 -> 'Split': sent in 12 ms, confirmed on air after 120 ms
+round 1 -> 'Camera': sent in 11 ms, confirmed on air after 123 ms
+round 2 -> 'Screen + camera': sent in 12 ms, confirmed on air after 118 ms
+round 2 -> 'Split': sent in 6 ms, confirmed on air after 98 ms
+round 2 -> 'Camera': sent in 9 ms, confirmed on air after 116 ms
+round 3 -> 'Screen + camera': sent in 12 ms, confirmed on air after 116 ms
+round 3 -> 'Split': sent in 10 ms, confirmed on air after 111 ms
+round 3 -> 'Camera': sent in 9 ms, confirmed on air after 115 ms
+round 4 -> 'Screen + camera': sent in 13 ms, confirmed on air after 118 ms
+round 4 -> 'Split': sent in 12 ms, confirmed on air after 115 ms
+round 4 -> 'Camera': sent in 11 ms, confirmed on air after 118 ms
+tool call returns: median 11 ms, min 6, max 13 (12 switches)
+switch confirmed (incl. a state read): median 116 ms, min 98, max 123 (12 switches)

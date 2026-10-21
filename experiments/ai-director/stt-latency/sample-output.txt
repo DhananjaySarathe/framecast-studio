@@ -1,0 +1,196 @@
+SpeechTranscriber available: true
+locale en_US; installed: en_AU, en_CA, en_GB, en_IE, en_IN, en_NZ, en_SG, en_US, en_ZA
+analyzer format: <AVAudioFormat 0x7aacc4c190:  1 ch,  16000 Hz, Int16>
+feeding 39.7 s of audio in real time…
+  3.92s  audio  0.00– 4.00  lag -0.08s  volat  Hey
+  3.92s  audio  0.00– 4.00  lag -0.08s  volat  Hey everyone
+  3.92s  audio  0.00– 4.00  lag -0.08s  volat  Hey everyone,
+  3.92s  audio  0.00– 4.00  lag -0.08s  volat  Hey everyone, welcome
+  3.92s  audio  0.00– 4.00  lag -0.08s  volat  Hey everyone, welcome back
+  3.92s  audio  0.00– 4.00  lag -0.08s  volat  Hey everyone, welcome back.
+  3.94s  audio  0.00– 1.86  lag  2.08s  FINAL  Hey everyone, welcome back.
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it'
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it's
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it's Cla
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it's Claude
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it's Claude O
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it's Claude Op
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it's Claude Opus
+  3.94s  audio  1.86– 4.00  lag -0.06s  volat   Today it's Claude Opus 5.
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5 against
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5 against Cla
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5 against Claude
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5 against Claude Son
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5 against Claude Sonnet
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5 against Claude Sonnet 5.
+  7.72s  audio  1.86– 7.80  lag -0.08s  volat   Today it's Claude Opus 5.5 against Claude Sonnet 5.5.
+  7.76s  audio  1.86– 6.12  lag  1.64s  FINAL   Today it's Claude Opus 5.5 against Claude Sonnet 5.5.
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let'
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let's
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let's start
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let's start with
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let's start with the
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let's start with the pri
+  7.76s  audio  6.12– 7.80  lag -0.04s  volat   Let's start with the prize
+ 11.52s  audio  6.12–11.60  lag -0.08s  volat   Let's start with the prize because
+ 11.52s  audio  6.12–11.60  lag -0.08s  volat   Let's start with the prize because that
+ 11.52s  audio  6.12–11.60  lag -0.08s  volat   Let's start with the prize because that surp
+ 11.52s  audio  6.12–11.60  lag -0.08s  volat   Let's start with the prize because that surpris
+ 11.52s  audio  6.12–11.60  lag -0.08s  volat   Let's start with the prize because that surprises people
+ 11.52s  audio  6.12–11.60  lag -0.08s  volat   Let's start with the prize because that surprises people.
+ 11.56s  audio  6.18– 9.36  lag  2.20s  FINAL   Let's start with the prize, because that surprises people.
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   O
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   Op
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   Opus
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   Opus cost
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   Opus costs
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   Opus costs $
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   Opus costs $4
+ 11.56s  audio  9.36–11.60  lag -0.04s  volat   Opus costs $4 per
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per00
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 in
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input to
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tok
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens,
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens, and
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens, and Son
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens, and Sonnet
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens, and Sonnet cost
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens, and Sonnet costs
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens, and Sonnet costs $
+ 15.42s  audio  9.36–15.50  lag -0.08s  volat   Opus costs $4 per0000 input tokens, and Sonnet costs $2.
+ 15.49s  audio  9.54–14.16  lag  1.33s  FINAL   Opus costs $4 per million input tokens, and Sonnet costs $2.
+ 15.49s  audio 14.16–15.50  lag -0.01s  volat   Now
+ 15.49s  audio 14.16–15.50  lag -0.01s  volat   Now let
+ 15.49s  audio 14.16–15.50  lag -0.01s  volat   Now let me
+ 15.49s  audio 14.16–15.50  lag -0.01s  volat   Now let me show
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the ben
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the bench
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark ch
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark chart
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark chart on
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark chart on the
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark chart on the c
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark chart on the cod
+ 19.22s  audio 14.16–19.30  lag -0.08s  volat   Now let me show you the benchmark chart on the coding test
+ 19.23s  audio 14.16–19.30  lag -0.07s  volat   Now let me show you the benchmark chart on the coding test.
+ 19.27s  audio 14.34–17.82  lag  1.45s  FINAL   Now let me show you the benchmark chart on the coding test.
+ 19.27s  audio 17.82–19.30  lag -0.03s  volat   O
+ 19.27s  audio 17.82–19.30  lag -0.03s  volat   Op
+ 19.27s  audio 17.82–19.30  lag -0.03s  volat   OpA
+ 19.27s  audio 17.82–19.30  lag -0.03s  volat   OpA sol
+ 19.27s  audio 17.82–19.30  lag -0.03s  volat   OpA solved
+ 19.27s  audio 17.82–19.30  lag -0.03s  volat   OpA solved more
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more task
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks,
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks, but
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks, but Son
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks, but Sonnet
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks, but Sonnet was
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks, but Sonnet was almost
+ 23.12s  audio 17.82–23.20  lag -0.08s  volat   OpA solved more tasks, but Sonnet was almost twice
+ 23.13s  audio 17.82–23.20  lag -0.07s  volat   OpA solved more tasks, but Sonnet was almost twice as
+ 23.13s  audio 17.82–23.20  lag -0.07s  volat   OpA solved more tasks, but Sonnet was almost twice as fast
+ 23.13s  audio 17.82–23.20  lag -0.07s  volat   OpA solved more tasks, but Sonnet was almost twice as fast.
+ 23.18s  audio 17.94–21.78  lag  1.40s  FINAL   OPA solved more tasks, but Sonnet was almost twice as fast.
+ 23.18s  audio 21.78–23.20  lag -0.02s  volat   Let
+ 23.18s  audio 21.78–23.20  lag -0.02s  volat   Let me
+ 23.18s  audio 21.78–23.20  lag -0.02s  volat   Let me switch
+ 23.18s  audio 21.78–23.20  lag -0.02s  volat   Let me switch to
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same prom
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same prompt
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same prompt on
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same prompt on both
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same prompt on both mod
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same prompt on both models
+ 26.91s  audio 21.78–27.00  lag -0.09s  volat   Let me switch to my screen and run the same prompt on both models.
+ 26.95s  audio 21.96–25.26  lag  1.69s  FINAL   Let me switch to my screen and run the same prompt on both models.
+ 26.95s  audio 25.26–27.00  lag -0.05s  volat   Watch
+ 26.95s  audio 25.26–27.00  lag -0.05s  volat   Watch the
+ 26.95s  audio 25.26–27.00  lag -0.05s  volat   Watch the timer
+ 26.95s  audio 25.26–27.00  lag -0.05s  volat   Watch the timer on
+ 26.95s  audio 25.26–27.00  lag -0.05s  volat   Watch the timer on the
+ 30.72s  audio 25.26–30.80  lag -0.08s  volat   Watch the timer on the right
+ 30.72s  audio 25.26–30.80  lag -0.08s  volat   Watch the timer on the right.
+ 30.74s  audio 25.50–27.06  lag  3.68s  FINAL   Watch the timer on the right.
+ 30.74s  audio 27.06–30.80  lag -0.06s  volat   Son
+ 30.74s  audio 27.06–30.80  lag -0.06s  volat   Sonnet
+ 30.74s  audio 27.06–30.80  lag -0.06s  volat   Sonnet finished
+ 30.74s  audio 27.06–30.80  lag -0.06s  volat   Sonnet finished first
+ 30.74s  audio 27.06–30.80  lag -0.06s  volat   Sonnet finished first.
+ 30.76s  audio 27.18–28.38  lag  2.38s  FINAL   Sonnet finished first.
+ 30.76s  audio 28.38–30.80  lag -0.04s  volat   Okay
+ 30.76s  audio 28.38–30.80  lag -0.04s  volat   Okay.
+ 30.76s  audio 28.56–29.16  lag  1.60s  FINAL   Okay.
+ 30.76s  audio 29.16–30.80  lag -0.04s  volat   so
+ 30.76s  audio 29.16–30.80  lag -0.04s  volat   so which
+ 30.76s  audio 29.16–30.80  lag -0.04s  volat   so which one
+ 30.76s  audio 29.16–30.80  lag -0.04s  volat   so which one should
+ 30.76s  audio 29.16–30.80  lag -0.04s  volat   so which one should you
+ 30.76s  audio 29.16–30.80  lag -0.04s  volat   so which one should you pick
+ 34.62s  audio 29.16–34.70  lag -0.08s  volat   so which one should you pick?
+ 34.64s  audio 29.28–30.84  lag  3.80s  FINAL   So which one should you pick?
+ 34.64s  audio 30.84–34.70  lag -0.06s  volat   If
+ 34.65s  audio 30.84–34.70  lag -0.05s  volat   If speed
+ 34.65s  audio 30.84–34.70  lag -0.05s  volat   If speed matter
+ 34.65s  audio 30.84–34.70  lag -0.05s  volat   If speed matters
+ 34.65s  audio 30.84–34.70  lag -0.05s  volat   If speed matters,
+ 34.66s  audio 30.84–31.98  lag  2.68s  FINAL   If speed matters.
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with Son
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with Sonnet
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with Sonnet if
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with Sonnet if quality
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with Sonnet if quality matter
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with Sonnet if quality matters
+ 34.66s  audio 31.98–34.70  lag -0.04s  volat   go with Sonnet if quality matters most
+ 38.42s  audio 31.98–38.50  lag -0.08s  volat   go with Sonnet if quality matters most?
+ 38.46s  audio 31.98–34.68  lag  3.78s  FINAL   Go with Sonnet, if quality matters most.
+ 38.46s  audio 34.68–38.50  lag -0.04s  volat   pick
+ 38.46s  audio 34.68–38.50  lag -0.04s  volat   pick O
+ 38.46s  audio 34.68–38.50  lag -0.04s  volat   pick Op
+ 38.46s  audio 34.68–38.50  lag -0.04s  volat   pick Opus
+ 38.46s  audio 34.68–38.50  lag -0.04s  volat   pick Opus.
+ 38.47s  audio 34.74–35.82  lag  2.65s  FINAL   Pick Opus.
+ 38.47s  audio 35.82–38.50  lag -0.03s  volat   That
+ 38.47s  audio 35.82–38.50  lag -0.03s  volat   That'
+ 38.47s  audio 35.82–38.50  lag -0.03s  volat   That's
+ 38.47s  audio 35.82–38.50  lag -0.03s  volat   That's it
+ 38.47s  audio 35.82–38.50  lag -0.03s  volat   That's it for
+ 38.47s  audio 35.82–38.50  lag -0.03s  volat   That's it for today
+ 38.47s  audio 35.82–38.50  lag -0.03s  volat   That's it for today.
+ 38.48s  audio 35.82–36.72  lag  1.76s  FINAL   That's it for today.
+ 38.48s  audio 36.72–38.50  lag -0.02s  volat   Thanks
+ 38.48s  audio 36.72–38.50  lag -0.02s  volat   Thanks for
+ 38.48s  audio 36.72–38.50  lag -0.02s  volat   Thanks for watching
+ 38.48s  audio 36.72–38.50  lag -0.02s  volat   Thanks for watching.
+ 38.49s  audio 36.84–37.80  lag  0.69s  FINAL   Thanks for watching.
+ 39.68s  audio 37.80–39.66  lag  0.02s  volat   See
+ 39.68s  audio 37.80–39.66  lag  0.02s  volat   See you
+ 39.68s  audio 37.80–39.66  lag  0.02s  volat   See you next
+ 39.68s  audio 37.80–39.66  lag  0.02s  volat   See you next time
+ 39.68s  audio 37.80–39.66  lag  0.02s  volat   See you next time.
+ 39.70s  audio 38.22–39.12  lag  0.58s  FINAL   See you next time.
+
+per word, first appearance after it was spoken: n=118 median 3.25s p90 4.90s max 6.18s
+per word, settled (final) after it was spoken:  n=109 median 3.50s p90 4.94s max 6.18s
+
+FINAL TEXT:
+Hey everyone, welcome back.  Today it's Claude Opus 5.5 against Claude Sonnet 5.5.  Let's start with the prize, because that surprises people.  Opus costs $4 per million input tokens, and Sonnet costs $2.  Now let me show you the benchmark chart on the coding test.  OPA solved more tasks, but Sonnet was almost twice as fast.  Let me switch to my screen and run the same prompt on both models.  Watch the timer on the right.  Sonnet finished first.  Okay.  So which one should you pick?  If speed matters.  Go with Sonnet, if quality matters most.  Pick Opus.  That's it for today.  Thanks for watching.  See you next time. 

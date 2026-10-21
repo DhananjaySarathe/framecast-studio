@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <!-- Card Drop Shadow -->
+  <rect x="198" y="1567" width="1690" height="410" rx="57" fill="#030610" fill-opacity="0.34"/>
+  <!-- Card Surface Body -->
+  <rect x="192" y="1555" width="1690" height="410" rx="57" fill="#0D1632" fill-opacity="0.9" stroke="#263B6E" stroke-width="3.5"/>
+  <!-- Top Accent Highlight -->
+  <line x1="249" y1="1557" x2="1825" y2="1557" stroke="#38BDF8" stroke-opacity="0.80" stroke-width="3" stroke-linecap="round"/>
+  
+    <circle cx="344" cy="1727" r="98" fill="#1B2C5E" stroke="#38BDF8" stroke-width="3"/>
+    <rect x="479" y="1617" width="473" height="82" rx="41" fill="#38BDF8" fill-opacity="0.18" stroke="#38BDF8" stroke-opacity="0.50" stroke-width="2"/>
+    <line x1="479" y1="1735" x2="1781" y2="1735" stroke="#263B6E" stroke-width="2"/>
+
+</svg>

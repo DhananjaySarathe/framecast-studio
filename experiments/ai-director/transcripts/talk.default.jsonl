@@ -1,0 +1,186 @@
+{"text":"Hey","t":3.936762809753418,"start":0,"pieces":[["Hey",0,4]],"final":false,"end":4}
+{"text":"Hey everyone","t":3.939363956451416,"start":0,"pieces":[["Hey everyone",0,4]],"final":false,"end":4}
+{"text":"Hey everyone,","t":3.9395637512207031,"start":0,"pieces":[["Hey everyone,",0,4]],"final":false,"end":4}
+{"text":"Hey everyone, welcome","t":3.9396867752075195,"start":0,"pieces":[["Hey everyone, welcome",0,4]],"final":false,"end":4}
+{"text":"Hey everyone, welcome back","t":3.9398398399353027,"start":0,"pieces":[["Hey everyone, welcome back",0,4]],"final":false,"end":4}
+{"text":"Hey everyone, welcome back.","t":3.9399468898773193,"start":0,"pieces":[["Hey everyone, welcome back.",0,4]],"final":false,"end":4}
+{"t":3.9911890029907227,"start":0,"text":"Hey everyone, welcome back.","end":1.8600000000000001,"final":true,"pieces":[["Hey",0,0.23999999999999999],[" everyone,",0.23999999999999999,0.83999999999999997],[" welcome",0.83999999999999997,1.26],[" back.",1.26,1.8]]}
+{"t":3.9913387298583984,"start":1.8600000000000001,"text":" Today","end":4,"final":false,"pieces":[[" Today",1.8600000000000001,4]]}
+{"t":3.9914298057556152,"start":1.8600000000000001,"text":" Today it","end":4,"final":false,"pieces":[[" Today it",1.8600000000000001,4]]}
+{"t":3.991506814956665,"start":1.8600000000000001,"text":" Today it'","end":4,"final":false,"pieces":[[" Today it'",1.8600000000000001,4]]}
+{"t":3.9915847778320312,"start":1.8600000000000001,"text":" Today it's","end":4,"final":false,"pieces":[[" Today it's",1.8600000000000001,4]]}
+{"t":3.9916348457336426,"start":1.8600000000000001,"text":" Today it's Cla","end":4,"final":false,"pieces":[[" Today it's Cla",1.8600000000000001,4]]}
+{"t":3.9916808605194092,"start":1.8600000000000001,"text":" Today it's Claude","end":4,"final":false,"pieces":[[" Today it's Claude",1.8600000000000001,4]]}
+{"t":3.9917240142822266,"start":1.8600000000000001,"text":" Today it's Claude O","end":4,"final":false,"pieces":[[" Today it's Claude O",1.8600000000000001,4]]}
+{"t":3.9917998313903809,"start":1.8600000000000001,"text":" Today it's Claude Op","end":4,"final":false,"pieces":[[" Today it's Claude Op",1.8600000000000001,4]]}
+{"t":3.9918479919433594,"start":1.8600000000000001,"text":" Today it's Claude Opus","end":4,"final":false,"pieces":[[" Today it's Claude Opus",1.8600000000000001,4]]}
+{"t":3.9918937683105469,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.","end":4,"final":false,"pieces":[[" Today it's Claude Opus 5.",1.8600000000000001,4]]}
+{"t":7.711439847946167,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5",1.8600000000000001,7.7999999999999998]]}
+{"t":7.711575984954834,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5 against","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5 against",1.8600000000000001,7.7999999999999998]]}
+{"t":7.7118558883666992,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5 against Cla","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5 against Cla",1.8600000000000001,7.7999999999999998]]}
+{"t":7.7119927406311035,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5 against Claude","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5 against Claude",1.8600000000000001,7.7999999999999998]]}
+{"t":7.7123498916625977,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5 against Claude Son","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5 against Claude Son",1.8600000000000001,7.7999999999999998]]}
+{"t":7.7125937938690186,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5 against Claude Sonnet","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5 against Claude Sonnet",1.8600000000000001,7.7999999999999998]]}
+{"t":7.7128238677978516,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5 against Claude Sonnet 5.","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5 against Claude Sonnet 5.",1.8600000000000001,7.7999999999999998]]}
+{"t":7.7136847972869873,"start":1.8600000000000001,"text":" Today it's Claude Opus 5.5 against Claude Sonnet 5.5.","end":7.7999999999999998,"final":false,"pieces":[[" Today it's Claude Opus 5.5 against Claude Sonnet 5.5.",1.8600000000000001,7.7999999999999998]]}
+{"text":" Today it's Claude Opus 5.5 against Claude Sonnet 5.5.","start":1.8600000000000001,"t":7.7722048759460449,"final":true,"pieces":[[" Today",1.8600000000000001,2.1600000000000001],[" it's",2.1600000000000001,2.5800000000000001],[" Claude",2.5800000000000001,2.8199999999999998],[" Opus",2.8199999999999998,3.2400000000000002],[" 5.5",3.2400000000000002,4.0199999999999996],[" against",4.0199999999999996,4.2599999999999998],[" Claude",4.2599999999999998,4.6799999999999997],[" Sonnet",4.6799999999999997,5.1600000000000001],[" 5.5.",5.1600000000000001,5.8799999999999999]],"end":6.1200000000000001}
+{"text":" Let","start":6.1200000000000001,"t":7.7723557949066162,"final":false,"pieces":[[" Let",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let'","start":6.1200000000000001,"t":7.7724337577819824,"final":false,"pieces":[[" Let'",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let's","start":6.1200000000000001,"t":7.7724988460540771,"final":false,"pieces":[[" Let's",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let's start","start":6.1200000000000001,"t":7.7725520133972168,"final":false,"pieces":[[" Let's start",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let's start with","start":6.1200000000000001,"t":7.7726249694824219,"final":false,"pieces":[[" Let's start with",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let's start with the","start":6.1200000000000001,"t":7.7726759910583496,"final":false,"pieces":[[" Let's start with the",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let's start with the pri","start":6.1200000000000001,"t":7.7727248668670654,"final":false,"pieces":[[" Let's start with the pri",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let's start with the prize","start":6.1200000000000001,"t":7.7727789878845215,"final":false,"pieces":[[" Let's start with the prize",6.1200000000000001,7.7999999999999998]],"end":7.7999999999999998}
+{"text":" Let's start with the prize because","start":6.1200000000000001,"t":11.520885944366455,"final":false,"pieces":[[" Let's start with the prize because",6.1200000000000001,11.6]],"end":11.6}
+{"text":" Let's start with the prize because that","start":6.1200000000000001,"t":11.521230697631836,"final":false,"pieces":[[" Let's start with the prize because that",6.1200000000000001,11.6]],"end":11.6}
+{"text":" Let's start with the prize because that surp","start":6.1200000000000001,"t":11.521467685699463,"final":false,"pieces":[[" Let's start with the prize because that surp",6.1200000000000001,11.6]],"end":11.6}
+{"text":" Let's start with the prize because that surpris","start":6.1200000000000001,"t":11.521678924560547,"final":false,"pieces":[[" Let's start with the prize because that surpris",6.1200000000000001,11.6]],"end":11.6}
+{"text":" Let's start with the prize because that surprises people","start":6.1200000000000001,"t":11.522193908691406,"final":false,"pieces":[[" Let's start with the prize because that surprises people",6.1200000000000001,11.6]],"end":11.6}
+{"text":" Let's start with the prize because that surprises people.","start":6.1200000000000001,"t":11.522445678710938,"final":false,"pieces":[[" Let's start with the prize because that surprises people.",6.1200000000000001,11.6]],"end":11.6}
+{"text":" Let's start with the prize, because that surprises people.","start":6.1799999999999997,"t":11.56648588180542,"final":true,"pieces":[[" Let's",6.1799999999999997,6.6600000000000001],[" start",6.6600000000000001,6.7199999999999998],[" with",6.7199999999999998,6.9000000000000004],[" the",6.9000000000000004,7.0800000000000001],[" prize,",7.0800000000000001,7.7999999999999998],[" because",7.7999999999999998,8.0399999999999991],[" that",8.0399999999999991,8.3399999999999999],[" surprises",8.3399999999999999,8.8800000000000008],[" people.",8.8800000000000008,9.3000000000000007]],"end":9.3599999999999994}
+{"text":" O","start":9.3599999999999994,"t":11.566644668579102,"final":false,"pieces":[[" O",9.3599999999999994,11.6]],"end":11.6}
+{"final":false,"pieces":[[" Op",9.3599999999999994,11.6]],"t":11.566704750061035,"text":" Op","start":9.3599999999999994,"end":11.6}
+{"final":false,"pieces":[[" Opus",9.3599999999999994,11.6]],"t":11.56677770614624,"text":" Opus","start":9.3599999999999994,"end":11.6}
+{"final":false,"pieces":[[" Opus cost",9.3599999999999994,11.6]],"t":11.56683874130249,"text":" Opus cost","start":9.3599999999999994,"end":11.6}
+{"final":false,"pieces":[[" Opus costs",9.3599999999999994,11.6]],"t":11.566895008087158,"text":" Opus costs","start":9.3599999999999994,"end":11.6}
+{"start":9.3599999999999994,"end":11.6,"text":" Opus costs $","t":11.566937923431396,"final":false,"pieces":[[" Opus costs $",9.3599999999999994,11.6]]}
+{"start":9.3599999999999994,"end":11.6,"text":" Opus costs $4","t":11.566982746124268,"final":false,"pieces":[[" Opus costs $4",9.3599999999999994,11.6]]}
+{"start":9.3599999999999994,"end":11.6,"text":" Opus costs $4 per","t":11.567028999328613,"final":false,"pieces":[[" Opus costs $4 per",9.3599999999999994,11.6]]}
+{"final":false,"pieces":[[" Opus costs $4 per00",9.3599999999999994,15.5]],"t":15.411527872085571,"text":" Opus costs $4 per00","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000",9.3599999999999994,15.5]],"t":15.411677837371826,"text":" Opus costs $4 per0000","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 in",9.3599999999999994,15.5]],"t":15.411818981170654,"text":" Opus costs $4 per0000 in","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input",9.3599999999999994,15.5]],"t":15.411901950836182,"text":" Opus costs $4 per0000 input","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input to",9.3599999999999994,15.5]],"t":15.412024974822998,"text":" Opus costs $4 per0000 input to","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tok",9.3599999999999994,15.5]],"t":15.412214756011963,"text":" Opus costs $4 per0000 input tok","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens,",9.3599999999999994,15.5]],"t":15.412509918212891,"text":" Opus costs $4 per0000 input tokens,","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens, and",9.3599999999999994,15.5]],"t":15.412860870361328,"text":" Opus costs $4 per0000 input tokens, and","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens, and Son",9.3599999999999994,15.5]],"t":15.413132667541504,"text":" Opus costs $4 per0000 input tokens, and Son","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens, and Sonnet",9.3599999999999994,15.5]],"t":15.413489818572998,"text":" Opus costs $4 per0000 input tokens, and Sonnet","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens, and Sonnet cost",9.3599999999999994,15.5]],"t":15.414038896560669,"text":" Opus costs $4 per0000 input tokens, and Sonnet cost","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens, and Sonnet costs",9.3599999999999994,15.5]],"t":15.414277791976929,"text":" Opus costs $4 per0000 input tokens, and Sonnet costs","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens, and Sonnet costs $",9.3599999999999994,15.5]],"t":15.414499759674072,"text":" Opus costs $4 per0000 input tokens, and Sonnet costs $","start":9.3599999999999994,"end":15.5}
+{"final":false,"pieces":[[" Opus costs $4 per0000 input tokens, and Sonnet costs $2.",9.3599999999999994,15.5]],"t":15.414712905883789,"text":" Opus costs $4 per0000 input tokens, and Sonnet costs $2.","start":9.3599999999999994,"end":15.5}
+{"final":true,"pieces":[[" Opus",9.5399999999999991,10.08],[" costs",10.08,10.380000000000001],[" $4",10.380000000000001,10.68],[" per",10.68,11.16],[" million",11.16,11.58],[" input",11.58,11.880000000000001],[" tokens,",11.880000000000001,12.48],[" and",12.48,12.720000000000001],[" Sonnet",12.720000000000001,13.140000000000001],[" costs",13.140000000000001,13.5],[" $2.",13.5,13.74]],"t":15.488764762878418,"text":" Opus costs $4 per million input tokens, and Sonnet costs $2.","start":9.5399999999999991,"end":14.16}
+{"final":false,"t":15.488930702209473,"pieces":[[" Now",14.16,15.5]],"end":15.5,"start":14.16,"text":" Now"}
+{"final":false,"t":15.488999843597412,"pieces":[[" Now let",14.16,15.5]],"end":15.5,"start":14.16,"text":" Now let"}
+{"final":false,"t":15.489070892333984,"pieces":[[" Now let me",14.16,15.5]],"end":15.5,"start":14.16,"text":" Now let me"}
+{"final":false,"t":15.489117860794067,"pieces":[[" Now let me show",14.16,15.5]],"end":15.5,"start":14.16,"text":" Now let me show"}
+{"t":19.217182874679565,"start":14.16,"end":19.300000000000001,"text":" Now let me show you","final":false,"pieces":[[" Now let me show you",14.16,19.300000000000001]]}
+{"t":19.21730899810791,"start":14.16,"end":19.300000000000001,"text":" Now let me show you the","final":false,"pieces":[[" Now let me show you the",14.16,19.300000000000001]]}
+{"t":19.217381954193115,"start":14.16,"end":19.300000000000001,"text":" Now let me show you the ben","final":false,"pieces":[[" Now let me show you the ben",14.16,19.300000000000001]]}
+{"t":19.217516899108887,"start":14.16,"end":19.300000000000001,"text":" Now let me show you the bench","final":false,"pieces":[[" Now let me show you the bench",14.16,19.300000000000001]]}
+{"t":19.217763900756836,"start":14.16,"text":" Now let me show you the benchmark","final":false,"pieces":[[" Now let me show you the benchmark",14.16,19.300000000000001]],"end":19.300000000000001}
+{"t":19.21809983253479,"start":14.16,"text":" Now let me show you the benchmark ch","final":false,"pieces":[[" Now let me show you the benchmark ch",14.16,19.300000000000001]],"end":19.300000000000001}
+{"text":" Now let me show you the benchmark chart","pieces":[[" Now let me show you the benchmark chart",14.16,19.300000000000001]],"final":false,"t":19.218254804611206,"start":14.16,"end":19.300000000000001}
+{"start":14.16,"t":19.218935966491699,"final":false,"pieces":[[" Now let me show you the benchmark chart on",14.16,19.300000000000001]],"end":19.300000000000001,"text":" Now let me show you the benchmark chart on"}
+{"start":14.16,"t":19.219210863113403,"final":false,"pieces":[[" Now let me show you the benchmark chart on the",14.16,19.300000000000001]],"end":19.300000000000001,"text":" Now let me show you the benchmark chart on the"}
+{"start":14.16,"t":19.219422817230225,"final":false,"pieces":[[" Now let me show you the benchmark chart on the c",14.16,19.300000000000001]],"end":19.300000000000001,"text":" Now let me show you the benchmark chart on the c"}
+{"start":14.16,"t":19.219594955444336,"final":false,"pieces":[[" Now let me show you the benchmark chart on the cod",14.16,19.300000000000001]],"end":19.300000000000001,"text":" Now let me show you the benchmark chart on the cod"}
+{"start":14.16,"t":19.22006893157959,"final":false,"pieces":[[" Now let me show you the benchmark chart on the coding test",14.16,19.300000000000001]],"end":19.300000000000001,"text":" Now let me show you the benchmark chart on the coding test"}
+{"start":14.16,"t":19.220318794250488,"final":false,"pieces":[[" Now let me show you the benchmark chart on the coding test.",14.16,19.300000000000001]],"end":19.300000000000001,"text":" Now let me show you the benchmark chart on the coding test."}
+{"start":14.34,"t":19.275054931640625,"final":true,"pieces":[[" Now",14.34,14.640000000000001],[" let",14.640000000000001,14.880000000000001],[" me",14.880000000000001,15.06],[" show",15.06,15.18],[" you",15.18,15.42],[" the",15.42,15.6],[" benchmark",15.6,16.02],[" chart",16.02,16.32],[" on",16.32,16.800000000000001],[" the",16.800000000000001,16.98],[" coding",16.98,17.34],[" test.",17.34,17.760000000000002]],"end":17.82,"text":" Now let me show you the benchmark chart on the coding test."}
+{"start":17.82,"end":19.300000000000001,"text":" O","t":19.275233745574951,"final":false,"pieces":[[" O",17.82,19.300000000000001]]}
+{"final":false,"pieces":[[" Op",17.82,19.300000000000001]],"t":19.275336742401123,"text":" Op","start":17.82,"end":19.300000000000001}
+{"final":false,"pieces":[[" OpA",17.82,19.300000000000001]],"t":19.275539875030518,"text":" OpA","start":17.82,"end":19.300000000000001}
+{"final":false,"pieces":[[" OpA sol",17.82,19.300000000000001]],"t":19.275634765625,"text":" OpA sol","start":17.82,"end":19.300000000000001}
+{"final":false,"pieces":[[" OpA solved",17.82,19.300000000000001]],"t":19.275681972503662,"text":" OpA solved","start":17.82,"end":19.300000000000001}
+{"final":false,"pieces":[[" OpA solved more",17.82,19.300000000000001]],"t":19.275721788406372,"text":" OpA solved more","start":17.82,"end":19.300000000000001}
+{"text":" OpA solved more task","start":17.82,"t":23.115356922149658,"final":false,"pieces":[[" OpA solved more task",17.82,23.199999999999999]],"end":23.199999999999999}
+{"pieces":[[" OpA solved more tasks",17.82,23.199999999999999]],"end":23.199999999999999,"text":" OpA solved more tasks","start":17.82,"t":23.115513801574707,"final":false}
+{"pieces":[[" OpA solved more tasks,",17.82,23.199999999999999]],"end":23.199999999999999,"text":" OpA solved more tasks,","start":17.82,"t":23.115594863891602,"final":false}
+{"final":false,"t":23.116321802139282,"pieces":[[" OpA solved more tasks, but",17.82,23.199999999999999]],"end":23.199999999999999,"start":17.82,"text":" OpA solved more tasks, but"}
+{"text":" OpA solved more tasks, but Son","start":17.82,"t":23.116649866104126,"final":false,"pieces":[[" OpA solved more tasks, but Son",17.82,23.199999999999999]],"end":23.199999999999999}
+{"final":false,"t":23.117035865783691,"pieces":[[" OpA solved more tasks, but Sonnet",17.82,23.199999999999999]],"end":23.199999999999999,"start":17.82,"text":" OpA solved more tasks, but Sonnet"}
+{"t":23.117364883422852,"start":17.82,"end":23.199999999999999,"text":" OpA solved more tasks, but Sonnet was","final":false,"pieces":[[" OpA solved more tasks, but Sonnet was",17.82,23.199999999999999]]}
+{"t":23.11754584312439,"start":17.82,"text":" OpA solved more tasks, but Sonnet was almost","final":false,"pieces":[[" OpA solved more tasks, but Sonnet was almost",17.82,23.199999999999999]],"end":23.199999999999999}
+{"text":" OpA solved more tasks, but Sonnet was almost twice","pieces":[[" OpA solved more tasks, but Sonnet was almost twice",17.82,23.199999999999999]],"final":false,"t":23.117984771728516,"start":17.82,"end":23.199999999999999}
+{"text":" OpA solved more tasks, but Sonnet was almost twice as","pieces":[[" OpA solved more tasks, but Sonnet was almost twice as",17.82,23.199999999999999]],"final":false,"t":23.118377685546875,"start":17.82,"end":23.199999999999999}
+{"text":" OpA solved more tasks, but Sonnet was almost twice as fast","pieces":[[" OpA solved more tasks, but Sonnet was almost twice as fast",17.82,23.199999999999999]],"final":false,"t":23.118680953979492,"start":17.82,"end":23.199999999999999}
+{"text":" OpA solved more tasks, but Sonnet was almost twice as fast.","pieces":[[" OpA solved more tasks, but Sonnet was almost twice as fast.",17.82,23.199999999999999]],"final":false,"t":23.119374752044678,"start":17.82,"end":23.199999999999999}
+{"text":" OPA solved more tasks, but Sonnet was almost twice as fast.","pieces":[[" OPA",17.940000000000001,18.420000000000002],[" solved",18.420000000000002,18.780000000000001],[" more",18.780000000000001,18.960000000000001],[" tasks,",18.960000000000001,19.559999999999999],[" but",19.559999999999999,19.920000000000002],[" Sonnet",19.920000000000002,20.399999999999999],[" was",20.399999999999999,20.579999999999998],[" almost",20.579999999999998,20.699999999999999],[" twice",20.699999999999999,21],[" as",21,21.239999999999998],[" fast.",21.239999999999998,21.719999999999999]],"final":true,"t":23.172786712646484,"start":17.940000000000001,"end":21.780000000000001}
+{"text":" Let","pieces":[[" Let",21.780000000000001,23.199999999999999]],"final":false,"t":23.173062801361084,"start":21.780000000000001,"end":23.199999999999999}
+{"text":" Let me","pieces":[[" Let me",21.780000000000001,23.199999999999999]],"final":false,"t":23.173173904418945,"start":21.780000000000001,"end":23.199999999999999}
+{"text":" Let me switch","pieces":[[" Let me switch",21.780000000000001,23.199999999999999]],"final":false,"t":23.173245906829834,"start":21.780000000000001,"end":23.199999999999999}
+{"text":" Let me switch to","pieces":[[" Let me switch to",21.780000000000001,23.199999999999999]],"final":false,"t":23.173295021057129,"start":21.780000000000001,"end":23.199999999999999}
+{"text":" Let me switch to my","start":21.780000000000001,"t":26.912956714630127,"final":false,"pieces":[[" Let me switch to my",21.780000000000001,27]],"end":27}
+{"text":" Let me switch to my screen","start":21.780000000000001,"t":26.91317892074585,"final":false,"pieces":[[" Let me switch to my screen",21.780000000000001,27]],"end":27}
+{"text":" Let me switch to my screen and","start":21.780000000000001,"t":26.913406848907471,"final":false,"pieces":[[" Let me switch to my screen and",21.780000000000001,27]],"end":27}
+{"t":26.913647890090942,"start":21.780000000000001,"end":27,"text":" Let me switch to my screen and run","final":false,"pieces":[[" Let me switch to my screen and run",21.780000000000001,27]]}
+{"t":26.914021968841553,"start":21.780000000000001,"text":" Let me switch to my screen and run the","final":false,"pieces":[[" Let me switch to my screen and run the",21.780000000000001,27]],"end":27}
+{"t":26.914167881011963,"start":21.780000000000001,"text":" Let me switch to my screen and run the same","final":false,"pieces":[[" Let me switch to my screen and run the same",21.780000000000001,27]],"end":27}
+{"t":26.914468765258789,"start":21.780000000000001,"text":" Let me switch to my screen and run the same prom","final":false,"pieces":[[" Let me switch to my screen and run the same prom",21.780000000000001,27]],"end":27}
+{"start":21.780000000000001,"text":" Let me switch to my screen and run the same prompt","pieces":[[" Let me switch to my screen and run the same prompt",21.780000000000001,27]],"final":false,"end":27,"t":26.914783954620361}
+{"start":21.780000000000001,"text":" Let me switch to my screen and run the same prompt on","pieces":[[" Let me switch to my screen and run the same prompt on",21.780000000000001,27]],"final":false,"end":27,"t":26.915071964263916}
+{"start":21.780000000000001,"text":" Let me switch to my screen and run the same prompt on both","pieces":[[" Let me switch to my screen and run the same prompt on both",21.780000000000001,27]],"final":false,"end":27,"t":26.915406703948975}
+{"start":21.780000000000001,"text":" Let me switch to my screen and run the same prompt on both mod","pieces":[[" Let me switch to my screen and run the same prompt on both mod",21.780000000000001,27]],"final":false,"end":27,"t":26.915709018707275}
+{"start":21.780000000000001,"text":" Let me switch to my screen and run the same prompt on both models","pieces":[[" Let me switch to my screen and run the same prompt on both models",21.780000000000001,27]],"final":false,"end":27,"t":26.916082859039307}
+{"start":21.780000000000001,"text":" Let me switch to my screen and run the same prompt on both models.","pieces":[[" Let me switch to my screen and run the same prompt on both models.",21.780000000000001,27]],"final":false,"end":27,"t":26.916342735290527}
+{"start":21.960000000000001,"text":" Let me switch to my screen and run the same prompt on both models.","pieces":[[" Let",21.960000000000001,22.260000000000002],[" me",22.260000000000002,22.440000000000001],[" switch",22.440000000000001,22.620000000000001],[" to",22.620000000000001,22.859999999999999],[" my",22.859999999999999,23.100000000000001],[" screen",23.100000000000001,23.219999999999999],[" and",23.219999999999999,23.52],[" run",23.52,23.699999999999999],[" the",23.699999999999999,23.82],[" same",23.82,23.940000000000001],[" prompt",23.940000000000001,24.300000000000001],[" on",24.300000000000001,24.48],[" both",24.48,24.66],[" models.",24.66,25.199999999999999]],"final":true,"end":25.260000000000002,"t":26.965271949768066}
+{"start":25.260000000000002,"end":27,"text":" Watch","t":26.965444803237915,"final":false,"pieces":[[" Watch",25.260000000000002,27]]}
+{"text":" Watch the","pieces":[[" Watch the",25.260000000000002,27]],"final":false,"t":26.965515851974487,"start":25.260000000000002,"end":27}
+{"text":" Watch the timer","pieces":[[" Watch the timer",25.260000000000002,27]],"final":false,"t":26.965566873550415,"start":25.260000000000002,"end":27}
+{"text":" Watch the timer on","pieces":[[" Watch the timer on",25.260000000000002,27]],"final":false,"t":26.965631008148193,"start":25.260000000000002,"end":27}
+{"text":" Watch the timer on the","pieces":[[" Watch the timer on the",25.260000000000002,27]],"final":false,"t":26.965680837631226,"start":25.260000000000002,"end":27}
+{"pieces":[[" Watch the timer on the right",25.260000000000002,30.800000000000001]],"end":30.800000000000001,"text":" Watch the timer on the right","start":25.260000000000002,"t":30.711745738983154,"final":false}
+{"pieces":[[" Watch the timer on the right.",25.260000000000002,30.800000000000001]],"end":30.800000000000001,"text":" Watch the timer on the right.","start":25.260000000000002,"t":30.711893796920776,"final":false}
+{"pieces":[[" Watch",25.5,25.800000000000001],[" the",25.800000000000001,26.039999999999999],[" timer",26.039999999999999,26.16],[" on",26.16,26.460000000000001],[" the",26.460000000000001,26.579999999999998],[" right.",26.579999999999998,27]],"end":27.059999999999999,"text":" Watch the timer on the right.","start":25.5,"t":30.730916976928711,"final":true}
+{"text":" Son","pieces":[[" Son",27.059999999999999,30.800000000000001]],"final":false,"t":30.73109769821167,"start":27.059999999999999,"end":30.800000000000001}
+{"text":" Sonnet","pieces":[[" Sonnet",27.059999999999999,30.800000000000001]],"final":false,"t":30.731207847595215,"start":27.059999999999999,"end":30.800000000000001}
+{"text":" Sonnet finished","pieces":[[" Sonnet finished",27.059999999999999,30.800000000000001]],"final":false,"t":30.731282711029053,"start":27.059999999999999,"end":30.800000000000001}
+{"text":" Sonnet finished first","pieces":[[" Sonnet finished first",27.059999999999999,30.800000000000001]],"final":false,"t":30.731339931488037,"start":27.059999999999999,"end":30.800000000000001}
+{"text":" Sonnet finished first.","pieces":[[" Sonnet finished first.",27.059999999999999,30.800000000000001]],"final":false,"t":30.73138689994812,"start":27.059999999999999,"end":30.800000000000001}
+{"text":" Sonnet finished first.","pieces":[[" Sonnet",27.18,27.719999999999999],[" finished",27.719999999999999,27.899999999999999],[" first.",27.899999999999999,28.32]],"final":true,"t":30.744778871536255,"start":27.18,"end":28.379999999999999}
+{"text":" Okay","pieces":[[" Okay",28.379999999999999,30.800000000000001]],"final":false,"t":30.744890689849854,"start":28.379999999999999,"end":30.800000000000001}
+{"text":" Okay.","pieces":[[" Okay.",28.379999999999999,30.800000000000001]],"final":false,"t":30.744947910308838,"start":28.379999999999999,"end":30.800000000000001}
+{"text":" Okay.","pieces":[[" Okay.",28.559999999999999,29.100000000000001]],"final":true,"t":30.752374887466431,"start":28.559999999999999,"end":29.16}
+{"text":" so","pieces":[[" so",29.16,30.800000000000001]],"final":false,"t":30.752481937408447,"start":29.16,"end":30.800000000000001}
+{"text":" so which","pieces":[[" so which",29.16,30.800000000000001]],"final":false,"t":30.752893924713135,"start":29.16,"end":30.800000000000001}
+{"final":false,"pieces":[[" so which one",29.16,30.800000000000001]],"t":30.753167867660522,"text":" so which one","start":29.16,"end":30.800000000000001}
+{"final":false,"pieces":[[" so which one should",29.16,30.800000000000001]],"t":30.753618717193604,"text":" so which one should","start":29.16,"end":30.800000000000001}
+{"final":false,"pieces":[[" so which one should you",29.16,30.800000000000001]],"t":30.753784894943237,"text":" so which one should you","start":29.16,"end":30.800000000000001}
+{"start":29.16,"text":" so which one should you pick","pieces":[[" so which one should you pick",29.16,30.800000000000001]],"final":false,"end":30.800000000000001,"t":30.753955841064453}
+{"final":false,"pieces":[[" so which one should you pick?",29.16,34.700000000000003]],"t":34.614413738250732,"text":" so which one should you pick?","start":29.16,"end":34.700000000000003}
+{"final":true,"pieces":[[" So",29.280000000000001,29.579999999999998],[" which",29.579999999999998,29.879999999999999],[" one",29.879999999999999,30.059999999999999],[" should",30.059999999999999,30.300000000000001],[" you",30.300000000000001,30.420000000000002],[" pick?",30.420000000000002,30.780000000000001]],"t":34.633973836898804,"text":" So which one should you pick?","start":29.280000000000001,"end":30.84}
+{"final":false,"pieces":[[" If",30.84,34.700000000000003]],"t":34.634198904037476,"text":" If","start":30.84,"end":34.700000000000003}
+{"final":false,"pieces":[[" If speed",30.84,34.700000000000003]],"t":34.634316921234131,"text":" If speed","start":30.84,"end":34.700000000000003}
+{"final":false,"pieces":[[" If speed matter",30.84,34.700000000000003]],"t":34.634416818618774,"text":" If speed matter","start":30.84,"end":34.700000000000003}
+{"final":false,"pieces":[[" If speed matters",30.84,34.700000000000003]],"t":34.634487867355347,"text":" If speed matters","start":30.84,"end":34.700000000000003}
+{"final":false,"pieces":[[" If speed matters,",30.84,34.700000000000003]],"t":34.634544849395752,"text":" If speed matters,","start":30.84,"end":34.700000000000003}
+{"final":true,"pieces":[[" If",30.84,31.140000000000001],[" speed",31.140000000000001,31.32],[" matters.",31.32,31.920000000000002]],"t":34.6491858959198,"text":" If speed matters.","start":30.84,"end":31.98}
+{"final":false,"pieces":[[" go",31.98,34.700000000000003]],"t":34.649372816085815,"text":" go","start":31.98,"end":34.700000000000003}
+{"final":false,"pieces":[[" go with",31.98,34.700000000000003]],"t":34.649549961090088,"text":" go with","start":31.98,"end":34.700000000000003}
+{"final":false,"pieces":[[" go with Son",31.98,34.700000000000003]],"t":34.649652004241943,"text":" go with Son","start":31.98,"end":34.700000000000003}
+{"final":false,"pieces":[[" go with Sonnet",31.98,34.700000000000003]],"t":34.649706840515137,"text":" go with Sonnet","start":31.98,"end":34.700000000000003}
+{"final":false,"pieces":[[" go with Sonnet if",31.98,34.700000000000003]],"t":34.650085926055908,"text":" go with Sonnet if","start":31.98,"end":34.700000000000003}
+{"start":31.98,"end":34.700000000000003,"text":" go with Sonnet if quality","t":34.650522708892822,"final":false,"pieces":[[" go with Sonnet if quality",31.98,34.700000000000003]]}
+{"start":31.98,"end":34.700000000000003,"text":" go with Sonnet if quality matter","t":34.651018857955933,"final":false,"pieces":[[" go with Sonnet if quality matter",31.98,34.700000000000003]]}
+{"start":31.98,"end":34.700000000000003,"text":" go with Sonnet if quality matters","t":34.651243686676025,"final":false,"pieces":[[" go with Sonnet if quality matters",31.98,34.700000000000003]]}
+{"final":false,"t":34.651569843292236,"pieces":[[" go with Sonnet if quality matters most",31.98,34.700000000000003]],"end":34.700000000000003,"start":31.98,"text":" go with Sonnet if quality matters most"}
+{"start":31.98,"end":38.5,"text":" go with Sonnet if quality matters most?","t":38.419119834899902,"final":false,"pieces":[[" go with Sonnet if quality matters most?",31.98,38.5]]}
+{"start":31.98,"end":34.68,"text":" Go with Sonnet, if quality matters most.","t":38.447906017303467,"final":true,"pieces":[[" Go",31.98,32.280000000000001],[" with",32.280000000000001,32.460000000000001],[" Sonnet,",32.460000000000001,33.119999999999997],[" if",33.119999999999997,33.359999999999999],[" quality",33.359999999999999,33.600000000000001],[" matters",33.600000000000001,34.140000000000001],[" most.",34.140000000000001,34.619999999999997]]}
+{"start":34.68,"end":38.5,"text":" pick","t":38.448143005371094,"final":false,"pieces":[[" pick",34.68,38.5]]}
+{"start":34.68,"end":38.5,"text":" pick O","t":38.448249816894531,"final":false,"pieces":[[" pick O",34.68,38.5]]}
+{"start":34.68,"end":38.5,"text":" pick Op","t":38.448300838470459,"final":false,"pieces":[[" pick Op",34.68,38.5]]}
+{"start":34.68,"end":38.5,"text":" pick Opus","t":38.448376893997192,"final":false,"pieces":[[" pick Opus",34.68,38.5]]}
+{"start":34.68,"end":38.5,"text":" pick Opus.","t":38.448427677154541,"final":false,"pieces":[[" pick Opus.",34.68,38.5]]}
+{"start":34.740000000000002,"end":35.82,"text":" Pick Opus.","t":38.461509704589844,"final":true,"pieces":[[" Pick",34.740000000000002,35.039999999999999],[" Opus.",35.039999999999999,35.759999999999998]]}
+{"start":35.82,"end":38.5,"text":" That","t":38.461688995361328,"final":false,"pieces":[[" That",35.82,38.5]]}
+{"start":35.82,"end":38.5,"text":" That'","t":38.461805820465088,"final":false,"pieces":[[" That'",35.82,38.5]]}
+{"start":35.82,"end":38.5,"text":" That's","t":38.461861848831177,"final":false,"pieces":[[" That's",35.82,38.5]]}
+{"start":35.82,"end":38.5,"text":" That's it","t":38.46190881729126,"final":false,"pieces":[[" That's it",35.82,38.5]]}
+{"start":35.82,"end":38.5,"text":" That's it for","t":38.461951732635498,"final":false,"pieces":[[" That's it for",35.82,38.5]]}
+{"start":35.82,"end":38.5,"text":" That's it for today","t":38.46202278137207,"final":false,"pieces":[[" That's it for today",35.82,38.5]]}
+{"start":35.82,"end":38.5,"text":" That's it for today.","t":38.462063789367676,"final":false,"pieces":[[" That's it for today.",35.82,38.5]]}
+{"start":35.82,"end":36.719999999999999,"text":" That's it for today.","t":38.477875709533691,"final":true,"pieces":[[" That's",35.82,36.119999999999997],[" it",36.119999999999997,36.18],[" for",36.18,36.299999999999997],[" today.",36.299999999999997,36.659999999999997]]}
+{"start":36.719999999999999,"end":38.5,"text":" Thanks","t":38.478027820587158,"final":false,"pieces":[[" Thanks",36.719999999999999,38.5]]}
+{"start":36.719999999999999,"end":38.5,"text":" Thanks for","t":38.478103876113892,"final":false,"pieces":[[" Thanks for",36.719999999999999,38.5]]}
+{"start":36.719999999999999,"end":38.5,"text":" Thanks for watching","t":38.478161811828613,"final":false,"pieces":[[" Thanks for watching",36.719999999999999,38.5]]}
+{"start":36.719999999999999,"end":38.5,"text":" Thanks for watching.","t":38.478361845016479,"final":false,"pieces":[[" Thanks for watching.",36.719999999999999,38.5]]}
+{"start":36.840000000000003,"end":37.799999999999997,"text":" Thanks for watching.","t":38.490119934082031,"final":true,"pieces":[[" Thanks",36.840000000000003,37.140000000000001],[" for",37.140000000000001,37.380000000000003],[" watching.",37.380000000000003,37.740000000000002]]}
+{"start":37.799999999999997,"end":39.658875000000002,"text":" See","t":39.67906379699707,"final":false,"pieces":[[" See",37.799999999999997,39.658875000000002]]}
+{"start":37.799999999999997,"end":39.658875000000002,"text":" See you","t":39.679229736328125,"final":false,"pieces":[[" See you",37.799999999999997,39.658875000000002]]}
+{"start":37.799999999999997,"end":39.658875000000002,"text":" See you next","t":39.679414749145508,"final":false,"pieces":[[" See you next",37.799999999999997,39.658875000000002]]}
+{"start":37.799999999999997,"end":39.658875000000002,"text":" See you next time","t":39.679589748382568,"final":false,"pieces":[[" See you next time",37.799999999999997,39.658875000000002]]}
+{"start":37.799999999999997,"end":39.658875000000002,"text":" See you next time.","t":39.679735898971558,"final":false,"pieces":[[" See you next time.",37.799999999999997,39.658875000000002]]}
+{"start":38.219999999999999,"end":39.119999999999997,"text":" See you next time.","t":39.69481897354126,"final":true,"pieces":[[" See",38.219999999999999,38.520000000000003],[" you",38.520000000000003,38.700000000000003],[" next",38.700000000000003,38.82],[" time.",38.82,39.060000000000002]]}

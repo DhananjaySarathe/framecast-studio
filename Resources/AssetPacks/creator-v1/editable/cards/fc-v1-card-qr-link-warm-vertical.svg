@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 3840" width="2160" height="3840">
+  <!-- Card Drop Shadow -->
+  <rect x="136" y="2239" width="1685" height="730" rx="102" fill="#120906" fill-opacity="0.34"/>
+  <!-- Card Surface Body -->
+  <rect x="130" y="2227" width="1685" height="730" rx="102" fill="#2E1A13" fill-opacity="0.91" stroke="#683D2E" stroke-width="3.5"/>
+  <!-- Top Accent Highlight -->
+  <line x1="232" y1="2229" x2="1713" y2="2229" stroke="#E59872" stroke-opacity="0.80" stroke-width="3" stroke-linecap="round"/>
+  
+    <!-- Blank Quiet-Zone Square Reserved for App-Generated QR Code -->
+    <rect x="218" y="2315" width="555" height="555" rx="44" fill="#FFFFFF" stroke="#E59872" stroke-width="3"/>
+    <!-- URL Pill Backplate (Text-Free) -->
+    <rect x="840" y="2694" width="891" height="161" rx="80" fill="#4E2E23" stroke="#683D2E" stroke-width="2"/>
+
+</svg>

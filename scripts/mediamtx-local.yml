@@ -1,0 +1,44 @@
+# Local test server for Framecast streaming. Every listener is disabled except RTMP on 127.0.0.1,
+# and every address is pinned to 127.0.0.1 as a second guard. Nothing is reachable from other machines.
+# Incoming streams are also written to local-output/mediamtx (git-ignored).
+logLevel: info
+api: no
+apiAddress: 127.0.0.1:9997
+metrics: no
+metricsAddress: 127.0.0.1:9998
+pprof: no
+pprofAddress: 127.0.0.1:9999
+playback: no
+playbackAddress: 127.0.0.1:9996
+rtsp: no
+rtspAddress: 127.0.0.1:8554
+rtspsAddress: 127.0.0.1:8322
+rtpAddress: 127.0.0.1:8000
+rtcpAddress: 127.0.0.1:8001
+srtpAddress: 127.0.0.1:8004
+srtcpAddress: 127.0.0.1:8005
+hls: no
+hlsAddress: 127.0.0.1:8888
+webrtc: no
+webrtcAddress: 127.0.0.1:8889
+webrtcLocalUDPAddress: 127.0.0.1:8189
+webrtcIPsFromInterfaces: no
+srt: no
+srtAddress: 127.0.0.1:8890
+moq: no
+moqHTTP2Address: 127.0.0.1:8892
+moqHTTP3Address: 127.0.0.1:8892
+moqQUICAddress: 127.0.0.1:8893
+moqServerKey: local-output/mediamtx/moq.key
+moqServerCert: local-output/mediamtx/moq.crt
+rtmp: yes
+rtmpAddress: 127.0.0.1:1935
+rtmpsAddress: 127.0.0.1:1936
+rtmpEncryption: "no"
+pathDefaults:
+  record: yes
+  recordPath: ./local-output/mediamtx/%path/%Y-%m-%d_%H-%M-%S-%f
+  recordFormat: fmp4
+  recordSegmentDuration: 1h
+paths:
+  all_others:

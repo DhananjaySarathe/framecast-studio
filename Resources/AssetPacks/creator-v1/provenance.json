@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "packId": "framecast-creator-assets-v1",
+  "version": "1.0.0",
+  "generatedAt": "2026-10-18T00:25:00+05:30",
+  "rightsAndLicensingNotice": "All 60 design families (108 primary runtime exports, 24 annotation color variants, 76 editable SVGs, 108 preview thumbnails, 8 demo scenes, and 3 contact sheets) were originally authored and procedurally/vectorially synthesized specifically for Framecast Creator Assets v1. No third-party stock photographs, web-scraped images, external fonts, brand logos, device trade dress, or other apps' assets were used. Note: programmatic/procedural and AI-assisted outputs are delivered as original project production assets for Framecast; we do not assert statutory CC0 dedication or make blanket legal guarantees without formal legal counsel review.",
+  "methods": [
+    {
+      "provenanceId": "prov-proc-float-gradient-v1",
+      "category": "backgrounds (soft gradients & mesh/aurora)",
+      "generationMethod": "Native 32-bit floating-point mathematical color-field synthesis in Python 3.14 (NumPy 2.5.1 + Pillow 12.3.0) with peripheral quiet-zone attenuation and Triangular PDF (TPDF) dithering prior to 8-bit sRGB PNG quantization.",
+      "toolAndModel": "Python 3.14 / NumPy 2.5.1 / Pillow 12.3.0 (local native synthesis, no external AI model)",
+      "nativeGenerationDimensions": {
+        "horizontal": "3840x2160 (native 4K, no post-generation upscaling of raster AI output; multi-stop analytical fields evaluated on smooth grid and bicubic-interpolated in float32 before full-4K TPDF dithering)",
+        "vertical": "2160x3840 (deliberately composed 9:16 coordinate equations, not cropped from 16:9)"
+      },
+      "parametersAndPrompts": "Analytical radial/curvilinear Gaussian and sinusoidal color-field equations using exact family hex tokens from design-tokens.json, attenuated across the central 70%x65% content zone.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    },
+    {
+      "provenanceId": "prov-proc-tactile-texture-v1",
+      "category": "backgrounds (tactile textures: paper, linen, matte charcoal, frosted surface)",
+      "generationMethod": "Multi-octave filtered isotropic and directional Gaussian fiber/grain synthesis layered over floating-point base color fields with TPDF dithering.",
+      "toolAndModel": "Python 3.14 / NumPy 2.5.1 / Pillow 12.3.0 GaussianBlur & float synthesis",
+      "nativeGenerationDimensions": {
+        "horizontal": "3840x2160",
+        "vertical": "2160x3840"
+      },
+      "parametersAndPrompts": "Subtle cotton rag paper fibers, woven warp/weft linen micro-strands, bead-blasted anodized charcoal slate, and frosted midnight acrylic subsurface refraction bands.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    },
+    {
+      "provenanceId": "prov-cairo-vector-abstract-v1",
+      "category": "backgrounds (abstract designs: edge ribbons, flowing waves, layered geometry, diffuse glass)",
+      "generationMethod": "Self-contained SVG vector artwork rendered directly at 3840x2160 and 2160x3840 via CairoSVG (libcairo2) with a soft atmospheric bloom pass and TPDF dithering.",
+      "toolAndModel": "CairoSVG / libcairo 2D vector renderer + Pillow 12.3.0",
+      "nativeGenerationDimensions": {
+        "horizontal": "3840x2160 (native vector rasterization)",
+        "vertical": "2160x3840 (native vector rasterization, separately authored 9:16 geometry)"
+      },
+      "parametersAndPrompts": "Peripheral Bézier ribbons, topographic wave contours, architectural paper relief planes, and rotated frosted glass cards.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    },
+    {
+      "provenanceId": "prov-cairo-optical-bokeh-env-v1",
+      "category": "backgrounds (defocused environmental designs: warm studio, daylight workspace, calm bookshelf, natural foliage)",
+      "generationMethod": "Multi-plane architectural and botanical vector scene construction rasterized and passed through multi-stage Gaussian and Box/Disc optical depth-of-field blur, then bicubic-interpolated to 3840x2160 and 2160x3840 with full-4K TPDF dithering.",
+      "toolAndModel": "CairoSVG + Pillow 12.3.0 multi-stage depth-of-field blur pipeline",
+      "nativeGenerationDimensions": {
+        "horizontal": "960x540 base architectural/botanical vector pass blurred with radius-22 Gaussian + radius-8 Box bokeh filter and smoothly interpolated to 3840x2160 with full-4K TPDF dithering",
+        "vertical": "540x960 base architectural/botanical vector pass blurred and smoothly interpolated to 2160x3840 with full-4K TPDF dithering"
+      },
+      "parametersAndPrompts": "Out-of-focus studio timber acoustic slats, sunlit plaster window mullions, dark walnut study bookshelves, and evening conservatory botanical fronds with zero people, signage, or brands.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    },
+    {
+      "provenanceId": "prov-cairo-scene-plate-v1",
+      "category": "stream-scenes (12 starting-soon, be-right-back, and thanks-for-watching plates)",
+      "generationMethod": "Self-contained SVG architectural stage overlays rasterized natively at 3840x2160 and 2160x3840 via CairoSVG and alpha-composited onto float32 family gradient backdrops prior to TPDF dithering.",
+      "toolAndModel": "CairoSVG + NumPy 2.5.1 + Pillow 12.3.0",
+      "nativeGenerationDimensions": {
+        "horizontal": "3840x2160 (native 4K)",
+        "vertical": "2160x3840 (native 4K)"
+      },
+      "parametersAndPrompts": "Text-free stage cards, status pills, accent dividers, and reserved countdown/social modules across Obsidian Mint, Paper & Ink, Warm Studio, and Deep Blue.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    },
+    {
+      "provenanceId": "prov-cairo-rgba-frame-v1",
+      "category": "frames (8 camera, screen, and interview frame designs)",
+      "generationMethod": "Self-contained SVG vector artwork with explicit <mask> aperture cutouts rasterized natively at 3840x2160 and 2160x3840 to 32-bit RGBA PNG via CairoSVG.",
+      "toolAndModel": "CairoSVG (libcairo2) native 4K RGBA rasterizer",
+      "nativeGenerationDimensions": {
+        "horizontal": "3840x2160 (native 4K RGBA)",
+        "vertical": "2160x3840 (native 4K RGBA)"
+      },
+      "parametersAndPrompts": "Double-hairline bezels, soft outer drop shadows, and verified alpha==0 transparent camera/screen apertures.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    },
+    {
+      "provenanceId": "prov-cairo-rgba-card-v1",
+      "category": "cards (8 editable lower-third, viewer-comment, chapter/tip callout, and QR/link card backplates)",
+      "generationMethod": "Self-contained SVG vector artwork rasterized natively at 3840x2160 and 2160x3840 to 32-bit RGBA PNG via CairoSVG.",
+      "toolAndModel": "CairoSVG (libcairo2) native 4K RGBA rasterizer",
+      "nativeGenerationDimensions": {
+        "horizontal": "3840x2160 (native 4K RGBA)",
+        "vertical": "2160x3840 (native 4K RGBA)"
+      },
+      "parametersAndPrompts": "Text-free full-canvas positioned overlay backplates with blank white QR quiet-zone squares on QR cards.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    },
+    {
+      "provenanceId": "prov-cairo-rgba-annotation-v1",
+      "category": "annotations (12 universal arrows, emphasis shapes, marks, status symbols, and step marker backplates)",
+      "generationMethod": "Self-contained SVG vector artwork rasterized natively up to 1400px (<=2048px cap) with >=90px unclipped stroke/shadow padding to 32-bit RGBA PNG via CairoSVG.",
+      "toolAndModel": "CairoSVG (libcairo2) native RGBA rasterizer",
+      "nativeGenerationDimensions": {
+        "universal": "560x1280 to 1400x840 (native vector rasterization)"
+      },
+      "parametersAndPrompts": "Straight, curved, and elbow arrows; circle and rounded-rect emphasis shapes; underline and bracket marks; check and warning status symbols; number-free step marker backplates.",
+      "externalSourcesUsed": [],
+      "rightsReviewRequired": false
+    }
+  ]
+}

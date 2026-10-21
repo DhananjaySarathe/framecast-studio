@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+
+  <!-- Drop Shadow Collar (evenodd hole) -->
+  <path d="M 372,180 L 3469,180 A 48,48 0 0 1 3517,228 L 3517,1947 A 48,48 0 0 1 3469,1995 L 372,1995 A 48,48 0 0 1 324,1947 L 324,228 A 48,48 0 0 1 372,180 Z M 372,194 L 3469,194 A 26,26 0 0 1 3495,220 L 3495,1939 A 26,26 0 0 1 3469,1965 L 372,1965 A 26,26 0 0 1 346,1939 L 346,220 A 26,26 0 0 1 372,194 Z" fill="#292524" fill-opacity="0.34" fill-rule="evenodd"/>
+  <!-- Bezel Collar (evenodd hole) -->
+  <path d="M 372,172 L 3469,172 A 48,48 0 0 1 3517,220 L 3517,1939 A 48,48 0 0 1 3469,1987 L 372,1987 A 48,48 0 0 1 324,1939 L 324,220 A 48,48 0 0 1 372,172 Z M 372,194 L 3469,194 A 26,26 0 0 1 3495,220 L 3495,1939 A 26,26 0 0 1 3469,1965 L 372,1965 A 26,26 0 0 1 346,1939 L 346,220 A 26,26 0 0 1 372,194 Z" fill="#FAF7F2" fill-opacity="0.94" fill-rule="evenodd" stroke="#CFC7B8" stroke-width="3.5"/>
+  <!-- Inner Crisp Accent Hairline around Aperture -->
+  <rect x="344" y="192" width="3153" height="1775" rx="28" fill="none" stroke="#1C1917" stroke-width="4"/>
+  <!-- Top Specular Highlight -->
+  <line x1="372" y1="174" x2="3469" y2="174" stroke="#8C6D53" stroke-opacity="0.72" stroke-width="3" stroke-linecap="round"/>
+
+</svg>

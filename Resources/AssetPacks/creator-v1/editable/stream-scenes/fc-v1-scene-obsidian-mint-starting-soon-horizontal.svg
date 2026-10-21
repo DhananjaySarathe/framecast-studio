@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3840 2160" width="3840" height="2160">
+  <defs>
+    <linearGradient id="stageFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#121C26" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#182634" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="stageBorder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2DD4BF" stop-opacity="0.65"/>
+      <stop offset="50%" stop-color="#2A3F54" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#5EEAD4" stop-opacity="0.45"/>
+    </linearGradient>
+  </defs>
+  <!-- Soft Drop Shadow Behind Stage -->
+  <rect x="392" y="320" width="3072" height="1555" rx="52" fill="#05080C" fill-opacity="0.36"/>
+  <!-- Main Architectural Stage Card -->
+  <rect x="384" y="302" width="3072" height="1555" rx="52" fill="url(#stageFill)" stroke="url(#stageBorder)" stroke-width="4"/>
+  <!-- Top Accent Hairline Highlight -->
+  <line x1="436" y1="304" x2="3404" y2="304" stroke="#2DD4BF" stroke-opacity="0.75" stroke-width="3"/>
+  
+    <!-- Status Badge Backplate (Text-Free) -->
+    <rect x="568" y="489" width="553" height="109" rx="54" fill="#2DD4BF" fill-opacity="0.16" stroke="#2DD4BF" stroke-opacity="0.55" stroke-width="2.5"/>
+    <circle cx="630" cy="543" r="21" fill="#2DD4BF"/>
+    <!-- Accent Divider Rule -->
+    <line x1="568" y1="1297" x2="1981" y2="1297" stroke="#2DD4BF" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round"/>
+    <!-- Reserved Countdown Timer Module (Text-Free) -->
+    <rect x="2289" y="582" width="983" height="746" rx="35" fill="#182634" fill-opacity="0.92" stroke="#2DD4BF" stroke-opacity="0.40" stroke-width="3"/>
+    <line x1="2407" y1="1119" x2="3154" y2="1119" stroke="#2A3F54" stroke-opacity="0.7" stroke-width="2"/>
+    <!-- Reserved Handle / Logo Pill (Text-Free) -->
+    <rect x="568" y="1453" width="1044" height="187" rx="26" fill="#1E3042" fill-opacity="0.75" stroke="#2A3F54" stroke-width="2"/>
+
+</svg>

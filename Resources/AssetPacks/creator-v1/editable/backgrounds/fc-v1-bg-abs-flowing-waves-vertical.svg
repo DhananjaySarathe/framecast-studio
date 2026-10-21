@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2160 3840" width="2160" height="3840">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#281610"/>
+      <stop offset="50%" stop-color="#21120D"/>
+      <stop offset="100%" stop-color="#2E1A13"/>
+    </linearGradient>
+    <linearGradient id="wv1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#C86D51" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#E59872" stop-opacity="0.10"/>
+    </linearGradient>
+    <linearGradient id="wv2" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0%" stop-color="#E59872" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#9A4E36" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+  <rect width="2160" height="3840" fill="url(#bg)"/>
+  <path d="M 0,691.1999999999999 C 756.0,307.2 1404.0,576.0 2160,268.8 L 2160,0 L 0,0 Z" fill="url(#wv1)"/>
+  <path d="M 0,422.4 C 648.0,153.6 1296.0,345.59999999999997 2160,115.19999999999999 L 2160,0 L 0,0 Z" fill="url(#wv2)" stroke="#F4C095" stroke-opacity="0.18" stroke-width="2.5"/>
+  <path d="M 0,3225.6 C 756.0,3571.2000000000003 1468.8000000000002,3187.2 2160,3456.0 L 2160,3840 L 0,3840 Z" fill="url(#wv1)"/>
+  <path d="M 0,3494.4 C 864.0,3724.7999999999997 1555.2,3417.6 2160,3648.0 L 2160,3840 L 0,3840 Z" fill="url(#wv2)" stroke="#E59872" stroke-opacity="0.20" stroke-width="2.5"/>
+</svg>
