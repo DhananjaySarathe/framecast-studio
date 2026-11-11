@@ -1,0 +1,12 @@
+visionbench concurrent | Version 27.0.1 (Build 26A434) | thermal 0
+concurrent: 150 frames loaded; thermal state 0
+idle (sampler only)          wall=8.0s proc CPU=0.3% busy=0.0% gpuThr=0.0% vision+other=0.3% ps~0.0% GPU util~0.0% busyIter/s=0.0 gpuFrame p50=nan p95=nan missed=0
+busy thread                  wall=15.0s proc CPU=99.8% busy=99.8% gpuThr=0.0% vision+other=0.1% ps~99.9% GPU util~0.0% busyIter/s=4170.9 gpuFrame p50=nan p95=nan missed=0
+busy thread + vision15Hz     wall=20.0s proc CPU=109.0% busy=99.8% gpuThr=0.0% vision+other=9.2% ps~107.8% GPU util~0.0% busyIter/s=4144.6 gpuFrame p50=nan p95=nan missed=0
+    vision: ticks=300.00 tickP50=4.93 tickP95=5.19 tickMax=34.63 first15max=34.63 tickP95after15=5.18 tickMaxAfter15=6.66 overruns67ms=0.00 faceP50=3.91 faceP95=4.11 trackP50=1.01 trackP95=1.22 intervalP50=66.64 intervalP95=72.25 intervalMax=75.70 reinits=2.00 iouMean=0.76
+vision15Hz alone             wall=20.0s proc CPU=18.3% busy=0.0% gpuThr=0.0% vision+other=18.3% ps~17.9% GPU util~0.0% busyIter/s=0.0 gpuFrame p50=nan p95=nan missed=0
+    vision: ticks=300.00 tickP50=12.23 tickP95=14.00 tickMax=17.89 first15max=17.89 tickP95after15=14.00 tickMaxAfter15=15.79 overruns67ms=0.00 faceP50=9.89 faceP95=11.34 trackP50=2.24 trackP95=2.73 intervalP50=66.57 intervalP95=68.53 intervalMax=104.59 reinits=2.00 iouMean=0.76
+busy + GPU compositor        wall=15.0s proc CPU=111.3% busy=99.6% gpuThr=5.1% vision+other=6.6% ps~110.2% GPU util~25.0% busyIter/s=4089.8 gpuFrame p50=3.22 p95=3.61 missed=0
+busy + GPU comp + vision15Hz wall=20.0s proc CPU=121.6% busy=99.6% gpuThr=5.9% vision+other=16.1% ps~120.2% GPU util~24.0% busyIter/s=4067.9 gpuFrame p50=2.98 p95=3.46 missed=0
+    vision: ticks=301.00 tickP50=5.05 tickP95=5.44 tickMax=24.68 first15max=24.68 tickP95after15=5.42 tickMaxAfter15=5.63 overruns67ms=0.00 faceP50=4.02 faceP95=4.29 trackP50=1.04 trackP95=1.26 intervalP50=67.02 intervalP95=73.79 intervalMax=76.00 reinits=3.00 iouMean=0.75
+thermal state end 0

@@ -12,10 +12,20 @@ import Darwin
 ///    guest page; guests knock over LiveKit data messages and are let in by a permission change.
 /// Local tokens are signed with a secret generated per session and never stored.
 final class GuestServer {
-    static let httpPort: UInt16 = 8090
-    static let httpsPort: UInt16 = 8443
-    static let signalPort = 7880
-    static let mediaPort = 7882
+    /// Test launches use their own ports (10000 higher) and folder, so they never collide with the user's guest
+    /// room or stop its server.
+    private static let testOffset = CollectionStore.profile == "default" ? 0 : 10_000
+    static let httpPort = UInt16(8090 + testOffset)
+    static let httpsPort = UInt16(8443 + testOffset)
+    static let signalPort = 7880 + testOffset
+    static let mediaPort = 7882 + testOffset
+    /// ICE over TCP, for Wi-Fi networks that block UDP between devices (common on office and shared Wi-Fi).
+    static let mediaTCPPort = 7881 + testOffset
+    /// LiveKit's TURN relay, plain TCP (Wi-Fi mode), and the port on the Wi-Fi address where Framecast passes
+    /// devices' connections to it. See `startRelay`.
+    static let turnPort = 7883 + testOffset
+    static let relayPort = UInt16(7884 + testOffset)
+    static var folder: URL { CollectionStore.root.appendingPathComponent(testOffset == 0 ? "GuestServer" : "GuestServer (tests)") }
     let reach: GuestReach
     let apiKey: String
     let secret: String
@@ -25,10 +35,13 @@ final class GuestServer {
     private let apiBase: String
     let runsLocalServer: Bool
     private(set) var lanAddress: String?
+    /// Media may also use TCP 7881 (Wi-Fi mode on a Mac with only private addresses).
+    private(set) var tcpFallback = false
     private var lanInterface: String?
     private var process: Process?
     private var listener: NWListener?
     private var tlsListener: NWListener?
+    private var relayListener: NWListener?
     private let queue = DispatchQueue(label: "framecast.guestserver")
 
     init(reach: GuestReach, cloud: GuestCloudConfig? = nil) {
@@ -48,6 +61,8 @@ final class GuestServer {
     var onRoomInfo: ((String) -> (title: String, open: Bool))?
     var onKnock: ((_ code: String, _ name: String, _ detail: String) -> (ticket: String, state: String)?)?
     var onTicket: ((String) -> [String: Any])?
+    /// A device page saying what happened to it (camera refused, couldn't connect, reconnected…).
+    var onDeviceLog: ((_ ticket: String, _ name: String, _ event: String, _ detail: String, _ camera: Bool) -> Void)?
 
     static func binaryPath() -> String? {
         ["/opt/homebrew/bin/livekit-server", "/usr/local/bin/livekit-server"].first { FileManager.default.isExecutableFile(atPath: $0) }
@@ -62,7 +77,7 @@ final class GuestServer {
         if runsLocalServer && bin == nil {
             throw Self.failure("The local guest server isn't installed. It's free and open source: run `brew install livekit` in Terminal, then open the room again.")
         }
-        let dir = CollectionStore.root.appendingPathComponent("GuestServer")
+        let dir = Self.folder
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         if reach == .wifi {
             guard let lan = LocalNetwork.privateIPv4() else {
@@ -71,29 +86,37 @@ final class GuestServer {
             lanAddress = lan.address; lanInterface = lan.interface
         }
         try startHTTP()
-        if let lan = lanAddress { try startHTTPS(host: lan, identity: GuestTLS.identity(for: lan, dir: dir)) }
+        if let lan = lanAddress {
+            try startHTTPS(host: lan, identity: GuestTLS.identity(for: lan, dir: dir))
+            if runsLocalServer { try startRelay(host: lan) }
+        }
         guard runsLocalServer, let bin else { return }
-        // Signalling stays on 127.0.0.1:7880 (Wi-Fi guests reach it through the https server on 8443). Media is
-        // UDP 7882 on loopback and, for Wi-Fi guests, on the Mac's private Wi-Fi address only. ICE/TCP and TURN off.
-        let ips = ["127.0.0.1"] + (lanAddress.map { [$0] } ?? [])
-        let interfaces = ["lo0"] + (lanInterface.map { [$0] } ?? [])
+        // Signalling stays on 127.0.0.1:7880 (Wi-Fi devices reach it through the https server on 8443) and media on
+        // UDP 7882 on 127.0.0.1 only. Wi-Fi devices send and receive media through LiveKit's TURN relay over a TCP
+        // connection they open to Framecast (`startRelay`, `turnConfig`), which reaches the relay and the relay
+        // reaches LiveKit on loopback. Nothing of LiveKit's media is on the Wi-Fi address: macOS's Local Network
+        // permission blocks sending from it (2026-11-01: a socket on the Wi-Fi address sent 0 bytes, even to this
+        // Mac's own address, while loopback and wildcard sockets sent), and the relay also gets through Wi-Fi
+        // networks that block UDP between devices (office and shared Wi-Fi), so the old TCP 7881 fallback is gone.
+        let ips = ["127.0.0.1"]
+        let interfaces = ["lo0"]
+        tcpFallback = false
         let config = """
         port: \(Self.signalPort)
         bind_addresses: ["127.0.0.1"]
         rtc:
-          tcp_port: 0
+          tcp_port: \(tcpFallback ? Self.mediaTCPPort : 0)
           udp_port: \(Self.mediaPort)
           use_external_ip: false
-          node_ip: \(lanAddress ?? "127.0.0.1")
+          node_ip: 127.0.0.1
           enable_loopback_candidate: true
           interfaces:
             includes: [\(interfaces.map { "\"\($0)\"" }.joined(separator: ", "))]
           ips:
             includes: [\(ips.map { "\"\($0)/32\"" }.joined(separator: ", "))]
-        turn:
-          enabled: false
+        \(turnConfig)
         logging:
-          level: warn
+          level: \(Self.testOffset == 0 ? "info" : "debug")
         """
         // A server left behind by a crash would hold the ports: stop it first (only if it's ours).
         let pidURL = dir.appendingPathComponent("livekit.pid")
@@ -121,6 +144,7 @@ final class GuestServer {
     func stop() {
         listener?.cancel(); listener = nil
         tlsListener?.cancel(); tlsListener = nil
+        relayListener?.cancel(); relayListener = nil
         if let p = process, p.isRunning {
             p.interrupt()
             let deadline = Date().addingTimeInterval(1.5)
@@ -200,6 +224,47 @@ final class GuestServer {
         tlsListener = l
     }
 
+    /// Video from devices on the Wi-Fi. macOS's Local Network permission can stop Framecast and the LiveKit server
+    /// it starts from sending to other devices (2026-11-01: the server received a phone's packets and sent 0 bytes;
+    /// the user's "Allow" applied only to processes already running and was never saved), but it never stops them
+    /// answering a connection a device opened: the page and the knock always worked. So devices also get LiveKit's
+    /// TURN relay, over TCP, through this port: the device opens the connection, Framecast passes the bytes to the
+    /// relay on 127.0.0.1, and the relay talks to LiveKit on this Mac. The pages point LiveKit's TURN entries here.
+    private func startRelay(host: String) throws {
+        let params = NWParameters.tcp
+        params.requiredLocalEndpoint = .hostPort(host: NWEndpoint.Host(host), port: NWEndpoint.Port(rawValue: Self.relayPort)!)
+        params.allowLocalEndpointReuse = true
+        let l = try NWListener(using: params)
+        l.newConnectionHandler = { [weak self] c in
+            guard let self else { c.cancel(); return }
+            c.start(queue: self.queue)
+            let up = NWConnection(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: UInt16(Self.turnPort))!, using: .tcp)
+            up.start(queue: self.queue)
+            self.pipe(c, to: up); self.pipe(up, to: c)
+        }
+        l.start(queue: queue)
+        relayListener = l
+    }
+
+    /// LiveKit's TURN relay in Wi-Fi mode: plain TCP on `turnPort` ("external TLS": the pages reach it through
+    /// `relayPort` without TLS), no UDP. It only serves devices that were let in (credentials signed with this
+    /// room's own secret). LiveKit's relay refuses private addresses by default; the one exception is 127.0.0.1,
+    /// where LiveKit's media listens, so it relays to nothing else.
+    private var turnConfig: String {
+        guard reach == .wifi, let lan = lanAddress else { return "turn:\n  enabled: false" }
+        return """
+        turn:
+          enabled: true
+          domain: \(lan)
+          tls_port: \(Self.turnPort)
+          udp_port: 0
+          external_tls: true
+          relay_range_start: \(30_000 + Self.testOffset)
+          relay_range_end: \(30_099 + Self.testOffset)
+          allow_restricted_peer_cidrs: ["127.0.0.1/32"]
+        """
+    }
+
     /// Hands a connection to the local LiveKit server, bytes unchanged in both directions (WebSocket upgrade
     /// and frames included).
     private func proxy(_ c: NWConnection, initial: Data) {
@@ -244,7 +309,15 @@ final class GuestServer {
                         self.send(c, status: "421 Misdirected Request", type: "text/plain", body: Data("Wrong address".utf8)); return
                     }
                     if parts.count >= 2, self.runsLocalServer, parts[1].hasPrefix("/rtc") || parts[1].hasPrefix("/twirp") {
-                        self.proxy(c, initial: buffer); return
+                        // The WebSocket (signalling) gets the connection for good. A plain request (LiveKit's
+                        // /rtc/validate after a failed WebSocket) goes over alone and LiveKit is asked to close
+                        // afterwards, so the browser can't reuse that connection for the page's /api calls.
+                        let upgrade = lines.dropFirst().contains { let l = $0.lowercased(); return l.hasPrefix("upgrade:") && l.contains("websocket") }
+                        if upgrade { self.proxy(c, initial: buffer); return }
+                        let kept = lines.filter { let l = $0.lowercased(); return !l.hasPrefix("connection:") && !l.hasPrefix("keep-alive:") }
+                        var once = Data((kept + ["Connection: close"]).joined(separator: "\r\n").utf8)
+                        once.append(Data("\r\n\r\n".utf8)); once.append(buffer[range.upperBound...])
+                        self.proxy(c, initial: once); return
                     }
                     let length = lines.compactMap { l -> Int? in
                         let kv = l.split(separator: ":", maxSplits: 1); return kv.count == 2 && kv[0].lowercased() == "content-length" ? Int(kv[1].trimmingCharacters(in: .whitespaces)) : nil
@@ -283,23 +356,41 @@ final class GuestServer {
         let q = Dictionary((comps?.queryItems ?? []).map { ($0.name, $0.value ?? "") }, uniquingKeysWith: { a, _ in a })
         func onMain<T>(_ f: @escaping () -> T, _ k: @escaping (T) -> Void) { DispatchQueue.main.async { let v = f(); self.queue.async { k(v) } } }
 
-        if path.hasSuffix("/livekit-client.umd.js") {
+        if path.hasSuffix("/framecast-join.js") {
+            // What the guest and camera pages share (relay, reporting, rejoining, cameras).
+            send(c, status: "200 OK", type: "application/javascript", body: (try? Data(contentsOf: resourceDir.appendingPathComponent("framecast-join.js"))) ?? Data())
+        } else if path.hasSuffix("/livekit-client.umd.js") {
             // The page loads it relative to itself, so it may be asked for under /invite/ too.
             send(c, status: "200 OK", type: "application/javascript", body: (try? Data(contentsOf: resourceDir.appendingPathComponent("livekit-client.umd.js"))) ?? Data())
+        } else if path.hasPrefix("/camera/") || path == "/camera.html" {
+            // Phones and computers that join as camera angles.
+            let url = resourceDir.appendingPathComponent("camera.html")
+            send(c, status: "200 OK", type: "text/html; charset=utf-8", body: (try? Data(contentsOf: url)) ?? Data("Missing camera page".utf8))
         } else if path.hasPrefix("/invite/") || path == "/" || path == "/index.html" {
             let url = resourceDir.appendingPathComponent("index.html")
             send(c, status: "200 OK", type: "text/html; charset=utf-8", body: (try? Data(contentsOf: url)) ?? Data("Missing guest page".utf8))
         } else if path == "/api/room" {
-            onMain({ self.onRoomInfo?(q["code"] ?? "") ?? ("", false) }) { r in self.json(c, ["title": r.title, "open": r.open]) }
+            // `relay`: the pages send video through Framecast's TCP relay port (Wi-Fi mode).
+            let relay = self.relayListener != nil ? Int(Self.relayPort) : 0
+            onMain({ self.onRoomInfo?(q["code"] ?? "") ?? ("", false) }) { r in self.json(c, ["title": r.title, "open": r.open, "relay": relay]) }
         } else if path == "/api/knock", method == "POST" {
             let o = (try? JSONSerialization.jsonObject(with: body)) as? [String: Any] ?? [:]
             let code = o["code"] as? String ?? "", name = String((o["name"] as? String ?? "Guest").prefix(60)), detail = String((o["detail"] as? String ?? "").prefix(80))
             onMain({ self.onKnock?(code, name, detail) }) { r in
-                if let r { self.json(c, ["ticket": r.ticket, "state": r.state]) }
+                if let r, r.state == "full" {
+                    self.send(c, status: "403 Forbidden", type: "text/plain", body: Data("The room is full right now. Ask the host to make room, then try again.".utf8))
+                } else if let r { self.json(c, ["ticket": r.ticket, "state": r.state]) }
                 else { self.send(c, status: "403 Forbidden", type: "text/plain", body: Data("This link has expired. Ask the host for a new one.".utf8)) }
             }
         } else if path == "/api/ticket" {
             onMain({ self.onTicket?(q["id"] ?? "") ?? ["state": "denied"] }) { r in self.json(c, r) }
+        } else if path == "/api/log", method == "POST" {
+            let o = (try? JSONSerialization.jsonObject(with: body)) as? [String: Any] ?? [:]
+            func text(_ k: String, _ n: Int) -> String { String((o[k] as? String ?? "").prefix(n)) }
+            let ticket = text("ticket", 16), name = text("name", 60), event = text("event", 40)
+            let detail = [text("detail", 300), text("ua", 160)].filter { !$0.isEmpty }.joined(separator: " · ")
+            let camera = text("page", 10) == "camera"
+            onMain({ self.onDeviceLog?(ticket, name, event, detail, camera) }) { _ in self.json(c, ["ok": true]) }
         } else {
             send(c, status: "404 Not Found", type: "text/plain", body: Data("Not found".utf8))
         }

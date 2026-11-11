@@ -43,10 +43,22 @@ public final class FrameSlot: @unchecked Sendable {
     private var buffer: CVPixelBuffer?
     private var pts = CMTime.invalid
     private var arrivedAt: Double = 0
+    private var rotationDegrees = 0
+    private var lagSeconds = 0.0
     public init() {}
-    public func put(_ pb: CVPixelBuffer, pts: CMTime) {
-        lock.lock(); buffer = pb; self.pts = pts; arrivedAt = HostClock.seconds(); lock.unlock()
+    /// `rotation`: degrees clockwise the frame needs to stand upright (phones send portrait frames sideways).
+    public func put(_ pb: CVPixelBuffer, pts: CMTime, rotation: Int = 0) {
+        let now = HostClock.seconds()
+        lock.lock()
+        buffer = pb; self.pts = pts; arrivedAt = now; rotationDegrees = rotation
+        // How long capture took to hand the frame over (camera timestamps are capture times on the host clock).
+        if pts.isValid { let l = now - CMTimeGetSeconds(pts); if l >= 0 && l < 2 { lagSeconds = lagSeconds == 0 ? l : lagSeconds * 0.95 + l * 0.05 } }
+        lock.unlock()
     }
+    /// Degrees clockwise the newest frame needs to stand upright.
+    public var rotation: Int { lock.lock(); defer { lock.unlock() }; return rotationDegrees }
+    /// Average seconds between capture and arrival (0 for sources stamped on arrival).
+    public var lag: Double { lock.lock(); defer { lock.unlock() }; return lagSeconds }
     public func get() -> (CVPixelBuffer, CMTime)? {
         lock.lock(); defer { lock.unlock() }
         guard let b = buffer else { return nil }
@@ -58,6 +70,18 @@ public final class FrameSlot: @unchecked Sendable {
         return arrivedAt == 0 ? .infinity : HostClock.seconds() - arrivedAt
     }
     public func clear() { lock.lock(); buffer = nil; arrivedAt = 0; lock.unlock() }
+}
+
+public extension CIImage {
+    /// Turns a frame upright by its clockwise rotation in degrees (0, 90, 180, 270).
+    func rotatedUpright(_ degrees: Int) -> CIImage {
+        switch (degrees % 360 + 360) % 360 {
+        case 90: return oriented(.right)
+        case 180: return oriented(.down)
+        case 270: return oriented(.left)
+        default: return self
+        }
+    }
 }
 
 /// A source whose picture never changes (colour, image, text, wallpaper).

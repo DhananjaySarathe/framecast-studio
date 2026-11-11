@@ -1,0 +1,58 @@
+loaded 41 frames 1920x1080 from t=60.0s
+OS Version 27.0.1 (Build 26A434), cores 15
+--- single-image requests on 1920x1080 BGRA unless noted (cold = first call incl. model load; med/p90 over 40 frames; cpu/frame = process CPU time per frame)
+VNDetectFaceRectangles rev3                    cold   65.9  med    5.9  p90    6.7  cpu/frame    4.0  | faces=3 | Main:ANE/GPU/CPU
+VNDetectFaceRectangles @1280x720               cold    5.4  med    5.6  p90    6.1  cpu/frame    3.7  | faces=3 | Main:ANE/GPU/CPU
+2026-10-21 22:23:46.806 visionbench[62260:18836510] FBBA: creating VNFaceBBoxAligner from VNFaceDetectorRevision2: VNFaceDetectorRevision2
+VNDetectFaceLandmarks rev3 (detect+landmarks)  cold   32.1  med    8.2  p90    9.2  cpu/frame    6.7  | faces=4 | Main:ANE/GPU/CPU
+VNDetectFaceCaptureQuality                     cold  604.8  med    9.6  p90   11.6  cpu/frame    7.1  | q=0.35 | Main:ANE/GPU/CPU
+VNDetectHumanRectangles rev2 upperBody         cold    7.8  med    2.8  p90    3.1  cpu/frame    1.5  | humans=3 | Main:ANE/GPU/CPU
+VNDetectHumanRectangles fullBody               cold    2.9  med    2.8  p90    2.9  cpu/frame    1.5  | humans=0 | Main:ANE/GPU/CPU
+VNDetectHumanBodyPose (2D, 19 joints)          cold   88.0  med    4.1  p90    4.3  cpu/frame    0.9  | bodies=0 | Main:ANE/GPU/CPU
+VNDetectHumanHandPose max2                     cold 4038.0  med    2.7  p90    2.9  cpu/frame    1.2  | hands=0 | Main:ANE/GPU/CPU
+VNDetectHumanHandPose max1 @960x540            cold    2.9  med    2.5  p90    2.7  cpu/frame    0.9  | hands=0 | Main:ANE/GPU/CPU
+VNGenerateAttentionBasedSaliency               cold   31.6  med    3.6  p90    3.9  cpu/frame    1.5  | boxes=1 | Main:ANE/GPU/CPU PostProcessing:ANE/GPU/CPU
+VNGenerateObjectnessBasedSaliency              cold   12.0  med    3.6  p90    3.8  cpu/frame    1.5  | boxes=1 | Main:ANE/GPU/CPU PostProcessing:ANE/GPU/CPU
+VNGeneratePersonInstanceMask                   cold 2087.9  med    6.4  p90    6.6  cpu/frame    2.7  | people=3 | Main:ANE/GPU/CPU
+VNGenerateForegroundInstanceMask               cold   84.6  med    9.9  p90   10.1  cpu/frame    2.6  | objects=1 | Main:ANE/GPU
+VNGeneratePersonSegmentation fast (image handl cold  953.6  med    2.9  p90    3.9  cpu/frame    1.5  | mask 256x192 | Main:ANE/GPU/CPU
+VNGeneratePersonSegmentation balanced (image h cold   37.0  med    8.3  p90    9.0  cpu/frame    4.0  | mask 512x384 | Main:ANE/GPU/CPU
+VNGeneratePersonSegmentation accurate (image h cold   58.4  med   27.3  p90   28.6  cpu/frame    8.4  | mask 2016x1512 | Main:ANE/GPU/CPU
+VNDetectHumanBodyPose3D                        cold   55.9  med   49.8  p90   50.6  cpu/frame   41.4  | bodies=1 | Main:ANE/GPU
+COMBO face+humanRect+hand in one perform       cold   18.9  med    8.8  p90    9.4  cpu/frame    5.5  |  | Main:ANE/GPU/CPU + Main:ANE/GPU/CPU + Main:ANE/GPU/CPU
+COMBO face+humanRect @1280x720                 cold    5.5  med    6.1  p90    6.6  cpu/frame    4.4  |  | Main:ANE/GPU/CPU + Main:ANE/GPU/CPU
+CIFilter.personSegmentation q=1 (balanced)+ren cold   13.0  med    8.4  p90    9.2  cpu/frame    4.9  |  | CI
+--- stateful / sequence requests (VNSequenceRequestHandler)
+PersonSegmentation fast via sequence handler   cold    3.7  med    2.5  p90    2.8  cpu/frame    1.4  | temporally smoothed | Main:ANE/GPU/CPU
+PersonSegmentation balanced via sequence handl cold    8.4  med    8.2  p90    9.2  cpu/frame    3.9  | temporally smoothed | Main:ANE/GPU/CPU
+VNTrackObject rev1 fast @1920x1080             cold    1.8  med    1.7  p90    2.0  cpu/frame    1.4  | minConf=1.00 maxTrackers=32 | 
+VNTrackObject rev1 accurate @1920x1080         cold    3.3  med    3.0  p90    3.1  cpu/frame    2.6  | minConf=0.69 maxTrackers=32 | 
+VNTrackObject rev2 accurate @1920x1080         cold  358.0  med    1.6  p90    1.8  cpu/frame   11.4  | minConf=0.94 maxTrackers=32 | 
+VNTrackObject rev1 fast @960x540               cold    1.2  med    1.1  p90    1.1  cpu/frame    0.9  | minConf=1.00 maxTrackers=32 | 
+VNTrackObject rev1 accurate @960x540           cold    1.3  med    1.8  p90    1.9  cpu/frame    1.5  | minConf=0.70 maxTrackers=32 | 
+VNTrackObject rev2 accurate @960x540           cold    1.6  med    0.9  p90    1.0  cpu/frame    3.3  | minConf=0.92 maxTrackers=32 | 
+VNGenerateOpticalFlow low @1920x1080           cold 11614.0  med   17.2  p90   23.6  cpu/frame   10.4  | flow 1920x1080 | Main:GPU
+VNGenerateOpticalFlow medium @1920x1080        cold 11559.7  med   16.5  p90   20.4  cpu/frame   10.7  | flow 1920x1080 | Main:GPU
+VNGenerateOpticalFlow high @1920x1080          cold 11672.0  med   33.0  p90   33.7  cpu/frame   10.6  | flow 1920x1080 | Main:GPU
+VNGenerateOpticalFlow veryHigh @1920x1080      cold 11314.5  med   39.9  p90   44.2  cpu/frame   11.1  | flow 1920x1080 | Main:GPU
+VNGenerateOpticalFlow low @960x540             cold   89.9  med   22.9  p90   31.8  cpu/frame    8.5  | flow 960x540 | Main:GPU
+VNGenerateOpticalFlow medium @960x540          cold  100.8  med   30.1  p90   33.3  cpu/frame   10.1  | flow 960x540 | Main:GPU
+VNGenerateOpticalFlow high @960x540            cold   99.3  med   36.8  p90   47.9  cpu/frame    9.8  | flow 960x540 | Main:GPU
+VNGenerateOpticalFlow veryHigh @960x540        cold   49.9  med   44.8  p90   49.4  cpu/frame    9.3  | flow 960x540 | Main:GPU
+VNTrackTranslationalImageRegistration @960x540 cold    0.9  med    0.7  p90    0.8  cpu/frame    0.5  | global shift | Main:CPU
+--- text recognition
+VNRecognizeText fast on video frame 1920x1080  cold   61.4  med   16.5  p90   17.6  cpu/frame   14.3  | lines=28 | Main:CPU
+VNRecognizeText accurate on video frame 1920x1 cold 34837.0  med   85.9  p90   90.7  cpu/frame  592.3  | lines=32 | Main:ANE/GPU/CPU
+VNDetectTextRectangles on video frame 1920x108 cold    4.7  med    4.7  p90    4.9  cpu/frame    0.0  | boxes=0 | Main:CPU
+VNRecognizeText fast on screenshot 2880x1800   cold   28.6  med   21.7  p90   23.4  cpu/frame   23.2  | lines=43 | Main:CPU
+VNRecognizeText accurate on screenshot 2880x18 cold  114.1  med   86.9  p90  104.6  cpu/frame  131.8  | lines=43 | Main:ANE/GPU/CPU
+VNDetectTextRectangles on screenshot 2880x1800 cold    8.7  med    8.7  p90   10.4  cpu/frame    0.0  | boxes=43 | Main:CPU
+--- Swift Vision API (macOS 15+) and macOS 27 revisions
+Swift DetectFaceRectanglesRequest rev3         cold   19.1  med    7.6  p90    8.0  cpu/frame    5.7  | faces=3 | 
+Swift DetectHumanRectanglesRequest rev2        cold    3.7  med    3.2  p90    3.8  cpu/frame    2.0  | humans=3 | 
+Swift DetectFaceRectanglesRequest rev4 (27)    cold   17.9  med    6.2  p90    7.3  cpu/frame    2.6  | faces=4 | 
+Swift DetectHumanRectanglesRequest rev3 (27)   cold    6.0  med    7.0  p90    8.6  cpu/frame    2.9  | humans=2 | 
+Swift DetectFaceLandmarksRequest rev4 (27)     cold    6.1  med    5.6  p90    5.7  cpu/frame    2.2  | faces=4 | 
+GenerateIterativeSegmentationRequest assetStatus (no download attempted): notReady  qualityLevels=[Vision.GenerateIterativeSegmentationRequest.QualityLevel.accurate, Vision.GenerateIterativeSegmentationRequest.QualityLevel.balanced, Vision.GenerateIterativeSegmentationRequest.QualityLevel.fast]
+supported compute devices rev4 face: ["main: [<MLNeuralEngineComputeDevice: 0x79f8e68d70>, <MLGPUComputeDevice: 0x79f8e68db0> Apple M5 Pro, <MLCPUComputeDevice: 0x79f8e68dc0>]"]
+done

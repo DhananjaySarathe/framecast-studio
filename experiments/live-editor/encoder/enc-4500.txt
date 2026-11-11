@@ -1,0 +1,12 @@
+H.264 VideoToolbox, 1920x1080@30, target 4500 kbps, no B-frames, keyframe every 2 s. PSNR vs exact source (higher is better; <30 dB looks soft/blocky).
+static shot (camera + sensor noise) PSNR mean  40.2 dB | worst frame  37.9 dB | worst in transition window  39.6 dB | actual 2.69 Mbps
+static shot + grain 0.03 PSNR mean  39.5 dB | worst frame  37.4 dB | worst in transition window  39.5 dB | actual 3.51 Mbps
+static shot + grain 0.06 PSNR mean  37.5 dB | worst frame  36.3 dB | worst in transition window  37.4 dB | actual 4.56 Mbps
+slow push-in 1.00->1.06 over 4 s PSNR mean  40.5 dB | worst frame  37.9 dB | worst in transition window  39.7 dB | actual 2.26 Mbps
+punch-in 1.00->1.15 in 0.25 s, hold PSNR mean  40.6 dB | worst frame  37.9 dB | worst in transition window  39.7 dB | actual 2.51 Mbps
+hard cuts every 2 s PSNR mean  40.4 dB | worst frame  37.9 dB | worst in transition window  39.1 dB | actual 3.28 Mbps
+dissolve 0.5 s PSNR mean  40.1 dB | worst frame  37.9 dB | worst in transition window  39.2 dB | actual 3.18 Mbps
+Move: PiP grows to full 0.7 s PSNR mean  39.9 dB | worst frame  36.2 dB | worst in transition window  36.2 dB | actual 3.37 Mbps
+fast slide 0.33 s, no blur PSNR mean  40.1 dB | worst frame  37.9 dB | worst in transition window  39.3 dB | actual 3.21 Mbps
+whip pan 0.33 s, motion blur r=60 PSNR mean  41.0 dB | worst frame  37.9 dB | worst in transition window  38.5 dB | actual 3.04 Mbps
+zoom-through 0.5 s, zoom blur PSNR mean  41.3 dB | worst frame  37.9 dB | worst in transition window  38.0 dB | actual 2.94 Mbps

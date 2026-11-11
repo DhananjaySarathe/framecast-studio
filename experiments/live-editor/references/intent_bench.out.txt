@@ -1,0 +1,41 @@
+Deterministic matcher
+  ok     Settings                   now click the settings button up here
+  ok     Privacy & Security         go into privacy and security
+  ok     Export                     hit export
+  ok     none                       we'll get to settings later, first let me talk about pricing
+  ok     42%                        see this number here, forty two percent
+  ok     none                       okay let me set things up first
+  ok     Share                      and then open the share menu
+  WRONG  none                       the notifications panel is where the magic happens
+  ok     none                       my cat just walked across the desk, sorry
+  WRONG  none                       watch the timer on the right
+  ok     Revenue growth by quarter  this chart shows revenue growth every quarter
+  ok     General                    click on general
+  ok     none                       don't click upgrade, you don't need pro for this
+  ok     Run prompt                 so I'll hit run prompt and we wait
+  ok     none                       if you ever need help just ask in the chat
+  ok     Appearance                 let's look at the appearance tab
+  ok     Save                       press safe to keep it
+  WRONG  Format                     this is the best format for beginners
+  15/18 right, 1 wrong target or false trigger, 2 missed; median 0.058 ms
+
+On-device model (context size 8192 tokens)
+   1.51s ok     Settings                   now click the settings button up here
+   0.48s ok     Privacy & Security         go into privacy and security
+   0.44s ok     Export                     hit export
+   0.43s WRONG  Settings                   we'll get to settings later, first let me talk about pricing
+   0.75s ok     42%                        see this number here, forty two percent
+   0.43s WRONG  Settings                   okay let me set things up first
+   0.43s ok     Share                      and then open the share menu
+   0.55s ok     Notifications              the notifications panel is where the magic happens
+   0.47s WRONG  Run prompt                 my cat just walked across the desk, sorry
+   0.45s ok     Timer 00:12                watch the timer on the right
+   0.51s ok     Revenue growth by quarter  this chart shows revenue growth every quarter
+   0.51s ok     General                    click on general
+   0.48s ok     none                       don't click upgrade, you don't need pro for this
+   0.59s ok     Run prompt                 so I'll hit run prompt and we wait
+   0.61s WRONG  Run prompt                 if you ever need help just ask in the chat
+   0.54s ok     Appearance                 let's look at the appearance tab
+   0.78s WRONG  Privacy & Security         press safe to keep it
+   0.66s WRONG  General                    this is the best format for beginners
+  12/18 right, 6 wrong target or false trigger, 0 missed; median 0.51 s, p90 0.78 s, max 1.51 s

@@ -1,0 +1,4 @@
+no zoom (4K shown at 1080p):            pixel std-dev 0.0 (stripes average out)
+whole-canvas zoom 2x (affine on composite): pixel std-dev 127.5
+per-layer crop zoom 2x (ItemCrop):          pixel std-dev 127.5
+reference: flattened 1080p then zoomed 2x:  pixel std-dev 0.0

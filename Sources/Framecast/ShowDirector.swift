@@ -283,7 +283,14 @@ final class ShowDirector {
         let l = ShowListener(locale: language.primary)
         listener = l
         l.onResult = { [weak self] text, fin, start, end in self?.hear(text, isFinal: fin, start: start, end: end) }
-        l.onStatus = { [weak self] s in self?.status = s }
+        // Recognition that stops mid-show turns Listen off, so the angles' own ears can take over the microphone.
+        l.onStatus = { [weak self, weak l] s in
+            guard let self else { return }
+            if s.hasPrefix("Speech recognition stopped"), let l, self.listener === l {
+                self.stopListening()
+                self.status = "\(s) Listen turned off; turn it on again to resume."
+            } else { self.status = s }
+        }
         // Hinglish: the same microphone also goes to a Hindi recogniser.
         let second = language.secondary.map { ShowListener(locale: $0) }
         secondListener = second
@@ -299,6 +306,7 @@ final class ShowDirector {
         }
         matcher.reset()
         isListening = true
+        studio.angles.ears.stop()       // Listen hears for the angles now (the ears' tap stays until Listen's replaces it)
         status = "Starting speech recognition…"
         Task { @MainActor in
             do {
@@ -310,6 +318,8 @@ final class ShowDirector {
                         self.status = "Hindi recognition couldn't start (\(error.localizedDescription)); listening in English only."
                     }
                 }
+                // Listen may have been turned off (or on again) while the Hindi model downloaded.
+                guard self.isListening, self.listener === l else { second?.stop(); l.stop(); return }
                 if let file {
                     self.status = "Listening to \(file.lastPathComponent)"
                     l.feed(file: file)
@@ -326,7 +336,10 @@ final class ShowDirector {
                     if self.isListening { self.startBrain() }
                 }
             } catch {
+                guard self.listener === l else { return }     // an older start failing under a newer one
                 self.isListening = false; self.listener = nil
+                if #available(macOS 26.0, *) { (self.secondListener as? ShowListener)?.stop() }
+                self.secondListener = nil
                 self.status = error.localizedDescription
             }
         }
@@ -351,6 +364,7 @@ final class ShowDirector {
 
     private func hear(_ text: String, isFinal: Bool, start: Double, end: Double) {
         guard isListening else { return }
+        studio.angles.hear(text, isFinal: isFinal)
         matcher.take(text: text, isFinal: isFinal, start: start, end: end)
         heard = matcher.recent
         if isRehearsing { record(text, isFinal: isFinal, start: start, end: end) }

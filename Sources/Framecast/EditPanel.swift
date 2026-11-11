@@ -188,6 +188,32 @@ struct TransformTab: View {
         if let src = studio.source(item.sourceID), case .wallpaper(let w) = src.kind {
             EditSection(title: "Background") { BackgroundCurrentRow(source: src, wallpaperID: w) }
         }
+        if showsCamera {
+            EditSection(title: "Camera angles") {
+                Toggle("Shuffle camera angles here", isOn: Binding(get: { item.shufflesAngles == true }, set: { on in
+                    if on, let scene = studio.editingScene { studio.angles.mark(itemID: item.id, sceneID: scene.id) } else { studio.angles.unmark() }
+                }))
+                .toggleStyle(.switch).controlSize(.small).font(.fc(12))
+                .help("This frame shows the angle you pick or the shuffle cuts to (Angles). One frame in the whole studio.")
+                Text("Its background and layout stay; only the picture in this frame changes. Angles has the cameras and the shuffle.")
+                    .font(.fc(10.5)).foregroundStyle(Theme.text4).fixedSize(horizontal: false, vertical: true)
+                // Angles from one camera: a medium and a close-up cut from this camera's picture.
+                if case .camera? = studio.source(item.sourceID)?.kind {
+                    if let shots = studio.angles.settings.virtual.cameras[item.sourceID.uuidString], shots.any {
+                        let made = shots.medium && shots.close ? "a medium and a close-up" : shots.medium ? "a medium shot" : "a close-up"
+                        Text("This camera also makes \(made) (Angles › From one camera).")
+                            .font(.fc(10.5)).foregroundStyle(Theme.text4).fixedSize(horizontal: false, vertical: true)
+                    } else {
+                        PillButton(title: "Make angles from this camera", systemImage: "crop") {
+                            studio.angles.setVirtual(camera: item.sourceID, shots: VirtualShots())
+                        }
+                        .disabled(studio.isRecording)
+                        .help(studio.isRecording ? "After the recording: each angle has its own file until it stops."
+                              : "Adds a medium and a close-up that follow your face, as more angles to cut to.")
+                    }
+                }
+            }
+        }
         EditSection(title: "Position & size") {
             ValueRow(title: "X", value: bind(\.x), range: -1...2, step: 0.001, reset: 0, format: pct, parse: parsePct)
             ValueRow(title: "Y", value: bind(\.y), range: -1...2, step: 0.001, reset: 0, format: pct, parse: parsePct)
@@ -232,6 +258,11 @@ struct TransformTab: View {
         if let src = studio.source(item.sourceID) { SourceSettings(source: src) }
     }
     var shapeKey: Int { switch item.mask { case .none: 0; case .circle: 1; case .roundedRect: 2 } }
+    /// A camera frame (or the one already marked) can show the camera angles.
+    var showsCamera: Bool {
+        if case .camera? = studio.source(item.sourceID)?.kind { return true }
+        return item.shufflesAngles == true
+    }
 }
 
 /// Per-source settings shown under the layer (text content, camera device, image file).

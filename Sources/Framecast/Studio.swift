@@ -6,15 +6,17 @@ import IOKit.pwr_mgt
 import FramecastEngine
 
 enum StudioRail: String, CaseIterable, Identifiable {
-    case chat, backstage, guests, audio, elements, edit, rundown
+    case chat, backstage, guests, angles, audio, elements, captions, edit, rundown
     var id: String { rawValue }
     var title: String {
         switch self {
         case .chat: "Comments"
         case .backstage: "Green room"
         case .guests: "Guests"
+        case .angles: "Angles"
         case .audio: "Mixer"
         case .elements: "Overlays"
+        case .captions: "Captions"
         case .edit: "Layer"
         case .rundown: "Rundown"
         }
@@ -24,8 +26,10 @@ enum StudioRail: String, CaseIterable, Identifiable {
         case .chat: "bubble.left"
         case .backstage: "bubble.left.and.text.bubble.right"
         case .guests: "person.2"
+        case .angles: "camera.metering.multispot"
         case .audio: "waveform"
         case .elements: "square.on.square"
+        case .captions: "captions.bubble"
         case .edit: "square.3.layers.3d"
         case .rundown: "list.bullet.rectangle"
         }
@@ -74,6 +78,11 @@ final class Studio {
     /// The show's rundown and the director that follows it (see ShowDirector.swift).
     @ObservationIgnored lazy var director = ShowDirector(studio: self)
     @ObservationIgnored lazy var controlLink = ControlLink(studio: self)
+    @ObservationIgnored lazy var liveEditor = LiveEditor(studio: self)
+    /// Camera angles (this Mac's cameras and devices from the camera link) and the shuffle frame.
+    @ObservationIgnored lazy var angles = CameraAngles(studio: self)
+    /// Live captions from the presenter's microphone, on both canvases (see CaptionEngine.swift).
+    @ObservationIgnored lazy var captions = CaptionEngine(studio: self)
     /// Test hooks (screenshot tours): which Add Source category / Settings pane to show, and a dismiss signal.
     /// Open background picker and what it changes.
     var backgroundTarget: BackgroundTarget?
@@ -156,6 +165,10 @@ final class Studio {
 
     func start() {
         ScreenSource.showsOwnWindows = settings.s.showsOwnWindows ?? false
+        // Before any capture starts, so the first display filter already leaves password managers out.
+        let le = settings.s.liveEditor ?? LiveEditorSettings()
+        ScreenSource.hiddenApps = Set(le.hidesPasswordManagers ? LiveEditor.passwordManagers : [])
+        ScreenSource.showsClicks = le.clickRings
         applyCanvases()
         engine.accent = RGBA(0.31, 0.82, 0.77)
         engine.previewHandler = { [preview] kind, pb in preview.push(kind, pb) }
@@ -164,6 +177,8 @@ final class Studio {
         for c in CanvasKind.allCases { pushProgram(c, transition: .cut) }
         pushPreviewItems()
         engine.start()
+        liveEditor.start()
+        angles.start()
         engine.setHeadphoneLevel(collection.audio.headphoneLevel)
         pollTimer = Timer.scheduledTimer(withTimeInterval: 1.0 / 15, repeats: true) { [weak self] _ in self?.poll() }
         thumbTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in self?.refreshThumbnails() }
@@ -172,6 +187,8 @@ final class Studio {
 
     func shutdown() {
         pollTimer?.invalidate(); thumbTimer?.invalidate()
+        liveEditor.stop()
+        captions.stop()
         director.close()
         controlLink.stop()
         guests.close()
@@ -313,10 +330,39 @@ final class Studio {
         }
         updateMediaOnAir()
     }
-    /// The live brain's asset slot shows the asset it put on air (Looks.swift).
+    /// The live brain's asset slot shows the asset it put on air (Looks.swift), and the shuffle frame shows the camera
+    /// angle on air (CameraAngles).
     private func resolvedItems(_ items: [SceneItem]) -> [SceneItem] {
-        guard let slot = director.assetSlotID, let asset = director.assetSourceID else { return items }
-        return items.map { var x = $0; if x.sourceID == slot { x.sourceID = asset }; return x }
+        var items = items
+        if let slot = director.assetSlotID, let asset = director.assetSourceID {
+            items = items.map { var x = $0; if x.sourceID == slot { x.sourceID = asset }; return x }
+        }
+        if let o = angles.override {
+            items = items.map { x in
+                guard x.shufflesAngles == true else { return x }
+                var y = x
+                y.sourceID = o.source
+                if let m = o.mirrored { y.isMirrored = m }
+                // The frame's crop and keys were set for its own camera; another angle shows whole and unkeyed. A crop of
+                // that same camera keeps all its filters (it's the same picture), but not its crop.
+                y.crop = ItemCrop()
+                if !o.sameCamera { y.filters = x.filters.filter { if case .colorCorrection = $0.kind { return true }; return false } }
+                return y
+            }
+        }
+        return items
+    }
+
+    /// Puts the layouts on air again as they are (a camera angle changed), without a transition, even while a scene
+    /// waits in preview.
+    func refreshAir() {
+        for c in CanvasKind.allCases {
+            guard let s = programScene(c) else { continue }
+            let items = resolvedItems(s.items(for: c))
+            airItems[c] = items
+            engine.updateProgramItems(items, for: c)
+        }
+        updateMediaOnAir()
     }
 
     func sceneIndex(_ id: UUID) -> Int? { collection.scenes.firstIndex { $0.id == id } }
@@ -470,7 +516,12 @@ final class Studio {
     /// Adds a source to the studio and, for pictures, as a new layer on top of the current layout.
     func addSource(_ record: SourceRecord, toLayout: Bool = true) {
         var rec = record
-        if let existing = collection.sources.first(where: { $0.kind == record.kind && record.kind.hasVideo }) { rec = existing }
+        // The same camera is one source whatever size it asks for (Use 4K): a second would open the device again.
+        func same(_ k: SourceKind) -> Bool {
+            if case .camera(let a, _, _, _) = k, case .camera(let b, _, _, _) = record.kind { return a == b }
+            return k == record.kind
+        }
+        if let existing = collection.sources.first(where: { same($0.kind) && record.kind.hasVideo }) { rec = existing }
         else { collection.sources.append(rec); engine.sync(sources: collection.sources, fpsHint: settings.s.horizontal.fps) }
         guard toLayout, rec.kind.hasVideo, let scene = editingScene, let si = sceneIndex(scene.id) else { return }
         var replaced: Set<UUID> = []
@@ -676,6 +727,21 @@ final class Studio {
                                        width: cfg.width, height: cfg.height, fps: cfg.fps, folders: folders, baseName: base,
                                        splitMinutes: Double(settings.s.splitMinutes), audioTracks: tracks))
         }
+        // Angles › Record each angle: one more file per camera angle, with the program's sound, starting together.
+        if angles.settings.recordAngles, canvases.contains(.horizontal) {
+            let cfg = settings.canvas(.horizontal)
+            let (codec, kbps) = settings.quality(.horizontal)
+            // Crops only when asked: the camera's own file already holds them, and each file is a full render and encode.
+            // A shot its camera can't make gets no file (it would be the camera's whole picture under the shot's name).
+            for a in angles.angles where !a.isVirtual || (angles.settings.virtual.recordCrops && angles.offered(a)) {
+                // "… angle Side phone": always named after its angle, whatever the name settings leave out.
+                let base = RecordingFileName.base(tags: settings.s.nameTags, canvas: .horizontal, addsCanvas: false,
+                                                  show: sessionName, layout: "", at: now) + " angle " + RecordingFileName.sanitized(a.name)
+                specs.append(RecordingSpec(canvas: .horizontal, container: settings.container(.horizontal), codec: codec, bitrateKbps: kbps,
+                                           width: cfg.width, height: cfg.height, fps: cfg.fps, folders: folders, baseName: base,
+                                           splitMinutes: Double(settings.s.splitMinutes), audioTracks: [1], isoSource: a.sourceID))
+            }
+        }
         do {
             recorders = try engine.startRecording(specs)
             for r in recorders {
@@ -709,6 +775,7 @@ final class Studio {
         isRecording = false
         recordingPausedAt = nil
         let chapterText = chapters(onRecording: true)
+        let main = recs.first { $0.spec.isoSource == nil }
         engine.stopRecording(recs) { [weak self] files in
             guard let self else { return }
             self.lastRecordings = files.sorted { $0.lastPathComponent < $1.lastPathComponent }
@@ -719,6 +786,10 @@ final class Studio {
                     try? chapterText.write(to: side, atomically: true, encoding: .utf8)
                 }
             }
+            // Subtitles and a transcript next to each recording, from the live captions. While captions are on, the
+            // last words get a moment to settle first.
+            let captions = self.captions
+            DispatchQueue.main.asyncAfter(deadline: .now() + (captions.isOn ? 1.5 : 0)) { captions.writeFiles(for: files, recorder: main) }
             self.recorders = []
             if !self.streaming.isLive { self.holdSleep(false); self.makeSummary() }
             then?()
@@ -789,6 +860,7 @@ final class Studio {
             }
         }
         streaming.poll()
+        liveEditor.poll()
     }
 
     /// One status light for the rail footer: healthy, or the most important problem.

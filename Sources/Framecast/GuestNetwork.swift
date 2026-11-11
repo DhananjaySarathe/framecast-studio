@@ -79,7 +79,7 @@ struct GuestCloudConfig: Equatable {
     }
 
     /// Tests the remote-guest protocol end to end against the LiveKit server on this Mac (nothing leaves it).
-    static let localTest = GuestCloudConfig(url: "ws://127.0.0.1:7880", apiKey: "local", secret: "local", pageURL: "http://127.0.0.1:8090/")
+    static let localTest = GuestCloudConfig(url: "ws://127.0.0.1:\(GuestServer.signalPort)", apiKey: "local", secret: "local", pageURL: "http://127.0.0.1:\(GuestServer.httpPort)/")
     var isLocalTest: Bool { URL(string: url)?.host == "127.0.0.1" }
 
     /// nil when usable; otherwise what's missing, in words.
@@ -154,6 +154,31 @@ enum LocalNetwork {
             if isPrivate(ip) { found.append((name, ip)) }
         }
         return found.first { $0.0 == primary } ?? found.first
+    }
+
+    /// Whether any interface of this Mac has an address reachable from the internet (a public IPv4, or a global
+    /// IPv6). Loopback, link-local, private and unique-local addresses don't count.
+    static func hasPublicAddress() -> Bool {
+        var list: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&list) == 0, let first = list else { return true }      // can't tell: assume the worst
+        defer { freeifaddrs(list) }
+        for p in sequence(first: first, next: { $0.pointee.ifa_next }) {
+            let a = p.pointee
+            guard Int32(a.ifa_flags) & IFF_UP != 0, Int32(a.ifa_flags) & IFF_LOOPBACK == 0, let sa = a.ifa_addr else { continue }
+            let family = Int32(sa.pointee.sa_family)
+            guard family == AF_INET || family == AF_INET6 else { continue }
+            var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+            guard getnameinfo(sa, socklen_t(sa.pointee.sa_len), &host, socklen_t(host.count), nil, 0, NI_NUMERICHOST) == 0 else { continue }
+            let ip = String(cString: host).split(separator: "%").first.map(String.init) ?? ""
+            if family == AF_INET {
+                let o = ip.split(separator: ".").compactMap { Int($0) }
+                // 100.64/10 is carrier-grade NAT, not reachable from outside either.
+                if !isPrivate(ip) && !(o.count == 4 && o[0] == 100 && (64...127).contains(o[1])) { return true }
+            } else if let first = ip.split(separator: ":").first, let v = Int(first, radix: 16), (0x2000...0x3fff).contains(v) {
+                return true                                                        // global unicast IPv6 (2000::/3)
+            }
+        }
+        return false
     }
 
     static func isPrivate(_ ip: String) -> Bool {

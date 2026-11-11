@@ -262,6 +262,9 @@ public struct SceneItem: Codable, Identifiable, Hashable, Sendable {
     public var isMirrored = false
     public var filters: [FilterSpec] = []
     public var isLinked = true
+    /// The frame that shows the camera angle on air (Angles › Shuffle); one frame at a time. Optional so collections
+    /// saved before it existed still load.
+    public var shufflesAngles: Bool?
     public init(id: UUID = UUID(), sourceID: UUID, role: LayoutRole? = nil, transform: ItemTransform = .full,
                 fit: FitMode = .fill, mask: ItemMask = .none, isVisible: Bool = true) {
         self.id = id; self.sourceID = sourceID; self.role = role; self.transform = transform

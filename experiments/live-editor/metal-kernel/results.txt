@@ -1,0 +1,3 @@
+supportsDynamicLibraries: true
+compiled 1 kernel(s) in 358 ms: radialWipe (CIColorKernel)
+rendered 1080p shader transition: mean 0.34 ms per frame

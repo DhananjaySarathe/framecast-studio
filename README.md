@@ -36,6 +36,10 @@ the switching off your hands.
   you a landscape stream for YouTube and a vertical one for Instagram, plus vertical recordings to cut into Shorts
   and Reels. Record both at once, as two files, and stream each canvas to YouTube, Twitch, X, Instagram or any
   RTMP/RTMPS server (X and Instagram allow streaming software only on some accounts).
+- **Your screen share moves like an edit.** Click on your shared screen and the stream glides in to where you
+  clicked, follows your cursor, and goes back to the whole screen when you stop. On 9:16 the screen fills the frame
+  as a slice that follows you. It's off until you switch it on, and never magnifies password fields or apps you
+  keep private ([docs/LIVE-EDITOR.md](docs/LIVE-EDITOR.md)).
 - **A full studio when you want the controls.** Scenes and layouts, 60 backgrounds, name tags and other overlays,
   guests who join from a browser link, YouTube and Twitch comments on screen (with your own free OAuth app), video
   and music files, a sound pad, markers that turn into a YouTube chapter list, and clips of the last 30 seconds in
@@ -97,6 +101,13 @@ The download is a universal app for Apple silicon and Intel; so far it has been 
 **Guests** join from a browser link. For guests on your Wi-Fi (macOS 15 or later), install the free LiveKit server
 with Homebrew (`brew install livekit`). For guests anywhere, you need your own LiveKit Cloud project and the guest
 page on a static host such as Cloudflare Pages (both have free plans). See [docs/GUESTS.md](docs/GUESTS.md).
+Phones join the same way as **camera angles** of you: pick one with a click or ⌃⌥⌘1–6, or let the shuffle cut
+between them in your pauses, with your face kept in frame and your voice lined up with each phone's picture. See
+[docs/ANGLES.md](docs/ANGLES.md).
+
+**Live captions** (macOS 26 or later) show what you say at the bottom of both canvases as you say it, recognised on
+this Mac by Apple's speech recognition: free and private. Turn them on with ⌃⌥⌘L; correct lines in the transcript,
+and every recording gets an `.srt` and a transcript next to it. See [docs/CAPTIONS.md](docs/CAPTIONS.md).
 
 ## Screenshots
 
@@ -142,6 +153,13 @@ between the **16:9**, **9:16** or **Both** canvases and opens Destinations, Add 
   Every piece has its own 16:9 and 9:16 artwork. Countdowns restart from the Layer tab.
 - **Comments**: click a comment to show it on screen. YouTube/Twitch connections need your own OAuth apps (see
   [docs/VERIFICATION.md](docs/VERIFICATION.md)).
+- **Camera moves** (Settings › Live editor): **Off** (the default), **Rehearse** (moves only while you're not
+  live) or **On**. A click zooms the screen share (Subtle 1.4x, Moderate 1.6x or Lively 2x, never past what stays
+  sharp) and the view follows the cursor; after a quiet spell (5 s by default) it goes back to the whole screen.
+  ⌃⌥⌘Z zooms to the cursor, ⌃⌥⌘X goes back to the whole screen for 30 s, ⌃⌥⌘C turns moves on or off. No zoom
+  while a password field is active, on the menu bar or Dock, or into apps on the never-zoom list. The Rundown tab
+  shows the frame time and the budget tier, which steps moves down if the Mac gets busy or hot. Details:
+  [docs/LIVE-EDITOR.md](docs/LIVE-EDITOR.md); the research and plan: [docs/LIVE-EDITOR-PLAN.md](docs/LIVE-EDITOR-PLAN.md).
 - **Show from a brief**: the AI director from [How a live show works](#how-a-live-show-works). Write the brief in
   Rundown › New show; Claude saves the outline, motion graphics, cards and reference pictures in the show's folder.
   Details: [docs/RUNDOWN.md](docs/RUNDOWN.md).

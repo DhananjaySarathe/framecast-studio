@@ -1,0 +1,20 @@
+== Compositor cost per tick (16:9 1920x1080 + 9:16 1080x1920), M-series GPU, real Framecast compositor ==
+A solo camera (bg + camera) both canvases: mean   4.12 ms  p95   4.52 ms
+B screen + camera (bg + 4K screen + cam) both canvases: mean   5.79 ms  p95   7.20 ms
+B again, timed with startTask+waitUntilCompleted both canvases: mean   5.71 ms  p95   6.21 ms
+C Move transition solo -> screen+cam at p=0.5 both canvases: mean   4.96 ms  p95   5.43 ms
+D Fade transition solo -> screen+cam at p=0.5 both canvases: mean   4.68 ms  p95   5.20 ms
+E B + animated per-layer crop (cam 1.4x, screen 2x) both canvases: mean   5.70 ms  p95   6.67 ms
+F B + whole-canvas zoom 1.3x (affine on composed image) both canvases: mean   3.55 ms  p95   4.03 ms
+G F + CIZoomBlur amount 12 (whole canvas) both canvases: mean  14.30 ms  p95  17.16 ms
+H B + CIMotionBlur r=20 on whole canvas both canvases: mean   9.06 ms  p95  10.39 ms
+I whip: slide + CIMotionBlur r=60 (both scenes) both canvases: mean   9.52 ms  p95  11.49 ms
+== Vision on-device analysis (one 1920x1080 BGRA camera frame / 3840x2160 screen frame) ==
+VNDetectFaceRectanglesRequest (1080p) mean   2.68 ms  p95   2.92 ms
+VNDetectHumanRectanglesRequest upperBodyOnly (1080p) mean   2.75 ms  p95   3.13 ms
+VNGeneratePersonSegmentationRequest .fast (1080p) mean   2.39 ms  p95   2.87 ms
+VNDetectHumanBodyPoseRequest (1080p) mean   4.07 ms  p95   4.25 ms
+VNTrackObjectRequest .fast (1080p, sequence) mean   0.90 ms  p95   1.10 ms
+VNGenerateAttentionBasedSaliencyImageRequest (4K screen) mean   4.07 ms  p95   4.24 ms
+VNRecognizeTextRequest .fast (4K screen) mean 223.19 ms  p95 226.29 ms
+GPU: Apple M5 Pro, unified memory: true

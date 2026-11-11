@@ -9,6 +9,7 @@ struct RundownPanel: View {
         let d = studio.director
         VStack(spacing: 0) {
             PanelHeader(title: "Rundown", subtitle: d.show?.title) { ShowMenu() }
+            if studio.liveEditor.settings.moves != .off { LiveEditorCard().padding([.horizontal, .top], 12) }
             if d.show == nil {
                 NoShowView()
             } else {

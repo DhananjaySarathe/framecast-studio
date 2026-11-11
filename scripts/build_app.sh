@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 CONFIG=${1:-release}
-VERSION=1.0.0
+VERSION=1.1.0
 swift build -c "$CONFIG" --product Framecast
 swift build -c "$CONFIG" --product fcverify
 swift build -c "$CONFIG" --product framecast-mcp
@@ -45,6 +45,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>NSPrincipalClass</key><string>NSApplication</string>
   <key>NSCameraUsageDescription</key><string>Framecast uses your camera as a source in your layouts.</string>
   <key>NSMicrophoneUsageDescription</key><string>Framecast records and streams audio from your microphone.</string>
+  <key>NSLocalNetworkUsageDescription</key><string>Framecast connects to phones and computers on your Wi-Fi that join your show as guests or camera angles.</string>
   <key>NSAudioCaptureUsageDescription</key><string>Framecast captures system and app audio for your recordings and streams.</string>
   <key>NSScreenCaptureUsageDescription</key><string>Framecast captures your displays, windows and apps for layouts, recordings and streams.</string>
   <key>NSSpeechRecognitionUsageDescription</key><string>Framecast follows your voice on this Mac to suggest scene changes from your rundown. Nothing you say leaves the Mac.</string>

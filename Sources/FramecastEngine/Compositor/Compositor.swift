@@ -16,8 +16,10 @@ public struct LayerInput {
     public var isText: Bool
     public var lut: CubeLUT?
     public var lutAmount: Double
-    public init(image: CIImage?, isText: Bool = false, lut: CubeLUT? = nil, lutAmount: Double = 1) {
-        self.image = image; self.isText = isText; self.lut = lut; self.lutAmount = lutAmount
+    /// The live editor's camera for this layer (nil: drawn as the scene says).
+    public var viewport: Viewport?
+    public init(image: CIImage?, isText: Bool = false, lut: CubeLUT? = nil, lutAmount: Double = 1, viewport: Viewport? = nil) {
+        self.image = image; self.isText = isText; self.lut = lut; self.lutAmount = lutAmount; self.viewport = viewport
     }
 }
 
@@ -73,10 +75,22 @@ public final class Compositor: @unchecked Sendable {
         case .fit: let s = min(sx, sy); sx = s; sy = s
         case .stretch: break
         }
-        let w = iw * sx, h = ih * sy
-        var tx = frame.minX + (frame.width - w) / 2
-        let ty = frame.minY + (frame.height - h) / 2
-        if input.isText && item.role == .lowerThird { tx = frame.minX }   // lower thirds hug the left edge
+        var tx: CGFloat, ty: CGFloat
+        if let vp = input.viewport {
+            // Zoom past the normal view and put the camera's centre in the middle of the frame, without ever showing
+            // past the picture's edge (a fit layer narrower than its frame stays centred on that axis).
+            let z = max(1, vp.zoom)
+            sx *= z; sy *= z
+            let w = iw * sx, h = ih * sy
+            tx = frame.midX - vp.cx * w
+            ty = frame.midY - (1 - vp.cy) * h
+            tx = w >= frame.width ? min(frame.minX, max(frame.maxX - w, tx)) : frame.minX + (frame.width - w) / 2
+            ty = h >= frame.height ? min(frame.minY, max(frame.maxY - h, ty)) : frame.minY + (frame.height - h) / 2
+        } else {
+            tx = frame.minX + (frame.width - iw * sx) / 2
+            ty = frame.minY + (frame.height - ih * sy) / 2
+            if input.isText && item.role == .lowerThird { tx = frame.minX }   // lower thirds hug the left edge
+        }
         img = img.transformed(by: CGAffineTransform(scaleX: sx, y: sy).concatenating(CGAffineTransform(translationX: tx, y: ty)))
         let shown = img.extent.intersection(frame)
         img = img.cropped(to: shown)
@@ -128,8 +142,10 @@ public final class Compositor: @unchecked Sendable {
         p < 0.5 ? 4 * p * p * p : 1 - pow(-2 * p + 2, 3) / 2
     }
 
+    /// `match` says which layers are the same picture for Move (by default the same source; the engine also pairs a
+    /// medium or close-up with its camera).
     public func transition(_ kind: TransitionKind, from a: [SceneItem], to b: [SceneItem], progress raw: Double, canvas: CGSize,
-                           accent: RGBA, resolve: (SceneItem) -> LayerInput?) -> CIImage {
+                           accent: RGBA, match: (SceneItem) -> UUID = { $0.sourceID }, resolve: (SceneItem) -> LayerInput?) -> CIImage {
         let p = Self.ease(min(max(raw, 0), 1))
         let bounds = CGRect(origin: .zero, size: canvas)
         switch kind {
@@ -157,7 +173,7 @@ public final class Compositor: @unchecked Sendable {
             var out = CIImage.empty()
             var matchedA = Set<UUID>()
             for ib in b {
-                if let ia = a.first(where: { $0.sourceID == ib.sourceID && !matchedA.contains($0.id) }) {
+                if let ia = a.first(where: { match($0) == match(ib) && !matchedA.contains($0.id) }) {
                     matchedA.insert(ia.id)
                     var mid = ib
                     let ta = ia.transform, tb = ib.transform

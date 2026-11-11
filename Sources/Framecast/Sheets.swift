@@ -134,10 +134,11 @@ struct AddSourceSheet: View {
         case .displays, .windows:
             do {
                 let content = try await SCShareableContent.excludingDesktopWindows(true, onScreenWindowsOnly: true)
+                // A test launch with stand-in devices never takes a picture of the real screen: icons instead.
                 if category == .displays {
                     for (i, d) in content.displays.enumerated() {
-                        let img = try? await SCScreenshotManager.captureImage(contentFilter: SCContentFilter(display: d, excludingWindows: []),
-                                                                                configuration: thumbConfig(d.width, d.height))
+                        let img = FakeDevices.isOn ? nil : (try? await SCScreenshotManager.captureImage(contentFilter: SCContentFilter(display: d, excludingWindows: []),
+                                                                                configuration: thumbConfig(d.width, d.height)))
                         out.append(SourceCard(id: "d\(d.displayID)", name: "Display \(i + 1)", detail: "\(d.width) × \(d.height)",
                                               record: SourceRecord(name: "Display \(i + 1)", kind: .display(displayID: d.displayID)), preview: img, icon: "display"))
                     }
@@ -147,8 +148,8 @@ struct AddSourceSheet: View {
                     }
                 } else {
                     for w in content.windows.filter({ ($0.title ?? "").count > 0 && $0.frame.width > 120 && $0.owningApplication?.bundleIdentifier != Bundle.main.bundleIdentifier }).prefix(40) {
-                        let img = try? await SCScreenshotManager.captureImage(contentFilter: SCContentFilter(desktopIndependentWindow: w),
-                                                                                configuration: thumbConfig(Int(w.frame.width), Int(w.frame.height)))
+                        let img = FakeDevices.isOn ? nil : (try? await SCScreenshotManager.captureImage(contentFilter: SCContentFilter(desktopIndependentWindow: w),
+                                                                                configuration: thumbConfig(Int(w.frame.width), Int(w.frame.height))))
                         let app = w.owningApplication?.applicationName ?? "App"
                         out.append(SourceCard(id: "w\(w.windowID)", name: w.title ?? app, detail: app,
                                               record: SourceRecord(name: "\(app) window", kind: .window(bundleID: w.owningApplication?.bundleIdentifier ?? "", title: w.title ?? "", windowID: w.windowID)),
@@ -253,6 +254,7 @@ struct GoLiveSheet: View {
                 .padding(10).background(RoundedRectangle(cornerRadius: 10).fill(Theme.control2))
             }
             Toggle("Also record on this Mac", isOn: $recordToo).toggleStyle(.checkbox).font(.fc(12.5))
+            GoLiveMovesNote()
             if let e = studio.streaming.lastError { Text(e).font(.fc(12)).foregroundStyle(Theme.warning).fixedSize(horizontal: false, vertical: true) }
             HStack {
                 Text(studio.streaming.enabled.isEmpty ? "Turn on at least one destination." : "Your destinations start receiving the broadcast right away.")

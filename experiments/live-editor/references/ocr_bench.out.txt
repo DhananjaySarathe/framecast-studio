@@ -1,0 +1,25 @@
+Vision OCR on a synthetic app window (38 known text items, sizes 10-40 pt at 1280x800 logical)
+  2560x1600 fast     correction=off  median   18.3 ms  min   17.5 ms  recall 35/38  missed: 42%, Run prompt, Click Save to keep your work, or Discard to undo every edit.
+  2560x1600 fast     correction=on   median   44.8 ms  min   44.3 ms  recall 35/38  missed: 42%, Run prompt, Click Save to keep your work, or Discard to undo every edit.
+  2560x1600 accurate correction=off  median   95.4 ms  min   68.9 ms  recall 38/38  missed: 
+  2560x1600 accurate correction=on   median  101.3 ms  min   94.3 ms  recall 36/38  missed: let session = LanguageModelSession(instructions: rules), for item in items where item.isVisible { draw(item) }
+  1920x1200 fast     correction=off  median   16.5 ms  min   15.8 ms  recall 32/38  missed: Notifications, 42%, Run prompt, let session = LanguageModelSession(instructions: rules), for item in items where item.isVisible { draw(item) }
+  1920x1200 fast     correction=on   median   41.9 ms  min   41.4 ms  recall 32/38  missed: Notifications, 42%, Run prompt, let session = LanguageModelSession(instructions: rules), for item in items where item.isVisible { draw(item) }
+  1920x1200 accurate correction=off  median   66.6 ms  min   63.5 ms  recall 38/38  missed: 
+  1920x1200 accurate correction=on   median   84.1 ms  min   80.1 ms  recall 36/38  missed: let session = LanguageModelSession(instructions: rules), for item in items where item.isVisible { draw(item) }
+  1280x800 fast     correction=off  median   13.6 ms  min   12.9 ms  recall 19/38  missed: Settings, Notifications, Accounts, Storage, File
+  1280x800 fast     correction=on   median   38.3 ms  min   37.5 ms  recall 20/38  missed: Settings, Notifications, Storage, File, Format
+  1280x800 accurate correction=off  median  123.2 ms  min   77.5 ms  recall 36/38  missed: Format, for item in items where item.isVisible { draw(item) }
+  1280x800 accurate correction=on   median  131.6 ms  min  109.4 ms  recall 35/38  missed: Format, let session = LanguageModelSession(instructions: rules), for item in items where item.isVisible { draw(item) }
+  2560x1600 fast ROI=sidebar (20% of width)  median    7.1 ms
+  2560x1600 accurate ROI=sidebar (20% of width)  median   52.4 ms
+  'Settings' found in line "Settings" confidence 1.0; line box (0.018702790894637278, 0.7819618416356507, 0.038093602657318114, 0.017034960985183645); word box (0.018702790894637278, 0.7819618416356507, 0.038093602657318114, 0.017034960985183645)
+  expected approx x 0.019-0.08, y (from bottom) ~0.83-0.86
+
+Hand pose on 1280x720 with no hands (detector cost floor): median    3.4 ms  results 0
+Body pose on 1280x720 with no person: median    5.3 ms
+Attention saliency on 1280x720: median    7.6 ms
+TrackObject fast 1280x720, 59 frames: median    2.9 ms  max centre error 0.031 of frame width
+TrackObject accurate 1280x720, 59 frames: median    2.8 ms  max centre error 0.031 of frame width
+
+Scroll registration 1280x800 (content right of sidebar scrolled 60 px): median    8.3 ms  transform tx -0.0 ty -60.0

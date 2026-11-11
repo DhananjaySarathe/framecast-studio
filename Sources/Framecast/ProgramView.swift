@@ -26,6 +26,7 @@ struct ProgramArea: View {
         }
         .padding(.vertical, 18).padding(.horizontal, 18)
         .overlay(alignment: .topLeading) { if !studio.previewMode { ProgramHeader().padding(.top, 10).padding(.leading, 14) } }
+        .overlay(alignment: .topTrailing) { if !studio.previewMode { CaptionsToggle().padding(.top, 10).padding(.trailing, 14) } }
         .overlay(alignment: .bottom) {
             if let f = studio.flash {
                 Text(f).font(.fc(12, .semibold)).foregroundStyle(Theme.text)

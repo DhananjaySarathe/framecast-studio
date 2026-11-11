@@ -1,0 +1,14 @@
+visionbench ocr | Version 27.0.1 (Build 26A434) | thermal 0
+== 2880x1800 walk (65 imgs)
+RecognizeText .fast                            2880x1800 walk (65 imgs) n=60 p50=71.04 p95=82.65 mean=64.20 min=36.06 max=101.79 first=94.16 | rev 3; lines avg 52.62; chars/frame avg 1076.6; usesLanguageCorrection default
+RecognizeText .accurate                        2880x1800 walk (65 imgs) n=60 p50=94.72 p95=104.75 mean=91.45 min=73.04 max=107.08 first=149.58 | rev 3; lines avg 58.22; chars/frame avg 1066.8; usesLanguageCorrection default
+== 1440x900 walk (65 imgs)
+RecognizeText .fast                            1440x900 walk (65 imgs) n=60 p50=75.71 p95=83.32 mean=67.03 min=32.79 max=84.21 first=47.09 | rev 3; lines avg 45.37; chars/frame avg 864.3; usesLanguageCorrection default
+RecognizeText .accurate                        1440x900 walk (65 imgs) n=60 p50=150.19 p95=257.20 mean=159.38 min=76.34 max=304.13 first=131.20 | rev 3; lines avg 57.25; chars/frame avg 1061.7; usesLanguageCorrection default
+== 2880x1800 ui (15 imgs)
+RecognizeText .fast                            2880x1800 ui (15 imgs) n=60 p50=42.65 p95=128.33 mean=47.53 min=6.60 max=131.26 first=33.32 | rev 3; lines avg 41.67; chars/frame avg 726.7; usesLanguageCorrection default
+RecognizeText .accurate                        2880x1800 ui (15 imgs) n=60 p50=86.12 p95=129.70 mean=85.36 min=10.46 max=136.37 first=78.60 | rev 3; lines avg 45.20; chars/frame avg 761.8; usesLanguageCorrection default
+== 1440x900 ui (15 imgs)
+RecognizeText .fast                            1440x900 ui (15 imgs)  n=60 p50=42.75 p95=117.34 mean=46.81 min=4.83 max=119.38 first=33.17 | rev 3; lines avg 32.60; chars/frame avg 588.7; usesLanguageCorrection default
+RecognizeText .accurate                        1440x900 ui (15 imgs)  n=60 p50=78.40 p95=114.58 mean=77.10 min=11.37 max=118.60 first=80.44 | rev 3; lines avg 40.40; chars/frame avg 718.4; usesLanguageCorrection default
+wrote <scratch>/bench/results_ocr.json

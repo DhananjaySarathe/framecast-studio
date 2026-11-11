@@ -24,6 +24,13 @@ if command == "icon" {
     exit(0)
 }
 
+if command == "live-editor" { exit(liveEditorChecks() ? 0 : 1) }
+if command == "angles" { exit(anglesChecks() ? 0 : 1) }
+if command == "virtual" { exit(virtualChecks() ? 0 : 1) }
+if command == "captions" { exit(captionsChecks() ? 0 : 1) }
+if command == "ocr" { exit(ocrCheck(args.dropFirst().first, band: args.count > 2 ? args[2] : nil) ? 0 : 1) }
+if command == "face" { exit(faceCheck(args.dropFirst().first) ? 0 : 1) }
+
 if command == "filters" {
     // Pixel checks for the keyers, LUT and colour correction (no capture devices needed).
     let comp = Compositor()

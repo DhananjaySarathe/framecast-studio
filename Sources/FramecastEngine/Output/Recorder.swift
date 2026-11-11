@@ -24,11 +24,13 @@ public struct RecordingSpec: Sendable {
     public var baseName: String
     public var splitMinutes: Double       // 0 = one file
     public var audioTracks: [Int]         // 1 = program mix; 2…6 = separate tracks
+    /// A camera angle recorded on its own (one file per angle, with the program's sound); nil records the canvas.
+    public var isoSource: UUID?
     public init(canvas: CanvasKind, container: ContainerFormat, codec: VideoCodec, bitrateKbps: Int, width: Int, height: Int, fps: Int,
-                folders: [URL], baseName: String, splitMinutes: Double = 0, audioTracks: [Int] = [1]) {
+                folders: [URL], baseName: String, splitMinutes: Double = 0, audioTracks: [Int] = [1], isoSource: UUID? = nil) {
         self.canvas = canvas; self.container = container; self.codec = codec; self.bitrateKbps = bitrateKbps
         self.width = width; self.height = height; self.fps = fps; self.folders = folders; self.baseName = baseName
-        self.splitMinutes = splitMinutes; self.audioTracks = audioTracks
+        self.splitMinutes = splitMinutes; self.audioTracks = audioTracks; self.isoSource = isoSource
     }
 }
 
@@ -192,6 +194,7 @@ public final class CanvasRecorder: @unchecked Sendable {
         let index: Int; let start: Int64; var end: Int64?; let sinks: [RecordingSink]; var audioDoneTo: Int64; var finished = false
         var firstVideoRel: Int64?      // grid anchor for constant-frame-rate timestamps
         var lastFrameNumber: Int64 = -1
+        var lastFrameIdx: Int64 = -1         // timeline index of that frame (a pause in between isn't a miss)
     }
     private var parts: [Part] = []
     public private(set) var files: [URL] = []
@@ -259,6 +262,9 @@ public final class CanvasRecorder: @unchecked Sendable {
     }
     public var bytesWritten: Int64 { lock.lock(); defer { lock.unlock() }; return parts.flatMap(\.sinks).reduce(0) { $0 + $1.bytesWritten } }
     public var droppedFrames: Int { lock.lock(); defer { lock.unlock() }; return parts.flatMap(\.sinks).reduce(0) { $0 + $1.droppedFrames } }
+    /// Frame slots on the constant-rate grid that no render reached (a stall upstream of the encoder).
+    public var missedFrames: Int { lock.lock(); defer { lock.unlock() }; return missed }
+    private var missed = 0
 
     public func appendVideo(_ pb: CVPixelBuffer, pts: CMTime) {
         lock.lock(); defer { lock.unlock() }
@@ -279,7 +285,12 @@ public final class CanvasRecorder: @unchecked Sendable {
         parts[pi].firstVideoRel = anchor
         let n = Int64((Double(relSamples - anchor) * Double(spec.fps) / 48_000).rounded())
         guard n > parts[pi].lastFrameNumber else { return }        // two renders in one frame slot
+        if parts[pi].lastFrameNumber >= 0 {
+            let last = parts[pi].lastFrameIdx
+            if !pauses.contains(where: { $0.start > last && $0.start <= idx }) { missed += Int(n - parts[pi].lastFrameNumber - 1) }
+        }
         parts[pi].lastFrameNumber = n
+        parts[pi].lastFrameIdx = idx
         let rel = CMTimeAdd(CMTime(value: anchor, timescale: 48_000), CMTime(value: n, timescale: CMTimeScale(spec.fps)))
         for s in parts[pi].sinks { s.appendVideo(pb, at: rel) }
         checkFailures(parts[pi])

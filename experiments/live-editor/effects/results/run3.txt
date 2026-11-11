@@ -1,0 +1,80 @@
+GPU: Apple M5 Pro  supportsDynamicLibraries: true
+Core Image transition filters on this Mac (11): CIAccordionFoldTransition, CIBarsSwipeTransition, CICopyMachineTransition, CIDisintegrateWithMaskTransition, CIDissolveTransition, CIFlashTransition, CIModTransition, CIPageCurlTransition, CIPageCurlWithShadowTransition, CIRippleTransition, CISwipeTransition
+baseline: one full-frame camera wall   0.62 / p95   0.93 ms   gpu   0.26 / p95   0.37 ms   passes 1
+baseline: Move-like 2 layers, rounded mask wall   1.02 / p95   1.38 ms   gpu   0.56 / p95   0.94 ms   passes 2
+CIDissolveTransition (current Fade) wall   0.86 / p95   1.85 ms   gpu   0.38 / p95   0.78 ms   passes 1
+CISwipeTransition wall   1.05 / p95   1.71 ms   gpu   0.52 / p95   0.92 ms   passes 1
+CIBarsSwipeTransition wall   0.92 / p95   1.28 ms   gpu   0.44 / p95   0.83 ms   passes 1
+CICopyMachineTransition wall   0.91 / p95   1.29 ms   gpu   0.45 / p95   0.85 ms   passes 1
+CIFlashTransition wall   1.04 / p95   2.25 ms   gpu   0.53 / p95   1.75 ms   passes 1
+CIModTransition wall   0.96 / p95   1.30 ms   gpu   0.49 / p95   0.88 ms   passes 1
+CIRippleTransition wall   2.62 / p95   3.85 ms   gpu   3.54 / p95   8.84 ms   passes 5
+CIPageCurlTransition wall   2.14 / p95   3.70 ms   gpu   2.31 / p95   6.58 ms   passes 5
+CIPageCurlWithShadowTransition wall   1.90 / p95   3.23 ms   gpu   1.15 / p95   5.93 ms   passes 4
+CIAccordionFoldTransition wall   0.56 / p95   0.73 ms   gpu   0.11 / p95   0.35 ms   passes 1
+CIDisintegrateWithMaskTransition wall   1.18 / p95   1.48 ms   gpu   0.38 / p95   0.74 ms   passes 3
+luma/track-matte wipe (CIBlendWithMask) wall   0.52 / p95   0.73 ms   gpu   0.09 / p95   0.34 ms   passes 1
+whip pan, CIMotionBlur peak r=40 wall   1.25 / p95   1.83 ms   gpu   0.59 / p95   1.42 ms   passes 7
+whip pan, CIMotionBlur peak r=100 wall   1.29 / p95   1.56 ms   gpu   0.66 / p95   0.92 ms   passes 7
+CIMotionBlur r=100 held (worst frame) wall   1.26 / p95   1.54 ms   gpu   0.74 / p95   1.56 ms   passes 7
+zoom-through, CIZoomBlur peak 25 wall   2.24 / p95   2.50 ms   gpu   1.39 / p95   1.49 ms   passes 3
+CIGaussianBlur sigma 20 (defocus / bg blur) wall   1.12 / p95   1.31 ms   gpu   0.32 / p95   0.35 ms   passes 3
+push-in / Ken Burns affine 1.00->1.08 wall   0.42 / p95   0.47 ms   gpu   0.06 / p95   0.06 ms   passes 1
+push-in via CILanczosScaleTransform wall   1.58 / p95   1.97 ms   gpu   1.02 / p95   1.20 ms   passes 4
+LUT CIColorCubeWithColorSpace 33^3 wall   0.56 / p95   0.71 ms   gpu   0.07 / p95   0.09 ms   passes 1
+LUT CIColorCubeWithColorSpace 64^3 wall   1.27 / p95   1.50 ms   gpu   0.09 / p95   0.13 ms   passes 1
+grain: CIRandomGenerator + soft light wall   0.98 / p95   1.25 ms   gpu   0.53 / p95   0.60 ms   passes 1
+light leak: 2 moving radial gradients, screen wall   0.99 / p95   1.33 ms   gpu   0.50 / p95   0.81 ms   passes 1
+CIVignetteEffect wall   0.69 / p95   1.14 ms   gpu   0.32 / p95   0.72 ms   passes 1
+Runtime Metal CI kernel compile: 1.2 ms, kernels: fc_crossZoom, fc_directionalWarp, fc_grain
+gl directionalwarp (runtime Metal CIKernel) wall   1.66 / p95   1.84 ms   gpu   1.14 / p95   1.77 ms   passes 4
+gl CrossZoom 82 taps (runtime Metal CIKernel) wall   1.62 / p95   1.90 ms   gpu   0.82 / p95   1.02 ms   passes 4
+grain (runtime Metal CIColorKernel) wall   0.46 / p95   0.73 ms   gpu   0.07 / p95   0.08 ms   passes 1
+STACK: Move layout + push-in + LUT33 + grain + vignette wall   1.02 / p95   1.38 ms   gpu   0.22 / p95   0.24 ms   passes 2
+caption: re-rasterise text every frame wall   0.55 / p95   0.92 ms   gpu   0.09 / p95   0.09 ms   passes 1
+caption: cached line images + pop scale wall   0.47 / p95   0.56 ms   gpu   0.09 / p95   0.09 ms   passes 1
+BOTH CANVASES (CrossZoom + LUT + grain): wall 7.73 / p95 10.80 ms, gpu 11.50 / p95 21.79 ms per tick (budget 16.7 ms at 60 fps)
+TICK both canvases plain: one camera, fill wall  0.78 / p95  1.05 ms  (60 fps budget 16.7 ms)
+TICK both canvases look: push-in + LUT33 + grain + vignette wall  1.30 / p95  1.63 ms  (60 fps budget 16.7 ms)
+TICK both canvases whip pan r=60 wall  3.33 / p95  4.67 ms  (60 fps budget 16.7 ms)
+TICK both canvases zoom-through CIZoomBlur 25 wall  5.43 / p95  6.92 ms  (60 fps budget 16.7 ms)
+TICK both canvases gl CrossZoom (82 taps) wall  6.94 / p95  9.22 ms  (60 fps budget 16.7 ms)
+TICK both canvases gl directionalwarp wall  4.09 / p95  4.94 ms  (60 fps budget 16.7 ms)
+TICK both canvases CIPageCurlWithShadow wall  3.06 / p95  6.07 ms  (60 fps budget 16.7 ms)
+stinger stinger-hevc-alpha.mov: 60 frames decoded in 78.8 ms (1.31 ms/frame), file 0.1 MB, alpha preserved: yes
+stinger stinger-prores4444.mov: 60 frames decoded in 97.2 ms (1.62 ms/frame), file 2.4 MB, alpha preserved: yes
+AVURLAsset audiovisual types mentioning webm/matroska: none
+
+SUMMARY (1920x1080 BGRA, ms per frame per canvas; x2 for both canvases)
+baseline: one full-frame camera | gpu   0.26 | gpu p95   0.37 | wall   0.62 | passes 1
+baseline: Move-like 2 layers, rounded mask | gpu   0.56 | gpu p95   0.94 | wall   1.02 | passes 2
+CIDissolveTransition (current Fade) | gpu   0.38 | gpu p95   0.78 | wall   0.86 | passes 1
+CISwipeTransition | gpu   0.52 | gpu p95   0.92 | wall   1.05 | passes 1
+CIBarsSwipeTransition | gpu   0.44 | gpu p95   0.83 | wall   0.92 | passes 1
+CICopyMachineTransition | gpu   0.45 | gpu p95   0.85 | wall   0.91 | passes 1
+CIFlashTransition | gpu   0.53 | gpu p95   1.75 | wall   1.04 | passes 1
+CIModTransition | gpu   0.49 | gpu p95   0.88 | wall   0.96 | passes 1
+CIRippleTransition | gpu   3.54 | gpu p95   8.84 | wall   2.62 | passes 5
+CIPageCurlTransition | gpu   2.31 | gpu p95   6.58 | wall   2.14 | passes 5
+CIPageCurlWithShadowTransition | gpu   1.15 | gpu p95   5.93 | wall   1.90 | passes 4
+CIAccordionFoldTransition | gpu   0.11 | gpu p95   0.35 | wall   0.56 | passes 1
+CIDisintegrateWithMaskTransition | gpu   0.38 | gpu p95   0.74 | wall   1.18 | passes 3
+luma/track-matte wipe (CIBlendWithMask) | gpu   0.09 | gpu p95   0.34 | wall   0.52 | passes 1
+whip pan, CIMotionBlur peak r=40 | gpu   0.59 | gpu p95   1.42 | wall   1.25 | passes 7
+whip pan, CIMotionBlur peak r=100 | gpu   0.66 | gpu p95   0.92 | wall   1.29 | passes 7
+CIMotionBlur r=100 held (worst frame) | gpu   0.74 | gpu p95   1.56 | wall   1.26 | passes 7
+zoom-through, CIZoomBlur peak 25 | gpu   1.39 | gpu p95   1.49 | wall   2.24 | passes 3
+CIGaussianBlur sigma 20 (defocus / bg blur) | gpu   0.32 | gpu p95   0.35 | wall   1.12 | passes 3
+push-in / Ken Burns affine 1.00->1.08 | gpu   0.06 | gpu p95   0.06 | wall   0.42 | passes 1
+push-in via CILanczosScaleTransform | gpu   1.02 | gpu p95   1.20 | wall   1.58 | passes 4
+LUT CIColorCubeWithColorSpace 33^3 | gpu   0.07 | gpu p95   0.09 | wall   0.56 | passes 1
+LUT CIColorCubeWithColorSpace 64^3 | gpu   0.09 | gpu p95   0.13 | wall   1.27 | passes 1
+grain: CIRandomGenerator + soft light | gpu   0.53 | gpu p95   0.60 | wall   0.98 | passes 1
+light leak: 2 moving radial gradients, screen | gpu   0.50 | gpu p95   0.81 | wall   0.99 | passes 1
+CIVignetteEffect | gpu   0.32 | gpu p95   0.72 | wall   0.69 | passes 1
+gl directionalwarp (runtime Metal CIKernel) | gpu   1.14 | gpu p95   1.77 | wall   1.66 | passes 4
+gl CrossZoom 82 taps (runtime Metal CIKernel) | gpu   0.82 | gpu p95   1.02 | wall   1.62 | passes 4
+grain (runtime Metal CIColorKernel) | gpu   0.07 | gpu p95   0.08 | wall   0.46 | passes 1
+STACK: Move layout + push-in + LUT33 + grain + vignette | gpu   0.22 | gpu p95   0.24 | wall   1.02 | passes 2
+caption: re-rasterise text every frame | gpu   0.09 | gpu p95   0.09 | wall   0.55 | passes 1
+caption: cached line images + pop scale | gpu   0.09 | gpu p95   0.09 | wall   0.47 | passes 1

@@ -3,22 +3,22 @@ import AppKit
 import FramecastEngine
 
 enum SettingsPane: String, CaseIterable, Identifiable {
-    case general, video, recording, streaming, ai, hotkeys, streamDeck, remote, camera, account
+    case general, video, recording, streaming, ai, liveEditor, hotkeys, streamDeck, remote, camera, account
     var id: String { rawValue }
     var title: String {
         switch self {
         case .general: "General"; case .video: "Canvases"; case .recording: "Recording"; case .streaming: "Broadcasting"
-        case .ai: "AI"
+        case .ai: "AI"; case .liveEditor: "Live editor"
         case .hotkeys: "Shortcuts"; case .camera: "Extras"; case .account: "Privacy"
         case .streamDeck: "Stream Deck"; case .remote: "Remote"
         }
     }
     /// What the sidebar lists. Stream Deck, Remote and Virtual camera notes live together under Extras.
-    static let shown: [SettingsPane] = [.general, .video, .recording, .streaming, .ai, .hotkeys, .camera, .account]
+    static let shown: [SettingsPane] = [.general, .video, .recording, .streaming, .ai, .liveEditor, .hotkeys, .camera, .account]
     var icon: String {
         switch self {
         case .general: "gearshape"; case .video: "rectangle.on.rectangle"; case .recording: "record.circle"; case .streaming: "dot.radiowaves.left.and.right"
-        case .ai: "sparkles"
+        case .ai: "sparkles"; case .liveEditor: "scope"
         case .hotkeys: "keyboard"; case .streamDeck: "square.grid.3x2"; case .remote: "iphone"; case .camera: "video"; case .account: "person.crop.circle"
         }
     }
@@ -58,6 +58,7 @@ struct SettingsView: View {
                     case .recording: RecordingPane()
                     case .streaming: StreamingPane()
                     case .ai: AIPane()
+                    case .liveEditor: LiveEditorPane()
                     case .hotkeys: HotkeysPane()
                     case .streamDeck: GapPane(title: "Stream Deck", text: "Framecast v1 doesn't include an Elgato Stream Deck plugin. Every action has a global keyboard shortcut instead (Hotkeys), which Stream Deck's built-in Hotkey action can trigger.")
                     case .remote: GapPane(title: "Remote", text: "Framecast v1 has no iPhone/iPad app for controlling the studio. Use global hotkeys, or the scriptable test hooks described in README.md.")

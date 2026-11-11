@@ -30,6 +30,12 @@ public final class Engine: @unchecked Sendable {
     public let mixer: AudioMixer
     public let compositor = Compositor()
     public let overlays = OverlayRenderer()
+    /// The live editor's screen camera, and the governor that keeps it inside the frame budget.
+    public let focus = FocusController()
+    public let governor = BudgetGovernor()
+    private let stats = TickStats()
+    /// Test launches only: makes every tick take at least this long (checks the governor).
+    public var testMinTickMs = 0.0
     private let renderQueue = DispatchQueue(label: "framecast.render", qos: .userInteractive)
     private var timer: DispatchSourceTimer?
     private let lock = NSLock()
@@ -45,6 +51,8 @@ public final class Engine: @unchecked Sendable {
         .vertical: CanvasConfig(width: 1080, height: 1920, fps: 30),
     ]
     private var pools: [CanvasKind: CVPixelBufferPool] = [:]
+    /// Buffers for camera-angle recordings, by size ("1920x1080").
+    private var isoPools: [String: CVPixelBufferPool] = [:]
 
     private struct Program {
         var items: [SceneItem] = []
@@ -62,6 +70,10 @@ public final class Engine: @unchecked Sendable {
     private struct ElementState { var element: OverlayElement; var shownAt: Double; var hidingAt: Double? }
     private var elements: [UUID: ElementState] = [:]
     private var chatOverlay: (ChatOverlay, Double, Double?)?
+    /// Live captions: what's shown and, once turned off, when they started fading out.
+    private var captions: (frame: CaptionFrame, hidingAt: Double?, version: Int)?
+    private var captionVersion = 0
+    private let captionRenderer = CaptionRenderer()
     public var accent = RGBA(0.30, 0.82, 0.77)
 
     private var consumers: [ObjectIdentifier: CanvasFrameConsumer] = [:]
@@ -138,6 +150,21 @@ public final class Engine: @unchecked Sendable {
         return p
     }
 
+    private func isoPool(_ size: CGSize) -> CVPixelBufferPool? {
+        let key = "\(Int(size.width))x\(Int(size.height))"
+        if let p = isoPools[key] { return p }
+        let attrs: [String: Any] = [
+            kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+            kCVPixelBufferWidthKey as String: Int(size.width), kCVPixelBufferHeightKey as String: Int(size.height),
+            kCVPixelBufferIOSurfacePropertiesKey as String: [:],
+            kCVPixelBufferMetalCompatibilityKey as String: true,
+        ]
+        var p: CVPixelBufferPool?
+        CVPixelBufferPoolCreate(nil, [kCVPixelBufferPoolMinimumBufferCountKey as String: 4] as CFDictionary, attrs as CFDictionary, &p)
+        isoPools[key] = p
+        return p
+    }
+
     // MARK: Sources
 
     /// Brings running sources in line with the collection: starts new ones, stops removed ones, and
@@ -185,13 +212,55 @@ public final class Engine: @unchecked Sendable {
         screens.forEach { $0.refreshFilter() }
     }
 
+    /// Screen captures pick up a changed click-ring setting (ScreenSource.showsClicks).
+    public func refreshScreenConfigurations() {
+        lock.lock(); let screens = videoSources.values.compactMap { $0 as? ScreenSource }; lock.unlock()
+        screens.forEach { $0.refreshConfiguration() }
+    }
+
     public func restartSource(_ id: UUID) {
         lock.lock(); let r = records[id]; lock.unlock()
         guard let r else { return }
         stopSource(id); startSource(r, fps: canvas(.horizontal).fps)
     }
 
+    /// What a source shows instead of its device: a picture, silence (an empty picture for a video source), or a
+    /// sound source that pushes samples into the mixer like a microphone (a test file).
+    public enum StandIn { case video(VideoSource), silent, audio(AudioCaptureSource) }
+    /// Asked first whenever a source starts or restarts (`sync`, `restartSource`). A stand-in replaces the device,
+    /// which is then never opened (test launches: a clip for each camera, a still for each screen, silence for each
+    /// microphone). Set it before `start()`; nil, or a nil answer, starts the real source.
+    public var standIn: ((SourceRecord) -> StandIn?)?
+
     private func startSource(_ s: SourceRecord, fps: Int) {
+        let (video, audio) = standIn?(s).map { standInSources($0, for: s) } ?? makeSources(s, fps: fps)
+        lock.lock()
+        if let video { videoSources[s.id] = video }
+        if let audio { audioSources[s.id] = audio }
+        if let lut = s.lut, luts[lut.path] == nil { loadLUT(lut.path) }
+        lock.unlock()
+        video?.start(); audio?.start()
+    }
+
+    private func standInSources(_ stand: StandIn, for s: SourceRecord) -> (VideoSource?, AudioCaptureSource?) {
+        switch stand {
+        case .video(let v): return (v, nil)
+        case .silent:
+            var audio: AudioCaptureSource?
+            if s.kind.hasAudio {
+                mixer.addGenerator(s.id, settings: s.audio ?? AudioSettings()) { _, n in [Float](repeating: 0, count: n * 2) }
+                if case .microphone = s.kind { mixer.setVoice(s.id, true) }
+                audio = SilentAudioSource(id: s.id)
+            }
+            return (s.kind.hasVideo ? EmptySlotSource(id: s.id) : nil, audio)
+        case .audio(let a):
+            mixer.addSource(s.id, settings: s.audio ?? AudioSettings())
+            if case .microphone = s.kind { mixer.setVoice(s.id, true) }
+            return (s.kind.hasVideo ? EmptySlotSource(id: s.id) : nil, a)
+        }
+    }
+
+    private func makeSources(_ s: SourceRecord, fps: Int) -> (VideoSource?, AudioCaptureSource?) {
         var video: VideoSource?
         var audio: AudioCaptureSource?
         switch s.kind {
@@ -232,12 +301,7 @@ public final class Engine: @unchecked Sendable {
         case .guest, .guestScreen, .guestGrid:
             video = EmptySlotSource(id: s.id)   // the guest room swaps in a live slot when it opens
         }
-        lock.lock()
-        if let video { videoSources[s.id] = video }
-        if let audio { audioSources[s.id] = audio }
-        if let lut = s.lut, luts[lut.path] == nil { loadLUT(lut.path) }
-        lock.unlock()
-        video?.start(); audio?.start()
+        return (video, audio)
     }
 
     /// Transport controls of a video or music file source.
@@ -250,15 +314,41 @@ public final class Engine: @unchecked Sendable {
         old?.stop(); source.start()
     }
 
+    /// Drops a source the app added with `setExternalSource` that has no record in the collection (a camera angle
+    /// from a device that left).
+    public func removeExternalSource(_ id: UUID) {
+        lock.lock()
+        guard records[id] == nil, let old = videoSources.removeValue(forKey: id) else { lock.unlock(); return }
+        lock.unlock()
+        old.stop()
+    }
+
+    /// A crop reports its camera's state.
     public func state(of id: UUID) -> SourceState? {
         lock.lock(); defer { lock.unlock() }
+        if let d = videoSources[id] as? DerivedVideoSource { return base(of: d)?.state }
         return videoSources[id]?.state ?? audioSources[id]?.state
+    }
+    /// The type that draws a source ("CameraSource", or a test stand-in's), for the angles dump.
+    public func sourceTypeName(of id: UUID) -> String? {
+        lock.lock(); defer { lock.unlock() }
+        let s: AnyObject? = videoSources[id] ?? audioSources[id]
+        return s.map { String(describing: type(of: $0)) }
     }
     public func deviceName(of id: UUID) -> String? {
         lock.lock(); defer { lock.unlock() }
         if let c = videoSources[id] as? CameraSource { return c.deviceName }
         return audioSources[id]?.deviceName
     }
+    /// Seconds a Mac camera takes from capture to arrival (nil for other sources). A crop reports its camera's.
+    public func captureLag(of id: UUID) -> Double? {
+        lock.lock(); defer { lock.unlock() }
+        var s = videoSources[id]
+        if let d = s as? DerivedVideoSource { s = base(of: d) }
+        return (s as? CameraSource)?.captureLag
+    }
+    public func screenSource(_ id: UUID) -> ScreenSource? { lock.lock(); defer { lock.unlock() }; return videoSources[id] as? ScreenSource }
+    public func screenGeometry(of id: UUID) -> ScreenGeometry? { lock.lock(); defer { lock.unlock() }; return (videoSources[id] as? ScreenSource)?.geometry }
     public func nativeSize(of id: UUID) -> CGSize? { lock.lock(); defer { lock.unlock() }; return videoSources[id]?.nativeSize }
 
     // MARK: Program, transitions, overlays
@@ -314,6 +404,23 @@ public final class Engine: @unchecked Sendable {
         lock.unlock()
     }
 
+    /// Live captions on both program canvases, above everything else (nil fades them out). Drawn again only when
+    /// the words change.
+    public func showCaptions(_ f: CaptionFrame?) {
+        lock.lock()
+        if let f {
+            // The same words again keep the picture already drawn.
+            if captions?.frame != f || captions?.hidingAt != nil { captionVersion += 1 }
+            captions = (f, nil, captionVersion)
+        } else if let c = captions, c.hidingAt == nil { captions = (c.frame, HostClock.seconds(), c.version) }
+        lock.unlock()
+    }
+    /// The caption lines on a canvas in its latest frame (empty when none are readable: off, or mostly faded).
+    public func captionLines(_ kind: CanvasKind) -> [String] {
+        lock.lock(); defer { lock.unlock() }
+        return captionRenderer.shown[kind]?.lines ?? []
+    }
+
     // MARK: Consumers
 
     public func addConsumer(_ c: CanvasFrameConsumer) { lock.lock(); consumers[ObjectIdentifier(c)] = c; lock.unlock() }
@@ -321,28 +428,104 @@ public final class Engine: @unchecked Sendable {
 
     // MARK: Rendering
 
-    private func layerInput(_ item: SceneItem, at t: CMTime, canvas: CanvasKind) -> LayerInput? {
-        guard let src = videoSources[item.sourceID], let img = src.image(at: t, canvas: canvas) else { return nil }
-        let rec = records[item.sourceID]
+    /// What the program render tells the live editor: hold targets during a transition or just after a switch.
+    private struct Framing { var size: CGSize; var hold: Bool; var tier: BudgetTier }
+
+    /// The base a crop is cut from (never another crop). Call with `lock` held.
+    private func base(of d: DerivedVideoSource) -> VideoSource? {
+        guard let b = videoSources[d.baseID], !(b is DerivedVideoSource) else { return nil }
+        return b
+    }
+
+    /// A source's picture; a crop is cut from its camera's picture, fetched by ID on every call. `canvas` nil asks
+    /// for the source's plain picture (stills). Call with `lock` held.
+    private func picture(_ src: VideoSource, at t: CMTime, canvas: CanvasKind?, frame: CGSize?, role: DeriveRole) -> CIImage? {
+        func plain(_ s: VideoSource) -> CIImage? {
+            if let canvas { return s.image(at: t, canvas: canvas) }
+            return s.image(at: t)
+        }
+        guard let d = src as? DerivedVideoSource else { return plain(src) }
+        guard let b = base(of: d), let img = plain(b) else { return nil }
+        return d.derive(img, at: t, canvas: canvas ?? .horizontal, frame: frame, role: role)
+    }
+
+    private func layerInput(_ item: SceneItem, at t: CMTime, canvas: CanvasKind, framing: Framing? = nil) -> LayerInput? {
+        guard let src = videoSources[item.sourceID] else { return nil }
+        // A crop is cut to the layer's frame on this canvas; it glides only on the program.
+        let frame = src is DerivedVideoSource ? Compositor.frame(of: item.transform, canvas: framing?.size ?? canvases[canvas]?.size ?? .zero).size : nil
+        guard let img = picture(src, at: t, canvas: canvas, frame: frame, role: framing == nil ? .preview : .program) else { return nil }
+        // A crop keeps its camera's LUT.
+        let rec = records[item.sourceID] ?? (src as? DerivedVideoSource).flatMap { records[$0.baseID] }
         var lut: CubeLUT?
         if let l = rec?.lut, l.isEnabled { lut = luts[l.path] }
         var isText = false
         if case .text = rec?.kind { isText = true }
         if case .countdown = rec?.kind { isText = true }
-        return LayerInput(image: img, isText: isText, lut: lut, lutAmount: rec?.lut?.amount ?? 1)
+        var input = LayerInput(image: img, isText: isText, lut: lut, lutAmount: rec?.lut?.amount ?? 1)
+        // Only the program on air moves; thumbnails, snapshots and the preview before air stay as the scene says.
+        if let framing, item.isVisible, let screen = src as? ScreenSource, let geo = screen.geometry {
+            let c = item.crop
+            let picture = CGSize(width: img.extent.width * max(0.01, 1 - c.left - c.right), height: img.extent.height * max(0.01, 1 - c.top - c.bottom))
+            let frame = Compositor.frame(of: item.transform, canvas: framing.size).size
+            if picture.width >= 1, picture.height >= 1, frame.width >= 1, frame.height >= 1 {
+                let layer = LayerGeometry(image: picture, frame: frame, fit: item.fit, crop: c, mirrored: item.isMirrored)
+                input.viewport = focus.viewport(source: item.sourceID, canvas: canvas, screen: geo, layer: layer,
+                                                at: CMTimeGetSeconds(t), hold: framing.hold, tier: framing.tier)
+            }
+        }
+        if let framing, item.isVisible, item.shufflesAngles == true, input.viewport == nil {
+            input.viewport = angleViewport(item, image: img, canvas: canvas, size: framing.size, at: CMTimeGetSeconds(t))
+        }
+        return input
     }
+
+    // MARK: Camera angles
+
+    /// Where the presenter's face is in each camera angle the shuffle frame may show (0…1, top-left, in the whole
+    /// upright picture). The frame then keeps them framed when the angle's shape differs from the frame's (a portrait
+    /// phone in a 16:9 frame, a 16:9 phone in a 9:16 frame). Angles without an entry show centred, as the scene says.
+    public func setAngleFaces(_ faces: [UUID: CGPoint]) { angleLock.lock(); angleFaces = faces; angleLock.unlock() }
+    private let angleLock = NSLock()
+    private var angleFaces: [UUID: CGPoint] = [:]
+    private var angleViews: [CanvasKind: (source: UUID, cx: Double, cy: Double, at: Double)] = [:]
+
+    private func angleViewport(_ item: SceneItem, image: CIImage, canvas: CanvasKind, size: CGSize, at now: Double) -> Viewport? {
+        angleLock.lock(); defer { angleLock.unlock() }
+        guard let face = angleFaces[item.sourceID], item.fit != .stretch else { angleViews[canvas] = nil; return nil }
+        let c = item.crop
+        let picture = CGSize(width: image.extent.width * max(0.01, 1 - c.left - c.right), height: image.extent.height * max(0.01, 1 - c.top - c.bottom))
+        let frame = Compositor.frame(of: item.transform, canvas: size).size
+        guard picture.width >= 1, picture.height >= 1, frame.width >= 1, frame.height >= 1 else { return nil }
+        let geo = LayerGeometry(image: picture, frame: frame, fit: item.fit, crop: c, mirrored: item.isMirrored)
+        guard let p = geo.picturePoint(face) else { return nil }
+        // The face's centre about 40% down the frame (a little headroom), never past the picture's edge.
+        let target = geo.clamp(CGPoint(x: p.x, y: p.y + 0.1 * geo.visible(zoom: 1).height), zoom: 1)
+        if var v = angleViews[canvas], v.source == item.sourceID {
+            let k = min(1, max(0, now - v.at) / 0.9)          // follows the presenter over about a second
+            v.cx += (target.x - v.cx) * k; v.cy += (target.y - v.cy) * k; v.at = now
+            angleViews[canvas] = v
+            return Viewport(cx: v.cx, cy: v.cy, zoom: 1)
+        }
+        angleViews[canvas] = (item.sourceID, target.x, target.y, now)   // a cut lands already framed, no slide
+        return Viewport(cx: target.x, cy: target.y, zoom: 1)
+    }
+
+    private func inTransition(_ p: Program, at now: Double) -> Bool { p.duration > 0 && now - p.started < p.duration && !p.previous.isEmpty }
 
     /// Composites one canvas at time `t` (also used for thumbnails and snapshots).
     func composite(_ kind: CanvasKind, at t: CMTime, size: CGSize) -> CIImage {
         let p = programs[kind]!
         let now = CMTimeGetSeconds(t)
         let progress = p.duration > 0 ? (now - p.started) / p.duration : 1
+        let framing = Framing(size: size, hold: inTransition(p, at: now) || now - p.started < 1.5, tier: governor.tier)
         var img: CIImage
         if progress < 1 && !p.previous.isEmpty {
-            img = compositor.transition(p.transition, from: p.previous, to: p.items, progress: progress, canvas: size,
-                                        accent: accent) { self.layerInput($0, at: t, canvas: kind) }
+            // A medium or close-up moves as its camera: the frame glides into the next layout instead of fading.
+            img = compositor.transition(p.transition, from: p.previous, to: p.items, progress: progress, canvas: size, accent: accent,
+                                        match: { (self.videoSources[$0.sourceID] as? DerivedVideoSource)?.baseID ?? $0.sourceID })
+                                        { self.layerInput($0, at: t, canvas: kind, framing: framing) }
         } else {
-            img = compositor.compose(items: p.items, canvas: size) { self.layerInput($0, at: t, canvas: kind) }
+            img = compositor.compose(items: p.items, canvas: size) { self.layerInput($0, at: t, canvas: kind, framing: framing) }
         }
         // Overlay elements and the on-screen chat card sit above every layout.
         for (id, s) in elements {
@@ -366,6 +549,17 @@ public final class Engine: @unchecked Sendable {
                 img = overlays.place(card, position: .topRight, motion: .rise, progress: prog, canvas: size).composited(over: img)
             }
         }
+        // Live captions over everything, so they're seen on air and in recordings.
+        if let c = captions {
+            var alpha = CaptionFade.alpha(now: now, lastChange: c.frame.lastChange)
+            if let h = c.hidingAt { alpha = min(alpha, 1 - (now - h) / 0.3) }
+            if alpha > 0.001, let bar = captionRenderer.image(c.frame, version: c.version, kind: kind, size: size, now: now) {
+                img = (alpha < 0.999 ? bar.applyingFilter("CIColorMatrix", parameters: ["inputAVector": CIVector(x: 0, y: 0, z: 0, w: CGFloat(alpha))]) : bar)
+                    .composited(over: img)
+            }
+            captionRenderer.noteShown(kind, alpha: max(0, alpha))
+            if c.hidingAt != nil, alpha <= 0 { captions = nil; captionRenderer.reset() }
+        }
         return img
     }
 
@@ -373,6 +567,7 @@ public final class Engine: @unchecked Sendable {
         let tNow = HostClock.now()
         let now = CMTimeGetSeconds(tNow)
         lock.lock()
+        let lockedAt = HostClock.seconds()
         // One shared timestamp per tick: both canvases render the same instant, so their files stay in step.
         var due: [(CanvasKind, CanvasConfig)] = []
         for (kind, cfg) in canvases where cfg.isOn {
@@ -391,6 +586,8 @@ public final class Engine: @unchecked Sendable {
         let recs = recorders
         let start = HostClock.seconds()
         var produced: [(CanvasKind, CVPixelBuffer)] = []
+        let moving = due.contains { inTransition(programs[$0.0]!, at: now) }
+        metrics.thermalSerious = governor.current.thermal == "serious" || governor.current.thermal == "critical"
         for (kind, cfg) in due {
             guard let pool = pool(for: kind, cfg) else { continue }
             var pbOut: CVPixelBuffer?
@@ -401,7 +598,32 @@ public final class Engine: @unchecked Sendable {
             metrics.renderedFrames[kind, default: 0] += 1
             produced.append((kind, pb))
         }
+        // Camera-angle recordings: each draws its source alone (fitted, on black) at the 16:9 canvas's cadence.
+        var isoFrames: [(CanvasRecorder, CVPixelBuffer)] = []
+        if due.contains(where: { $0.0 == .horizontal }) {
+            for r in recs {
+                guard let sid = r.spec.isoSource else { continue }
+                let size = CGSize(width: r.spec.width, height: r.spec.height)
+                guard let pool = isoPool(size) else { continue }
+                var pbOut: CVPixelBuffer?
+                CVPixelBufferPoolCreatePixelBuffer(nil, pool, &pbOut)
+                guard let pb = pbOut else { continue }
+                var img = CIImage(color: .black).cropped(to: CGRect(origin: .zero, size: size))
+                if let src = videoSources[sid], let pic = picture(src, at: tNow, canvas: .horizontal, frame: size, role: .iso),
+                   pic.extent.width >= 1, pic.extent.height >= 1 {
+                    let s = min(size.width / pic.extent.width, size.height / pic.extent.height)
+                    let w = pic.extent.width * s, h = pic.extent.height * s
+                    let placed = pic.transformed(by: CGAffineTransform(translationX: -pic.extent.minX, y: -pic.extent.minY))
+                        .transformed(by: CGAffineTransform(scaleX: s, y: s))
+                        .transformed(by: CGAffineTransform(translationX: ((size.width - w) / 2).rounded(), y: ((size.height - h) / 2).rounded()))
+                    img = placed.composited(over: img)
+                }
+                compositor.render(img, to: pb, canvas: size)
+                isoFrames.append((r, pb))
+            }
+        }
         metrics.renderMs = (HostClock.seconds() - start) * 1000
+        let renderMs = metrics.renderMs
         let previewEvery = self.previewEvery
         let tc = tickCount
         var scenePreviews: [(CanvasKind, CVPixelBuffer)] = []
@@ -418,17 +640,42 @@ public final class Engine: @unchecked Sendable {
                 scenePreviews.append((kind, pb))
             }
         }
+        if testMinTickMs > 0 { let until = lockedAt + testMinTickMs / 1000; while HostClock.seconds() < until { usleep(200) } }
+        let fps = canvases[.horizontal]?.fps ?? 30
         lock.unlock()
+        let lockMs = (HostClock.seconds() - lockedAt) * 1000
         for (kind, pb) in scenePreviews { scenePreviewHandler?(kind, pb) }
 
+        for (r, pb) in isoFrames { r.appendVideo(pb, pts: tNow) }
         for (kind, pb) in produced {
-            for r in recs where r.spec.canvas == kind { r.appendVideo(pb, pts: tNow) }
+            for r in recs where r.spec.canvas == kind && r.spec.isoSource == nil { r.appendVideo(pb, pts: tNow) }
             for c in cons { c.consume(pb, pts: tNow, canvas: kind) }
             if previewEvery > 0 && tc % previewEvery == 0 { previewHandler?(kind, pb) }
         }
+        // The whole tick, from taking the lock until every output has its frame.
+        let tickMs = (HostClock.seconds() - lockedAt) * 1000
+        stats.add(TickStats.Sample(t: now, tick: tickMs, lock: lockMs, render: renderMs, transition: moving))
+        governor.evaluate(now: now, fps: fps, stats: stats, missedTotal: recs.reduce(0) { $0 + $1.missedFrames })
+        focus.traceTick(["t": now, "tick": tickMs, "lock": lockMs, "render": renderMs, "transition": moving, "tier": governor.tier.rawValue])
     }
 
+    /// Tick times over the last `seconds` (the HUD, the governor and the Gate 0 benchmark read this).
+    public func tickSummary(seconds: Double) -> TickSummary { stats.summary(since: HostClock.seconds() - seconds) }
+    public func resetTickStats() { stats.reset() }
+    /// Frames cameras had to drop, and frame slots recordings missed, since launch.
+    public var captureDrops: Int { lock.lock(); defer { lock.unlock() }; return videoSources.values.compactMap { $0 as? CameraSource }.reduce(0) { $0 + $1.droppedFrames } }
+    public var missedRecordingFrames: Int { lock.lock(); defer { lock.unlock() }; return recorders.reduce(0) { $0 + $1.missedFrames } }
+
     /// A still of a layout for thumbnails ("live" layout cards), rendered off the main thread.
+    /// The program as it goes out, with the live editor's and the camera angles' framing (tests).
+    public func programSnapshot(_ kind: CanvasKind, width: CGFloat) -> CGImage? {
+        lock.lock()
+        let cfg = canvases[kind]!
+        let img = composite(kind, at: HostClock.now(), size: cfg.size)
+        lock.unlock()
+        return compositor.cgImage(img, canvas: cfg.size, scale: width / cfg.size.width)
+    }
+
     public func snapshot(items: [SceneItem], canvas kind: CanvasKind, width: CGFloat) -> CGImage? {
         lock.lock()
         let cfg = canvases[kind]!
@@ -455,7 +702,8 @@ public final class Engine: @unchecked Sendable {
     /// Picture of a single source (Add Source gallery, Edit panel).
     public func sourceSnapshot(_ id: UUID, maxSide: CGFloat) -> CGImage? {
         lock.lock()
-        let img = videoSources[id]?.image(at: HostClock.now())
+        let t = HostClock.now()
+        let img = videoSources[id].flatMap { picture($0, at: t, canvas: nil, frame: nil, role: .preview) }
         lock.unlock()
         guard let img, img.extent.width > 0 else { return nil }
         let k = maxSide / max(img.extent.width, img.extent.height)
@@ -477,6 +725,7 @@ public final class Engine: @unchecked Sendable {
         let start = HostClock.now()
         made.forEach { $0.begin(at: start) }
         recorders.append(contentsOf: made)
+        governor.relearn()
         if recorderBridge == nil {
             let b = RecorderAudioBridge(); b.engine = self; recorderBridge = b; mixer.addConsumer(b)
         }
@@ -499,6 +748,7 @@ public final class Engine: @unchecked Sendable {
         group.notify(queue: queue) { [weak self] in
             guard let self else { return }
             self.lock.lock(); self.recorders.removeAll { r in recs.contains { $0 === r } }; self.lock.unlock()
+            self.governor.relearn()
             completion(files)
         }
     }
@@ -519,26 +769,39 @@ public final class Engine: @unchecked Sendable {
         addConsumer(s)
         mixer.addConsumer(s)
         s.start()
+        governor.relearn()
         return s
     }
     /// Starts holding the last moments of the canvases for instant clips.
     public func startReplay(_ canvases: [ReplayBuffer.Canvas], seconds: Double = 30) throws -> ReplayBuffer {
         let r = try ReplayBuffer(canvases: canvases, seconds: seconds)
         addConsumer(r); mixer.addConsumer(r)
+        governor.relearn()
         return r
     }
-    public func stopReplay(_ r: ReplayBuffer) { removeConsumer(r); mixer.removeConsumer(r); r.finish() }
+    public func stopReplay(_ r: ReplayBuffer) { removeConsumer(r); mixer.removeConsumer(r); r.finish(); governor.relearn() }
 
     public func stopStream(_ s: StreamOutput) {
         s.stop()
         removeConsumer(s)
         mixer.removeConsumer(s)
+        governor.relearn()
     }
 }
 
 final class RecorderAudioBridge: AudioBlockConsumer {
     weak var engine: Engine?
     func consume(_ block: AudioBlock) { engine?.deliverAudio(block) }
+}
+
+/// A microphone or system-audio stand-in: running, and silent (the mixer gets a generator of zeros).
+final class SilentAudioSource: AudioCaptureSource {
+    let id: UUID
+    let state: SourceState = .running
+    let deviceName = "Stand-in (silent)"
+    init(id: UUID) { self.id = id }
+    func start() {}
+    func stop() {}
 }
 
 /// Plays monitored sources to the default output ("Monitor in headphones").

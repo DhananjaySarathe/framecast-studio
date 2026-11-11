@@ -72,6 +72,12 @@ public final class CameraSource: NSObject, VideoSource, AVCaptureVideoDataOutput
     private let slot = FrameSlot()
     public private(set) var deviceName = ""
     private var observer: NSObjectProtocol?
+    private let dropLock = NSLock()
+    private var drops = 0
+    /// Frames the camera delivered too late to use (the governor and Gate 0 watch this).
+    public var droppedFrames: Int { dropLock.lock(); defer { dropLock.unlock() }; return drops }
+    /// Average seconds from capture to arrival; a phone angle's sound waits for the difference (lip sync).
+    public var captureLag: Double { slot.lag }
 
     public init(id: UUID, deviceID: String, width: Int, height: Int, fps: Int) {
         self.id = id; self.deviceID = deviceID; wanted = (width, height, fps)
@@ -81,6 +87,57 @@ public final class CameraSource: NSObject, VideoSource, AVCaptureVideoDataOutput
         AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .external, .continuityCamera, .deskViewCamera],
                                          mediaType: .video, position: .unspecified).devices
             .filter { !$0.localizedName.contains("Framecast") }
+    }
+
+    /// One of a camera's formats: its size and best frame rate.
+    public struct FormatInfo: Equatable, Sendable {
+        public var width: Int, height: Int, maxFPS: Double
+        public init(width: Int, height: Int, maxFPS: Double) { self.width = width; self.height = height; self.maxFPS = maxFPS }
+    }
+
+    /// The format a camera opens for a requested size and frame rate (an index into `formats`): the closest size, a
+    /// format that can't reach the rate counting as 2000 pixels further. A 4K request never gives up the frame rate:
+    /// when the closest 4K format is slower, the camera opens as for 1080p.
+    public static func chooseFormat(_ formats: [FormatInfo], width w: Int, height h: Int, fps: Int) -> Int? {
+        func closest(_ w: Int, _ h: Int) -> Int? {
+            formats.indices.min { a, b in
+                func score(_ f: FormatInfo) -> Double {
+                    abs(Double(f.width - w)) + abs(Double(f.height - h)) + (f.maxFPS + 0.5 < Double(fps) ? 2000 : 0)
+                }
+                return score(formats[a]) < score(formats[b])
+            }
+        }
+        let best = closest(w, h)
+        if w >= 3840, let b = best, formats[b].maxFPS + 0.5 < Double(fps) { return closest(1920, 1080) }
+        return best
+    }
+
+    /// Whether a 4K request opens a 4K picture shaped near 16:9 (to 17:9) at the camera's frame rate.
+    public static func offers4K(_ formats: [FormatInfo], fps: Int) -> Bool {
+        guard let i = chooseFormat(formats, width: 3840, height: 2160, fps: fps) else { return false }
+        let f = formats[i], aspect = Double(f.width) / Double(max(1, f.height))
+        return f.width >= 3840 && f.height >= 2160 && aspect >= 1.70 && aspect <= 1.92 && f.maxFPS + 0.5 >= Double(fps)
+    }
+
+    private static func info(_ f: AVCaptureDevice.Format) -> FormatInfo {
+        let d = CMVideoFormatDescriptionGetDimensions(f.formatDescription)
+        return FormatInfo(width: Int(d.width), height: Int(d.height), maxFPS: f.videoSupportedFrameRateRanges.map(\.maxFrameRate).max() ?? 0)
+    }
+
+    /// Whether Use 4K would give this camera a 4K picture at `fps`, decided by the chooser `configure` uses. Reads
+    /// the device's list of formats only: the camera isn't opened. Nil when no such camera is connected.
+    public static func offers4K(deviceID: String, fps: Int) -> Bool? {
+        let device = deviceID.isEmpty ? (AVCaptureDevice.default(for: .video) ?? devices().first) : AVCaptureDevice(uniqueID: deviceID)
+        guard let device else { return nil }
+        return offers4K(device.formats.map(info), fps: fps)
+    }
+
+    /// Whether Center Stage (Control Center › Video Effects) is reframing this camera's picture. Reads the setting
+    /// only: the camera isn't opened, and nothing is changed. Nil when no such camera is connected.
+    public static func centerStageActive(deviceID: String) -> Bool? {
+        let device = deviceID.isEmpty ? (AVCaptureDevice.default(for: .video) ?? devices().first) : AVCaptureDevice(uniqueID: deviceID)
+        guard let device else { return nil }
+        return device.isCenterStageActive
     }
 
     public func start() {
@@ -106,16 +163,9 @@ public final class CameraSource: NSObject, VideoSource, AVCaptureVideoDataOutput
             let input = try AVCaptureDeviceInput(device: device)
             guard session.canAddInput(input) else { state = .failed("Camera is in use by another app."); session.commitConfiguration(); return }
             session.addInput(input)
-            // Closest format to the requested size and frame rate.
+            // Closest format to the requested size and frame rate (the same chooser Use 4K asks).
             let (w, h, fps) = wanted
-            let best = device.formats.min { a, b in
-                func score(_ f: AVCaptureDevice.Format) -> Double {
-                    let d = CMVideoFormatDescriptionGetDimensions(f.formatDescription)
-                    let maxFPS = f.videoSupportedFrameRateRanges.map(\.maxFrameRate).max() ?? 0
-                    return abs(Double(d.width - Int32(w))) + abs(Double(d.height - Int32(h))) + (maxFPS + 0.5 < Double(fps) ? 2000 : 0)
-                }
-                return score(a) < score(b)
-            }
+            let best = Self.chooseFormat(device.formats.map(Self.info), width: w, height: h, fps: fps).map { device.formats[$0] }
             if let best {
                 try device.lockForConfiguration()
                 device.activeFormat = best
@@ -155,6 +205,10 @@ public final class CameraSource: NSObject, VideoSource, AVCaptureVideoDataOutput
         guard let pb = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
         slot.put(pb, pts: CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         if case .lost = state { state = .running }
+    }
+
+    public func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        dropLock.lock(); drops += 1; dropLock.unlock()
     }
 
     public func image(at time: CMTime) -> CIImage? {
@@ -211,6 +265,28 @@ public final class ScreenSource: NSObject, VideoSource, SCStreamOutput, SCStream
     private let slot = FrameSlot()
     private var watcher: AppWatcher?
     private var generation = 0      // bumped by stop and app quit, so a start still in flight is dropped
+    private var config: SCStreamConfiguration?
+    /// Where the capture sits on the desktop, for mapping the cursor and clicks (the live editor).
+    private let geoLock = NSLock()
+    private var geo: ScreenGeometry?
+    private var displayID: CGDirectDisplayID?
+    private var geoCheckedAt = 0.0
+    private var geoRefreshing = false
+    private var pixelScale: CGFloat = 2
+    private var capturedPoints = CGSize.zero
+    /// A moved window sends no new frames while its content stays the same, so asking also has it looked up again, on
+    /// the capture queue (4 times a second at most for a window): the render queue never waits on the window server.
+    public var geometry: ScreenGeometry? {
+        geoLock.lock(); defer { geoLock.unlock() }
+        if !geoRefreshing, HostClock.seconds() - geoCheckedAt > (displayID == nil ? 0.25 : 2) {
+            geoRefreshing = true
+            queue.async { [weak self] in
+                self?.refreshGeometry()
+                self?.geoLock.lock(); self?.geoRefreshing = false; self?.geoLock.unlock()
+            }
+        }
+        return geo
+    }
 
     public init(id: UUID, target: ScreenTarget, fps: Int) { self.id = id; self.target = target; self.fps = fps }
 
@@ -224,24 +300,47 @@ public final class ScreenSource: NSObject, VideoSource, SCStreamOutput, SCStream
         get { optionsLock.lock(); defer { optionsLock.unlock() }; return _private }
         set { optionsLock.lock(); _private = newValue; optionsLock.unlock() }
     }
+    /// Apps whose windows display captures leave out (password managers, by default), by bundle id.
+    public static var hiddenApps: Set<String> {
+        get { optionsLock.lock(); defer { optionsLock.unlock() }; return _hiddenApps }
+        set { optionsLock.lock(); _hiddenApps = newValue; optionsLock.unlock() }
+    }
+    /// Draws a ring around each click (macOS 15 and later).
+    public static var showsClicks: Bool {
+        get { optionsLock.lock(); defer { optionsLock.unlock() }; return _showsClicks }
+        set { optionsLock.lock(); _showsClicks = newValue; optionsLock.unlock() }
+    }
     private static let optionsLock = NSLock()
     nonisolated(unsafe) private static var _showsOwn = false
     nonisolated(unsafe) private static var _private: Set<CGWindowID> = []
+    nonisolated(unsafe) private static var _hiddenApps: Set<String> = []
+    nonisolated(unsafe) private static var _showsClicks = false
 
     private static func displayFilter(_ display: SCDisplay, _ content: SCShareableContent) -> SCContentFilter {
+        let hiddenApps = hiddenApps
         if showsOwnWindows {
             let hidden = privateWindows
-            return SCContentFilter(display: display, excludingWindows: content.windows.filter { hidden.contains($0.windowID) })
+            return SCContentFilter(display: display, excludingWindows: content.windows.filter {
+                hidden.contains($0.windowID) || hiddenApps.contains($0.owningApplication?.bundleIdentifier ?? "")
+            })
         }
-        let me = content.applications.filter { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
+        let me = content.applications.filter { $0.bundleIdentifier == Bundle.main.bundleIdentifier || hiddenApps.contains($0.bundleIdentifier) }
         return SCContentFilter(display: display, excludingApplications: me, exceptingWindows: [])
+    }
+
+    /// Applies a change of `showsClicks` to a running capture.
+    public func refreshConfiguration() {
+        guard let s = stream, let cfg = config else { return }
+        if #available(macOS 15.0, *) { cfg.showMouseClicks = Self.showsClicks }
+        Task { try? await s.updateConfiguration(cfg) }
     }
 
     /// Applies a change of `showsOwnWindows` or `privateWindows` to a running display capture.
     public func refreshFilter() {
         guard case .display(let did) = target, let s = stream else { return }
         Task {
-            guard let content = try? await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true),
+            // All windows, not just on-screen ones, so a password manager with no window showing is still left out.
+            guard let content = try? await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: false),
                   let display = content.displays.first(where: { did == 0 ? $0.displayID == CGMainDisplayID() : $0.displayID == did }) ?? content.displays.first
             else { return }
             try? await s.updateContentFilter(Self.displayFilter(display, content))
@@ -261,8 +360,12 @@ public final class ScreenSource: NSObject, VideoSource, SCStreamOutput, SCStream
         let gen = generation
         Task {
             do {
-                let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
+                var isDisplay = false
+                if case .display = target { isDisplay = true }
+                let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: !isDisplay)
                 let me = content.applications.filter { $0.bundleIdentifier == Bundle.main.bundleIdentifier }
+                // What the display filter is built from: if it changes while the capture starts, build it again after.
+                let used = (Self.hiddenApps, Self.showsOwnWindows, Self.privateWindows, Self.showsClicks)
                 let filter: SCContentFilter
                 switch target {
                 case .display(let did):
@@ -270,12 +373,14 @@ public final class ScreenSource: NSObject, VideoSource, SCStreamOutput, SCStream
                             ?? content.displays.first else { state = .failed("No display available to capture."); return }
                     filter = Self.displayFilter(display, content)
                     size = CGSize(width: display.width, height: display.height)
+                    setGeometry(display: display.displayID)
                 case .window(let wid):
                     guard let w = content.windows.first(where: { $0.windowID == wid }) else {
                         state = .failed("Window not found. Add it again from the + menu."); return
                     }
                     filter = SCContentFilter(desktopIndependentWindow: w)
                     size = w.frame.size
+                    setGeometry(window: wid)
                 case .application(let bid):
                     guard let app = content.applications.first(where: { $0.bundleIdentifier == bid }),
                           let display = content.displays.first else {
@@ -290,8 +395,10 @@ public final class ScreenSource: NSObject, VideoSource, SCStreamOutput, SCStream
                     }
                     filter = SCContentFilter(display: display, including: [app], exceptingWindows: [])
                     size = CGSize(width: display.width, height: display.height)
+                    setGeometry(display: display.displayID)
                 }
                 let scale = CGFloat(filter.pointPixelScale)
+                geoLock.lock(); pixelScale = scale; capturedPoints = size; geoLock.unlock()
                 var w = size.width * scale, h = size.height * scale
                 let maxSide: CGFloat = 3840
                 if max(w, h) > maxSide { let k = maxSide / max(w, h); w *= k; h *= k }
@@ -302,13 +409,17 @@ public final class ScreenSource: NSObject, VideoSource, SCStreamOutput, SCStream
                 cfg.pixelFormat = kCVPixelFormatType_32BGRA
                 cfg.queueDepth = 6
                 cfg.showsCursor = true
+                if #available(macOS 15.0, *) { cfg.showMouseClicks = Self.showsClicks }
                 cfg.colorSpaceName = CGColorSpace.sRGB
+                config = cfg
                 let s = SCStream(filter: filter, configuration: cfg, delegate: self)
                 try s.addStreamOutput(self, type: .screen, sampleHandlerQueue: queue)
                 try await s.startCapture()
                 guard generation == gen else { try? await s.stopCapture(); return }
                 stream = s
                 state = .running
+                if isDisplay && (used.0 != Self.hiddenApps || used.1 != Self.showsOwnWindows || used.2 != Self.privateWindows) { refreshFilter() }
+                if used.3 != Self.showsClicks { refreshConfiguration() }
             } catch {
                 guard generation == gen else { return }
                 state = .failed(Self.describe(error))
@@ -355,6 +466,41 @@ public final class ScreenSource: NSObject, VideoSource, SCStreamOutput, SCStream
               let status = SCFrameStatus(rawValue: statusRaw), status == .complete,
               let pb = CMSampleBufferGetImageBuffer(sb) else { return }
         slot.put(pb, pts: CMSampleBufferGetPresentationTimeStamp(sb))
+        refreshGeometry()
+    }
+
+    private func setGeometry(display: CGDirectDisplayID) {
+        geoLock.lock(); displayID = display; geo = ScreenGeometry(rect: CGDisplayBounds(display)); geoCheckedAt = HostClock.seconds(); geoLock.unlock()
+    }
+    private func setGeometry(window: CGWindowID) {
+        let r = Self.windowBounds(window)
+        geoLock.lock()
+        displayID = nil; geo = r.map(ScreenGeometry.init); geoCheckedAt = HostClock.seconds()
+        let capturing = capturedPoints != .zero
+        let resized = capturing && (r.map { abs($0.width - capturedPoints.width) > 1 || abs($0.height - capturedPoints.height) > 1 } ?? false)
+        let scale = pixelScale
+        if resized, let r { capturedPoints = r.size }
+        geoLock.unlock()
+        // A resized window would be scaled into the old frame size, off from its bounds: capture it at its new size.
+        if resized, let r, let s = stream, let cfg = config {
+            var w = r.width * scale, h = r.height * scale
+            if max(w, h) > 3840 { let k = 3840 / max(w, h); w *= k; h *= k }
+            cfg.width = Int(w) & ~1; cfg.height = Int(h) & ~1
+            size = CGSize(width: cfg.width, height: cfg.height)
+            Task { try? await s.updateConfiguration(cfg) }
+        }
+    }
+    /// Windows move and displays get rearranged: look again now and then (4 times a second for a window).
+    private func refreshGeometry() {
+        let now = HostClock.seconds()
+        geoLock.lock(); let did = displayID, last = geoCheckedAt; geoLock.unlock()
+        if let did { if now - last > 2 { setGeometry(display: did) } }
+        else if case .window(let wid) = target, now - last > 0.25 { setGeometry(window: wid) }
+    }
+    static func windowBounds(_ id: CGWindowID) -> CGRect? {
+        guard let info = CGWindowListCopyWindowInfo([.optionIncludingWindow], id) as? [[String: Any]],
+              let b = info.first?[kCGWindowBounds as String] as? NSDictionary else { return nil }
+        return CGRect(dictionaryRepresentation: b)
     }
 
     public func stream(_ stream: SCStream, didStopWithError error: Error) {

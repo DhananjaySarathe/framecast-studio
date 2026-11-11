@@ -1,0 +1,10 @@
+frames 120
+--- forced compute device, 1280x720, median ms: default | ANE | GPU | CPU
+DetectFaceRectangles              3.9 |    3.6 |    8.0 |   17.6
+DetectHumanRectangles upper       2.9 |    2.9 |    6.6 |   16.5
+DetectHumanHandPose x2            1.8 |    1.8 |    1.7 |   10.9
+DetectHumanBodyPose               3.6 |    3.6 |    3.7 |   32.2
+PersonSegmentation balanced       8.7 |    9.1 |   16.2 |   52.2
+AttentionSaliency                 3.1 |    3.0 |   10.1 |   29.4
+--- sustained live loop @30 fps pacing (tracker 30 Hz, face+human 10 Hz, hands 10 Hz, person seg fast 1 Hz)
+frames 240  wall 9.4s  vision work avg 8.2 ms/frame  worst 42.8 ms  process CPU 22.6% of one core

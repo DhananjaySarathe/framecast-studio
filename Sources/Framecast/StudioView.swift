@@ -413,6 +413,13 @@ struct InspectorTabs: View {
             Text("\(studio.guests.lobby.count)").font(.fc(9, .bold)).foregroundStyle(.white)
                 .padding(.horizontal, 4).padding(.vertical, 1).background(Capsule().fill(Theme.live)).offset(x: 9, y: -6)
         }
+        let knocking = studio.guests.devices.filter { $0.status == .waiting }.count
+        if r == .angles && knocking > 0 {
+            Text("\(knocking)").font(.fc(9, .bold)).foregroundStyle(.white)
+                .padding(.horizontal, 4).padding(.vertical, 1).background(Capsule().fill(Theme.live)).offset(x: 9, y: -6)
+        } else if r == .angles && studio.angles.shuffleOn {
+            Circle().fill(Theme.healthy).frame(width: 6, height: 6).offset(x: 7, y: -4)
+        }
     }
 }
 
@@ -472,8 +479,10 @@ struct SidePanel: View {
             case .chat: ChatPanel()
             case .backstage: BackstagePanel()
             case .guests: GuestsPanel()
+            case .angles: AnglesPanel()
             case .audio: AudioPanel()
             case .elements: ElementsPanel()
+            case .captions: CaptionsPanel()
             case .edit: EditPanel()
             case .rundown:
                 // Only the presenter sees the Rundown (script, outline, what the AI is doing); a shared screen or

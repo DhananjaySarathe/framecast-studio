@@ -1,0 +1,21 @@
+camera authorization status (not requested): 0  (0 notDetermined, 1 restricted, 2 denied, 3 authorized)
+centerStageControlMode=0 centerStageEnabled=false portraitEffectEnabled=false studioLightEnabled=false reactionEffectsEnabled=true backgroundReplacementEnabled=false
+
+== MacBook Pro Camera type=AVCaptureDeviceTypeBuiltInWideAngleCamera model=MacBook Pro Camera continuity=false
+   active: 1920x1080 centerStageActive=false deskViewCompanion=MacBook Pro Desk View Camera
+   formats: 1080x1920@30  1280x720@30  1328x1760@30  1552x1552@30  1760x1328@30  1920x1080@30  640x480@30
+   Center Stage formats (7):
+     1080x1920@30 cs-fps 15-30 cs-zoom 1.00-1.00 portrait=true studioLight=true reactions=true bgReplace=true
+     1280x720@30 cs-fps 15-30 cs-zoom 1.00-1.00 portrait=true studioLight=true reactions=true bgReplace=true
+     1328x1760@30 cs-fps 15-30 cs-zoom 1.00-1.00 portrait=true studioLight=true reactions=true bgReplace=true
+     1552x1552@30 cs-fps 15-30 cs-zoom 1.00-1.00 portrait=true studioLight=true reactions=true bgReplace=true
+     1760x1328@30 cs-fps 15-30 cs-zoom 1.00-1.00 portrait=true studioLight=true reactions=true bgReplace=true
+     1920x1080@30 cs-fps 15-30 cs-zoom 1.00-1.00 portrait=true studioLight=true reactions=true bgReplace=true
+     640x480@30 cs-fps 15-30 cs-zoom 1.00-1.00 portrait=true studioLight=true reactions=true bgReplace=true
+   formats supporting Cinematic Video capture (macOS 26 API): 0
+
+== MacBook Pro Desk View Camera type=AVCaptureDeviceTypeDeskViewCamera model=MacBook Pro Desk View Camera continuity=false
+   active: 1920x1440 centerStageActive=false deskViewCompanion=none
+   formats: 1920x1440@30
+   Center Stage formats (0):
+   formats supporting Cinematic Video capture (macOS 26 API): 0

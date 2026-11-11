@@ -1,0 +1,21 @@
+On-device model (context size 8192 tokens)
+  (two-step schema: directingNow yes/no, then target)
+   0.80s ok     Settings                   now click the settings button up here
+   0.56s ok     Privacy & Security         go into privacy and security
+   0.51s ok     Export                     hit export
+   0.50s ok     none                       we'll get to settings later, first let me talk about pricing
+   0.56s WRONG  none                       see this number here, forty two percent
+   0.51s WRONG  Run prompt                 okay let me set things up first
+   0.55s ok     Share                      and then open the share menu
+   0.50s ok     Notifications              the notifications panel is where the magic happens
+   0.50s ok     none                       my cat just walked across the desk, sorry
+   0.52s ok     Timer 00:12                watch the timer on the right
+   0.56s WRONG  none                       this chart shows revenue growth every quarter
+   0.54s ok     General                    click on general
+   0.56s ok     none                       don't click upgrade, you don't need pro for this
+   0.51s ok     Run prompt                 so I'll hit run prompt and we wait
+   0.50s ok     none                       if you ever need help just ask in the chat
+   0.51s ok     Appearance                 let's look at the appearance tab
+   0.54s WRONG  none                       press safe to keep it
+   0.51s ok     none                       this is the best format for beginners
+  14/18 right, 1 wrong target or false trigger, 3 missed; median 0.52 s, p90 0.56 s, max 0.80 s

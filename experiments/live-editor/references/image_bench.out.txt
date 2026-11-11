@@ -1,0 +1,16 @@
+image 1280x800
+   1.82s WRONG General | click the blue button on the right
+   0.86s WRONG none | look at the big number
+   0.83s WRONG General | the third item in the sidebar
+   0.85s ok    Settings | now click the settings button
+   0.91s ok    none | my cat just walked across the desk, sorry
+   0.90s WRONG 42% | see the small grey text at the bottom of the paragraph
+  2/6 right; median 0.90 s, max 1.82 s
+image 640x400
+   1.21s WRONG Revenue growth by quarter | click the blue button on the right
+   0.92s WRONG Revenue growth by quarter | look at the big number
+   0.94s WRONG none | the third item in the sidebar
+   0.88s ok    Settings | now click the settings button
+   0.96s ok    none | my cat just walked across the desk, sorry
+   0.97s WRONG The quick summary shows that throughput doubled after the change. | see the small grey text at the bottom of the paragraph
+  2/6 right; median 0.96 s, max 1.21 s

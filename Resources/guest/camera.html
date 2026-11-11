@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Framecast camera angle</title>
+<style>
+  :root { --bg:#0B0D11; --panel:#12151B; --sel:#262C3A; --line:#232733; --text:#EEF0F6; --text2:#A8AFBF; --text3:#7F8798;
+          --accent:#7D6BFF; --ink:#FFFFFF; --live:#FF4D5E; --ok:#3DD68C; }
+  * { box-sizing: border-box; }
+  body { margin:0; background: var(--bg); color:var(--text); min-height:100vh;
+         font: 15px -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 18px 16px 28px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; margin-bottom: 14px; }
+  .logo { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(#2a2360, #0d0b20); border:2px solid var(--accent); }
+  .card { background: var(--panel); border:1px solid var(--line); border-radius: 18px; padding: 18px; }
+  h1 { font-size: 21px; margin: 0 0 6px; } p.sub { color: var(--text2); margin: 0 0 14px; line-height: 1.4; }
+  label { display:block; font-size:12px; font-weight:600; color:var(--text2); margin:14px 0 6px; }
+  input, select { width:100%; background:#161412; border:1px solid #37322D; color:var(--text); border-radius:10px; padding:11px 13px; font:inherit; }
+  .row { display:flex; gap:10px; } .row > * { flex:1; }
+  button { font: inherit; font-weight: 700; border-radius: 999px; border: 1px solid var(--line); background: var(--sel); color: var(--text); padding: 12px 18px; cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--ink); border-color: transparent; width: 100%; margin-top: 16px; }
+  button.danger { background: #2A1A18; color: #F2B8B4; border-color: #5A2A26; }
+  .frame { position: relative; border-radius: 16px; overflow: hidden; background: #0F0E0D; border: 4px solid transparent; transition: border-color .2s; }
+  .frame.live { border-color: var(--live); }
+  video { width:100%; display:block; aspect-ratio: 16 / 9; object-fit: cover; background:#0F0E0D; }
+  .tally { position:absolute; top:12px; left:12px; font-size:12px; font-weight:800; letter-spacing:.5px; padding:5px 10px; border-radius:8px; background: rgba(0,0,0,.6); }
+  .tally.live { background: var(--live); color:#fff; }
+  .bar { display:flex; gap:10px; margin-top:14px; flex-wrap: wrap; }
+  .muted { color: var(--text3); font-size: 13px; line-height: 1.45; }
+  label.check { display:flex; gap:10px; align-items:flex-start; font-weight:500; line-height:1.4; margin-top:16px; }
+  label.check input { width:auto; margin:2px 0 0; flex:none; }
+  .hidden { display:none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="logo"></span>Framecast</div>
+
+  <section id="joinView">
+    <div class="frame"><video id="preview" autoplay muted playsinline></video></div>
+    <div class="card" style="margin-top:14px">
+      <h1 id="roomTitle">Be a camera angle</h1>
+      <p class="sub">This phone or computer becomes another camera for the show. Only its picture is used: its sound stays out of the show unless the host allows it.</p>
+      <label>Name this angle</label>
+      <input id="name" maxlength="40" placeholder="Side camera">
+      <div class="row">
+        <div><label>Camera</label><select id="camera"></select></div>
+        <div><label>Quality</label><select id="quality"><option value="1080">1080p</option><option value="720">720p (less data)</option></select></div>
+      </div>
+      <label class="check"><input type="checkbox" id="lineUp"> Also lend the microphone (optional): the host can line up the sound with it, or let it into the show. Off: camera only.</label>
+      <p id="shapeNote" class="muted hidden">Hold the phone sideways for a 16:9 angle. Upright works too: Framecast keeps you in frame.</p>
+      <button id="joinBtn" class="primary">Join as a camera</button>
+      <p id="joinStatus" class="muted"></p>
+    </div>
+  </section>
+
+  <section id="liveView" class="hidden">
+    <div id="liveFrame" class="frame">
+      <video id="selfView" autoplay muted playsinline></video>
+      <span id="tally" class="tally">Connected · not on air</span>
+    </div>
+    <p id="liveStatus" class="muted" style="margin-top:12px">Keep this page open and the screen on. Place the camera, then leave it.</p>
+    <p id="micStatus" class="muted">Sound: not in the show. The host can allow it.</p>
+    <div class="bar">
+      <button id="flipBtn">Switch camera</button>
+      <button id="leaveBtn" class="danger">Leave</button>
+    </div>
+  </section>
+</div>
+
+<script src="livekit-client.umd.js"></script>
+<script src="framecast-join.js"></script>
+<script>
+// Two ways in, like the guest page:
+//  • served by Framecast (this Mac or Wi-Fi): /camera/<code>, knocking through Framecast's join API;
+//  • hosted anywhere (LiveKit Cloud): camera.html#u=<LiveKit URL>&t=<invite token>&n=<show title>; the token can only
+//    knock, and the host's admission hands over a full token. The fragment never reaches the web host.
+// The relay, reports to the Mac, the pass, waiting for the host and rejoining are in framecast-join.js (window.FJ).
+const LK = window.LivekitClient;
+const code = location.pathname.split('/').filter(Boolean).pop() || '';
+const hash = new URLSearchParams(location.hash.slice(1));
+const remote = hash.get('t') ? { url: hash.get('u'), token: hash.get('t'), title: hash.get('n') || '' } : null;
+const params = new URLSearchParams(location.search);
+const $ = (id) => document.getElementById(id);
+let stream, room, entered = false, knockTimer = null;
+// Staying out of the show: Leave, the host removed this camera, or the connection ended for good.
+let removed = false, leftForGood = false;
+const stayOut = () => removed || leftForGood;
+// The microphone in use: from the camera's own request when it's lent, or opened when the host allowed the sound.
+let micTrack = null, micRefused = false;
+// Why the microphone is published: 'show' (the host let its sound in) and/or 'sync' (lining up the sound for a moment).
+const micWants = new Set();
+// This tab's pass: a retry or a reload uses it again instead of taking another of the show's camera places.
+const ticketKey = 'camera:' + code;
+let ticket = remote ? null : FJ.loadTicket(ticketKey);
+function setTicket(t) { ticket = t; if (!remote) FJ.saveTicket(ticketKey, t); }
+FJ.setContext({ remote: !!remote, ticket: () => ticket, name: () => $('name').value.trim() || 'Phone camera' });
+const report = FJ.report;
+// Camera and microphone changes run one at a time: the ended event, the page coming back, Switch camera and the
+// host's requests can all ask at once.
+const media = FJ.queue();
+const camTrack = () => stream?.getVideoTracks()[0];
+const live = (t) => t?.readyState === 'live';
+const liveTip = $('liveStatus').textContent;
+
+// ?test=1 sends a synthetic picture (for headless tests): the angle's name and a moving bar.
+function testStream(label) {
+  const c = document.createElement('canvas'); c.width = 1280; c.height = 720; const g = c.getContext('2d'); let n = 0;
+  const hue = [...label].reduce((a, ch) => a + ch.charCodeAt(0), 0) * 37 % 360;
+  setInterval(() => { g.fillStyle = 'hsl(' + hue + ',50%,30%)'; g.fillRect(0, 0, 1280, 720);
+    g.fillStyle = '#fff'; g.font = 'bold 96px sans-serif'; g.fillText(label, 60, 380); g.fillRect((n * 12) % 1280, 600, 80, 40); n++; }, 33);
+  return c.captureStream(30);
+}
+
+// Camera only by default. With the microphone ticked it's one request for both (on iPhones a second request can
+// stop the first one's camera); if the microphone is refused or busy, the camera still starts on its own.
+function constraints(withMic) {
+  const h = $('quality').value === '720' ? 720 : 1080;
+  const v = { width: { ideal: h * 16 / 9 }, height: { ideal: h }, frameRate: { ideal: 30 } };
+  const c = $('camera').value;
+  if (c === 'environment' || c === 'user' || !c) v.facingMode = { ideal: c || 'environment' }; else v.deviceId = { exact: c };
+  const a = withMic ? { echoCancellation: true, noiseSuppression: true, autoGainControl: true } : false;
+  return { video: v, audio: a };
+}
+
+// Starts the camera (again) for the preview. One at a time; in the show, sending it is publishCamera's job.
+let previewing = null;
+function startPreview() {
+  if (!previewing) previewing = media(openPreview).catch(e => { report('camera-failed', e.message); return e.message; })
+                                                    .finally(() => { previewing = null; });
+  return previewing;
+}
+// Inside the queue. Returns why the camera couldn't start, or '' when it did.
+async function openPreview() {
+  // Phones open one camera at a time: let go of the old one first, without its ended handler asking again.
+  stream?.getVideoTracks().forEach(t => { t.onended = null; t.stop(); });
+  let s;
+  try {
+    if (params.get('test')) s = testStream(params.get('name') || 'Test angle');
+    else if ($('lineUp').checked) {
+      try { s = await navigator.mediaDevices.getUserMedia(constraints(true)); micRefused = false; }
+      catch (e) { report('mic-refused', e.message); micRefused = true; s = await navigator.mediaDevices.getUserMedia(constraints(false)); }
+    } else s = await navigator.mediaDevices.getUserMedia(constraints(false));
+  } catch (e) {
+    if (!entered) $('joinStatus').textContent = 'Allow camera access for this page, then reload it. (' + e.message + ')';
+    report('camera-failed', e.message);
+    return e.message || 'no camera';
+  }
+  // ?testmic=voice: a made-up voice instead of the microphone, for lining-up tests.
+  if (params.get('testmic') === 'voice' && $('lineUp').checked) {
+    s.getAudioTracks().forEach(t => { t.stop(); s.removeTrack(t); });
+    voiceStream().getAudioTracks().forEach(t => s.addTrack(t));
+  }
+  const oldMic = stream?.getAudioTracks()[0];
+  stream = s;
+  const v = s.getVideoTracks()[0];
+  if (v) { v.contentHint = 'motion'; v.onended = recover; }
+  // A new lent microphone takes the old one's place; one opened on its own (the host allowed the sound) stays
+  // unless the new request brought one; an old lent one that wasn't asked for again goes.
+  const mic = s.getAudioTracks()[0];
+  if (mic) await setMicTrack(mic);
+  else if (oldMic && micTrack === oldMic) await setMicTrack(null);
+  $('preview').srcObject = s; $('selfView').srcObject = s;
+  if (!params.get('test')) await listCameras();
+  liveCam = $('camera').value;
+  return '';
+}
+
+// An upright phone sends a tall picture: fine (Framecast keeps the face in frame), but sideways fills a 16:9 frame.
+function checkShape() {
+  const el = $('preview'), tall = el.videoHeight > el.videoWidth;
+  $('shapeNote').classList.toggle('hidden', !tall);
+}
+$('preview').addEventListener('resize', checkShape); $('preview').addEventListener('loadedmetadata', checkShape);
+$('lineUp').onchange = startPreview;
+
+// The camera couldn't start in the show: say so where it can be seen, and offer Switch camera as the retry.
+function noCamera(why) {
+  $('liveStatus').textContent = 'The camera couldn’t start' + (why ? ' (' + why + ')' : '') + ', so the host gets no picture. Close other apps using it, then tap Switch camera.';
+  $('flipBtn').classList.remove('hidden');
+}
+
+// iPhones stop the camera when the page goes to the background or a call comes in: start it again on the same
+// publication, so the Mac keeps the angle (on air, pinned, its lip-sync delay). The ended event and the page coming
+// back both ask; one restart runs. A connection that dropped meanwhile is joined again instead.
+let recovering = null;
+function recover() {
+  if (!entered || stayOut() || document.hidden) return;   // hidden: visibilitychange asks again
+  if (room?.state === 'disconnected') { rejoin('page came back'); return; }
+  if (!recovering) recovering = media(restore).catch(e => report('camera-failed', e.message)).finally(() => { recovering = null; });
+  return recovering;
+}
+async function restore() {
+  if (!live(camTrack())) {
+    const why = await openPreview();
+    if (!live(camTrack())) { noCamera(why); return; }
+    report('camera-restarted', camTrack().label);
+  }
+  await sendCamera();
+  if (micWants.size) await syncMic();
+}
+
+// Phones: Back and Front (the back camera is the better one). Computers: every camera by name, hidden with only one.
+async function listCameras() {
+  const cams = await FJ.cameras();
+  const sel = $('camera');
+  const add = (v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; sel.append(o); };
+  sel.innerHTML = '';
+  if (FJ.isPhone || cams.length < 2) { add('environment', 'Back camera'); add('user', 'Front camera'); }
+  else cams.forEach((c, i) => add(c.deviceId, c.label || ('Camera ' + (i + 1))));
+  const current = camTrack()?.getSettings();
+  if (!FJ.isPhone && cams.length >= 2 && current?.deviceId) sel.value = current.deviceId;
+  else if (current?.facingMode === 'user') sel.value = 'user';
+  const single = !FJ.isPhone && cams.length < 2;
+  sel.closest('div').classList.toggle('hidden', single);
+  $('flipBtn').classList.toggle('hidden', single);
+}
+
+// Swaps in another camera on the same publication: the angle stays on air, nothing reconnects. One switch at a
+// time; if the new camera can't start, the one that was running comes back and the list names it again.
+let liveCam = null, switching = false;
+async function switchCamera() {
+  if (params.get('test') || switching) return;
+  switching = true; $('flipBtn').disabled = $('camera').disabled = true;
+  try { await media(swapCamera); }
+  catch (e) { report('camera-failed', e.message); }
+  finally { switching = false; $('flipBtn').disabled = $('camera').disabled = false; }
+}
+async function openCamera(currentId) {
+  const id = await FJ.cameraId($('camera').value, currentId);
+  const v = constraints(false).video; if (id) { delete v.facingMode; v.deviceId = { exact: id }; }
+  return (await navigator.mediaDevices.getUserMedia({ video: v })).getVideoTracks()[0];
+}
+async function swapCamera() {
+  const sel = $('camera'), old = camTrack(), oldId = old?.getSettings().deviceId;
+  if (old) old.onended = null;
+  if (FJ.isPhone) old?.stop();   // phones open one camera at a time; computers keep it until the new one runs
+  let fresh, note = '';
+  try { fresh = await openCamera(oldId); }
+  catch (e) {
+    // Most Android devices can't open a second camera while one runs, and one asking for desktop pages looks
+    // like a computer: try once more with the old camera stopped.
+    if (live(old)) {
+      old.stop();
+      try { fresh = await openCamera(oldId); } catch (e3) {}
+    }
+    if (!fresh) {
+      report('camera-failed', e.message);
+      if (liveCam !== null) sel.value = liveCam;
+      $('liveStatus').textContent = note = 'That camera couldn’t start (' + e.message + '). Staying on the one you had.';
+      try { fresh = await openCamera(); }
+      catch (e2) { report('camera-failed', e2.message); noCamera(e2.message); return; }
+    }
+  }
+  liveCam = sel.value;
+  if (!stream) stream = new MediaStream();
+  for (const t of stream.getVideoTracks()) { t.onended = null; t.stop(); stream.removeTrack(t); }   // never two cameras
+  stream.addTrack(fresh);
+  fresh.contentHint = 'motion'; fresh.onended = recover;
+  $('preview').srcObject = stream; $('selfView').srcObject = stream;
+  if (entered) await sendCamera();
+  if (note) $('liveStatus').textContent = note;
+  report('camera-switched', fresh.label);
+  // Some phones stop the microphone when the camera changes: open it again if the host wants it.
+  if (micWants.size) await syncMic();
+}
+$('camera').onchange = () => entered ? switchCamera() : startPreview();
+$('quality').onchange = async () => { await startPreview(); if (entered) await publishCamera(); };
+
+// Whether the room details have arrived (the relay port has to be known before connecting).
+async function loadRoom() {
+  if (remote) { $('roomTitle').textContent = remote.title ? 'Camera angle for ' + remote.title : 'Be a camera angle'; return true; }
+  try {
+    const info = await FJ.api('/api/room?code=' + encodeURIComponent(code));
+    FJ.relayPort = info.relay || 0;
+    if (info.title) $('roomTitle').textContent = 'Camera angle for ' + info.title;
+    if (!info.open) $('joinStatus').textContent = 'This link has expired. Ask the host for a new one.';
+    return true;
+  } catch (e) { $('joinStatus').textContent = 'Bad link from server.'; return false; }
+}
+let roomInfo = Promise.resolve(false);
+
+$('joinBtn').onclick = async () => {
+  const name = $('name').value.trim() || 'Phone camera';
+  $('joinBtn').disabled = true;
+  FJ.keepAwake();   // inside the tap, so the screen stays on while the camera waits to be let in
+  // Join only with a working camera: start it again if it stopped, or try once more if it was refused.
+  if (!live(camTrack())) await startPreview();
+  if (!live(camTrack())) { $('joinBtn').disabled = false; FJ.keepAwake(false); return; }   // startPreview said why
+  if (remote) { knockRemote(name); return; }
+  try { await askHost(name); }
+  catch (e) { joinAgain(e.message); }
+};
+// Not joining after all: say why and let Join be tapped again.
+function joinAgain(text) { $('joinStatus').textContent = text; $('joinBtn').disabled = false; FJ.keepAwake(false); }
+
+// Knocks once per tab, then waits for the host. A pass the Mac no longer knows (from before a reload, or dropped
+// while the phone was locked) is replaced with a new knock; a refusal stays a refusal.
+async function askHost(name) {
+  if (!(await roomInfo)) roomInfo = loadRoom();
+  await roomInfo;
+  const reused = !!ticket;
+  if (reused) $('joinStatus').textContent = 'Joining…';
+  else {
+    const r = await FJ.api('/api/knock', { code, name, detail: 'camera' });
+    setTicket(r.ticket);
+    $('joinStatus').textContent = r.state === 'admitted' ? 'Joining…' : 'Waiting for the host to let this camera in…';
+  }
+  const t = await FJ.waitForHost(ticket, {
+    waiting: () => { $('joinStatus').textContent = 'Waiting for the host to let this camera in…'; },
+    trouble: () => { $('joinStatus').textContent = 'Lost touch with the Mac, trying again…'; } });
+  if (!t) return joinAgain('Can’t reach the Mac. Check the Wi-Fi, then tap Join again.');
+  if (t.state === 'gone') { report('knock-again', 'the Mac no longer had this pass'); setTicket(null); return askHost(name); }
+  if (t.state === 'denied') { setTicket(null); return joinAgain('The host removed this camera or didn’t let it in.'); }
+  const url = location.protocol === 'https:' ? 'wss://' + location.host : t.url;
+  room = makeRoom();
+  try { await room.connect(url, t.token, { autoSubscribe: false }); }
+  catch (e) { report('connect-failed', e.message); return joinAgain('Couldn’t reach the show (' + e.message + ').'); }
+  joined = { url, token: t.token };
+  report('connected', FJ.relayPort ? 'through the relay' : 'direct');
+  goLive();
+}
+
+// Lost the connection (Wi-Fi blip, the phone slept, LiveKit gave up): join again with the same pass for a few
+// minutes, unless this camera left, the host removed it or the room closed.
+let joined = null, rejoining = false;
+async function rejoin(why) {
+  if (rejoining || stayOut() || !joined) return;
+  rejoining = true;
+  report('disconnected', why);
+  let tries = 0;
+  const r = await FJ.connectAgain(makeRoom, joined, { autoSubscribe: false }, stayOut, (i) => {
+    tries = i; showTally(false, 'Reconnecting…');
+  });
+  rejoining = false;
+  if (!r) {
+    if (stayOut()) return;
+    $('tally').textContent = 'Not connected';
+    $('liveStatus').textContent = 'Lost the connection to the show. Check the Wi-Fi, then reload this page.';
+    return;
+  }
+  room = r;
+  showTally(onAir);   // off air, unless the Mac's tally already came in on the new connection
+  report('rejoined', 'attempt ' + tries);
+  await publishCamera();   // starts the camera again first if it stopped meanwhile
+  updateMic();
+}
+
+async function knockRemote(name) {
+  room = makeRoom();
+  try { await room.connect(remote.url, remote.token, { autoSubscribe: false }); }
+  catch (e) { return joinAgain('This link doesn’t work any more. Ask the host for a new one. (' + e.message + ')'); }
+  try { await room.localParticipant.setName(name); } catch (e) {}
+  const knock = () => room.localParticipant.publishData(new TextEncoder().encode(JSON.stringify({ name, detail: 'camera', device: true })),
+                                                       { reliable: true, topic: 'knock', destinationIdentities: ['host'] }).catch(() => {});
+  knock(); knockTimer = setInterval(() => { if (!entered) knock(); }, 3000);
+  $('joinStatus').textContent = 'Waiting for the host to let this camera in…';
+}
+
+// Let in: reconnect with the full token the host sent. If that fails, Join knocks again with the link and the host's
+// Mac lets this camera in again.
+let admitting = false;
+async function admitted(token) {
+  if (entered || admitting) return;
+  admitting = true; clearInterval(knockTimer);
+  const lobby = room; room = makeRoom(); lobby.disconnect();
+  try { await room.connect(remote.url, token, { autoSubscribe: false }); }
+  catch (e) { admitting = false; return joinAgain('Couldn’t join (' + e.message + '). Tap Join to try again.'); }
+  admitting = false;
+  joined = { url: remote.url, token };
+  goLive();
+}
+
+// LiveKit leaves the camera running when it gives up on a connection, so a rejoin sends the same one at once.
+function makeRoom() {
+  const r = new LK.Room({ adaptiveStream: false, dynacast: false, stopLocalTrackOnUnpublish: false });
+  r.on(LK.RoomEvent.DataReceived, (payload, participant, kind, topic) => {
+    if (topic !== 'control') return;
+    try { control(JSON.parse(new TextDecoder().decode(payload)), r); } catch (e) {}
+  });
+  r.on(LK.RoomEvent.Disconnected, (reason) => {
+    // The lobby connection we left on purpose, or a rejoin attempt that failed. A rejoin attempt the host or the
+    // server ended for good (removed meanwhile) counts, so the retries stop and the camera goes off.
+    if (r !== room && !(rejoining && FJ.isFinal(reason))) return;
+    clearInterval(knockTimer);
+    const final = FJ.isFinal(reason, removed);
+    if (!entered) return joinAgain(final ? 'The host didn’t let this camera in.' : 'Lost the connection while waiting. Tap Join to try again.');
+    showTally(false, 'Not connected');
+    if (reason === LK.DisconnectReason.PARTICIPANT_REMOVED) {
+      setTicket(null);   // a reload asks the host again instead of using the pass they took back
+      $('liveStatus').textContent = 'The host removed this camera from the show.';
+    }
+    if (reason === LK.DisconnectReason.DUPLICATE_IDENTITY) $('liveStatus').textContent = 'This camera joined again from another page. This one stopped.';
+    // Removed, left, replaced by a newer copy of this pass, or the room closed: stay out, camera off. Anything else
+    // (a Wi-Fi blip, LiveKit giving up, the browser freezing the page) joins again.
+    if (final) {
+      leftForGood = true; report('left', 'reason ' + reason);
+      stream?.getTracks().forEach(t => { t.onended = null; t.stop(); }); micTrack?.stop();
+    } else rejoin('reason ' + reason);
+  });
+  return r;
+}
+
+async function goLive() {
+  entered = true;
+  $('joinView').classList.add('hidden'); $('liveView').classList.remove('hidden');
+  FJ.keepAwake();
+  await publishCamera();
+  updateMic();   // the host's sound setting may have come in while connecting
+}
+
+// Sends the camera: on the publication the Mac already has (the angle keeps its place on air, its pin and its
+// lip-sync delay), or as a new one the first time in a room. Inside the queue; publishCamera() from outside.
+async function sendCamera() {
+  const v = camTrack();
+  if (!room || room.state === 'disconnected' || !live(v)) return;
+  const pub = FJ.published(room, 'camera');
+  if (pub) await FJ.swapTrack(pub, v);
+  else {
+    const high = $('quality').value !== '720';
+    await room.localParticipant.publishTrack(v, { name: 'camera', source: LK.Track.Source.Camera, simulcast: false,
+      videoEncoding: { maxBitrate: high ? 4_000_000 : 2_000_000, maxFramerate: 30 } });
+  }
+  $('liveStatus').textContent = liveTip;
+}
+// Sends the camera, starting it again first if it stopped or never started; says so on the page if it can't.
+function publishCamera() {
+  return media(async () => {
+    let why = '';
+    if (!live(camTrack())) why = await openPreview();
+    if (!live(camTrack())) { noCamera(why); return; }
+    await sendCamera();
+  }).catch(e => report('publish-failed', e.message));
+}
+
+// The microphone goes out only while the host wants it: in the show (they allowed it) or for a few seconds while
+// they line up the sound (then it's heard by their Mac only, never in the show). Always one publication at most.
+function updateMic() { return media(syncMic).catch(e => report('mic-failed', e.message)); }
+async function syncMic() {
+  if (!entered || !room || room.state === 'disconnected') return;   // joining and a rejoin call this again once connected
+  const pub = FJ.published(room, 'microphone');
+  if (micWants.size) {
+    try {
+      if (!live(micTrack)) await openMic();
+      if (pub) await FJ.swapTrack(pub, micTrack);
+      else await room.localParticipant.publishTrack(micTrack, { name: 'microphone', source: LK.Track.Source.Microphone });
+    } catch (e) {
+      if (micWants.has('sync')) tellHost({ type: 'sync', available: false });
+      micWants.delete('sync');
+      if (micWants.has('show')) $('micStatus').textContent = 'The host allowed the sound, but the microphone couldn’t start (' + e.message + ').';
+      return;
+    }
+  } else if (pub) {
+    try { await room.localParticipant.unpublishTrack(pub.track, false); } catch (e) {}
+  }
+  $('micStatus').textContent = micWants.has('show') ? 'Sound: in the show. The host allowed it and can turn it off.'
+    : micWants.has('sync') ? 'Lining up the sound with the host’s Mac (not in the show)…' : 'Sound: not in the show. The host can allow it.';
+}
+// A microphone of its own: when the host allowed the sound, or to line it up when it was lent and not refused.
+async function openMic() {
+  if (!micWants.has('show') && !($('lineUp').checked && !micRefused)) throw new Error('no microphone');
+  const s = params.get('test') ? toneStream() : await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+  await setMicTrack(s.getAudioTracks()[0]);
+}
+// Puts a new microphone in the old one's place: on its publication when it's sent, so a second copy never sits
+// in the show. null takes it out.
+async function setMicTrack(t) {
+  const old = micTrack, pub = FJ.published(room, 'microphone');
+  micTrack = t;
+  // The browser ended it (a call, another app): open it again while the host wants it.
+  if (t) t.onended = () => { if (t === micTrack && micWants.size && !document.hidden) updateMic(); };
+  if (pub && room.state !== 'disconnected') {
+    try { if (t) await FJ.swapTrack(pub, t); else await room.localParticipant.unpublishTrack(pub.track, false); } catch (e) {}
+  }
+  if (old && old !== t) old.stop();
+}
+function tellHost(m) {
+  room?.localParticipant.publishData(new TextEncoder().encode(JSON.stringify(m)), { reliable: true, topic: 'camera' }).catch(() => {});
+}
+// Noise in syllable-length bursts with short and long pauses: enough like speech to line up.
+function voiceStream() {
+  const ac = new AudioContext(), d = ac.createMediaStreamDestination();
+  const buf = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate), ch = buf.getChannelData(0);
+  for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+  const src = ac.createBufferSource(); src.buffer = buf; src.loop = true;
+  const g = ac.createGain(); g.gain.value = 0; src.connect(g).connect(d); src.start();
+  let t = ac.currentTime + 0.1;
+  const plan = () => {
+    while (t < ac.currentTime + 2) {
+      const len = 0.12 + Math.random() * 0.2, amp = 0.05 + Math.random() * 0.3;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(amp, t + len / 2); g.gain.linearRampToValueAtTime(0, t + len);
+      t += len + (Math.random() < 0.15 ? 0.4 + Math.random() * 0.5 : 0.04 + Math.random() * 0.1);
+    }
+  };
+  plan(); setInterval(plan, 500); ac.resume();
+  return d.stream;
+}
+function toneStream() {
+  const ac = new AudioContext(); const o = ac.createOscillator(); o.frequency.value = 660; const g = ac.createGain(); g.gain.value = 0.1;
+  const d = ac.createMediaStreamDestination(); o.connect(g).connect(d); o.start(); return d.stream;
+}
+
+// The Mac sends the sound setting (and the tally, when on air) again on every (re)connect, so each can arrive at any
+// time, more than once: they set a state rather than toggle one.
+let onAir = false;
+function showTally(on, text) {
+  onAir = on;
+  $('tally').textContent = text || (on ? 'ON AIR' : 'Connected · not on air');
+  $('tally').className = 'tally' + (on ? ' live' : ''); $('liveFrame').classList.toggle('live', on);
+}
+function control(m, r) {
+  if (m.type === 'admit' && remote) { admitted(m.token); return; }
+  if (m.type === 'tally') showTally(!!m.on);
+  if (m.type === 'audio') { m.on ? micWants.add('show') : micWants.delete('show'); updateMic(); }
+  if (m.type === 'sync') { m.on ? micWants.add('sync') : micWants.delete('sync'); updateMic(); }
+  if (m.type === 'remove') { removed = true; setTicket(null); r.disconnect(); $('liveStatus').textContent = 'The host removed this camera from the show.'; }
+}
+
+// Back in front: before joining, restart a preview the phone stopped; in the show, rejoin a connection the browser
+// dropped while the page was hidden, or restart the camera.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (!entered) { if (stream && !live(camTrack())) startPreview(); return; }
+  if (stayOut()) return;
+  if (room?.state === 'disconnected') { rejoin('page came back'); return; }
+  if (!live(camTrack())) recover();
+  else if (micWants.size && !live(micTrack)) updateMic();
+});
+
+$('flipBtn').onclick = () => {
+  if (switching) return;
+  const sel = $('camera'), opts = [...sel.options].map(o => o.value);
+  sel.value = opts[(opts.indexOf(sel.value) + 1) % opts.length];
+  entered ? switchCamera() : startPreview();
+};
+// Leave: the Mac hears it first (while the pass is still known), then the pass is forgotten and the page starts over.
+$('leaveBtn').onclick = async () => {
+  removed = true; $('leaveBtn').disabled = true;
+  await FJ.leaving(room);
+  setTicket(null); room?.disconnect(); location.reload();
+};
+
+if (params.get('name')) $('name').value = params.get('name');
+if (params.get('mic')) $('lineUp').checked = true;
+roomInfo = loadRoom(); startPreview();
+// Test hook: ?auto=1 joins by itself (headless browser tests; ?test=1 adds a synthetic picture). The host still lets it in.
+if (params.get('auto')) setTimeout(() => $('joinBtn').click(), 1500);
+</script>
+</body>
+</html>

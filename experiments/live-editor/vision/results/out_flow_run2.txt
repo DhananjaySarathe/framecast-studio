@@ -1,0 +1,8 @@
+visionbench flow | Version 27.0.1 (Build 26A434) | thermal 0
+OpticalFlow .low                               640x360 face (pairs)   n=60 p50=13.65 p95=18.58 mean=14.40 min=10.84 max=22.68 first=196.40 | rev 2; flow field 640x360 2x16F
+OpticalFlow .medium                            640x360 face (pairs)   n=60 p50=14.43 p95=18.09 mean=14.68 min=13.00 max=18.54 first=139.55 | rev 2; flow field 640x360 2x16F
+OpticalFlow .high                              640x360 face (pairs)   n=60 p50=22.11 p95=25.31 mean=22.32 min=19.48 max=27.18 first=145.05 | rev 2; flow field 640x360 2x16F
+OpticalFlow .veryHigh                          640x360 face (pairs)   n=60 p50=34.44 p95=36.51 mean=34.51 min=31.71 max=40.25 first=175.59 | rev 2; flow field 640x360 2x16F
+OpticalFlow .low                               1280x720 face (pairs)  n=60 p50=12.31 p95=13.17 mean=12.32 min=11.11 max=13.23 first=20.25 | rev 2; flow field 1280x720 2x16F
+OpticalFlow .medium                            1280x720 face (pairs)  n=60 p50=16.09 p95=16.63 mean=16.08 min=15.03 max=16.90 first=15.11 | rev 2; flow field 1280x720 2x16F
+wrote <scratch>/bench/results_flow_run2.json

@@ -25,12 +25,15 @@ final class ShowListener: @unchecked Sendable {
 
     /// The language to recognise (falls back to US English when this Mac can't do it).
     let preferred: Locale
+    /// The language actually recognised, once started (the preferred one, or US English when it couldn't be).
+    private(set) var resolved: Locale?
     init(locale: Locale = .current) { preferred = locale }
 
     func start() async throws {
         var locale = await SpeechTranscriber.supportedLocale(equivalentTo: preferred)
         if locale == nil { locale = await SpeechTranscriber.supportedLocale(equivalentTo: Locale(identifier: "en-US")) }
         guard let locale else { throw Self.failure("Speech recognition isn't available for your language on this Mac.") }
+        resolved = locale
         let transcriber = SpeechTranscriber(locale: locale, transcriptionOptions: [], reportingOptions: [.volatileResults, .fastResults],
                                             attributeOptions: [])
         if !(await SpeechTranscriber.installedLocales).contains(where: { $0.identifier == locale.identifier }),

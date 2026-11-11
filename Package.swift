@@ -23,7 +23,9 @@ let package = Package(
             name: "Framecast",
             dependencies: ["FramecastEngine", .product(name: "LiveKit", package: "client-sdk-swift")],
             path: "Sources/Framecast",
-            linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"])]
+            linkerSettings: [.unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks",
+                                           // Apple's on-device model is macOS 26+; older Macs still launch without it.
+                                           "-Xlinker", "-weak_framework", "-Xlinker", "FoundationModels"])]
         ),
         // Passes MCP messages between apps like Claude Desktop and Framecast's local control link.
         .executableTarget(

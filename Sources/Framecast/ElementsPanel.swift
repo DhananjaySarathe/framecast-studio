@@ -162,6 +162,8 @@ struct GuestsPanel: View {
                             if room.reach == .internet { CloudSetupRow() }
                             Text(room.status).font(.fc(11.5)).foregroundStyle(Theme.text3).fixedSize(horizontal: false, vertical: true)
                             PillButton(title: "Open the guest room", systemImage: "door.left.hand.open", prominent: true) { room.open() }
+                            Text("The room also gives you a camera link: phones and other computers join as extra camera angles of you.")
+                                .font(.fc(11)).foregroundStyle(Theme.text4).fixedSize(horizontal: false, vertical: true)
                         }
                     } else {
                         VStack(alignment: .leading, spacing: 8) {
@@ -178,8 +180,10 @@ struct GuestsPanel: View {
                             Toggle("Ask before letting guests in", isOn: Binding(get: { room.askBeforeLettingIn }, set: { room.askBeforeLettingIn = $0 })).toggleStyle(.checkbox).font(.fc(12))
                             Toggle("Guests join muted", isOn: Binding(get: { room.joinMuted }, set: { room.joinMuted = $0 })).toggleStyle(.checkbox).font(.fc(12))
                         }
+                        JoinActivity(devices: false)
                         section("Waiting room", room.lobby, empty: "Nobody waiting.")
                         section("On air", room.stage, empty: "Just you so far.")
+                        CameraLinkSection()
                         HStack {
                             PillButton(title: "New link") { room.newInviteLink() }
                             PillButton(title: "Close room", destructive: true) { room.close() }
@@ -194,6 +198,36 @@ struct GuestsPanel: View {
         SectionLabel(text: title)
         if list.isEmpty { Text(empty).font(.fc(12)).foregroundStyle(Theme.text3) }
         ForEach(list) { g in GuestRow(guest: g) }
+    }
+}
+
+/// Phones and computers as extra camera angles: the camera link and phones knocking on it. The angles themselves,
+/// the shuffle and lip sync live in the Angles tab.
+struct CameraLinkSection: View {
+    @Environment(Studio.self) var studio
+    var body: some View {
+        let room = studio.guests!
+        let angles = studio.angles
+        VStack(alignment: .leading, spacing: 8) {
+            SectionLabel(text: "Camera angles")
+            HStack {
+                Text(room.deviceInviteURL ?? "Making your camera link…").font(.fc(11.5).monospaced()).lineLimit(1).truncationMode(.middle)
+                Spacer()
+                Button("Copy") { if let u = room.deviceInviteURL { NSPasteboard.general.clearContents(); NSPasteboard.general.setString(u, forType: .string) } }
+                    .buttonStyle(.plain).foregroundStyle(Theme.accent).font(.fc(12, .semibold))
+                Button("New") { room.newDeviceLink() }.buttonStyle(.plain).foregroundStyle(Theme.text3).font(.fc(12, .semibold))
+            }
+            .padding(10).background(RoundedRectangle(cornerRadius: 8).fill(Theme.field))
+            Text("Open it on a phone or another computer to add it as a camera angle of you. Its sound stays out of the show unless you allow it.")
+                .font(.fc(10.5)).foregroundStyle(Theme.text4).fixedSize(horizontal: false, vertical: true)
+            WaitingDevices()
+            HStack {
+                Text("\(angles.angles.count) angle\(angles.angles.count == 1 ? "" : "s")\(angles.shuffleOn ? ", shuffling" : "")").font(.fc(12)).foregroundStyle(Theme.text2)
+                Spacer()
+                PillButton(title: "Open Angles", systemImage: "camera.metering.multispot") { studio.rail = .angles }
+            }
+        }
+        .onAppear { angles.rebuild() }
     }
 }
 
@@ -234,13 +268,12 @@ struct GuestRow: View {
             Circle().fill(Theme.selected).frame(width: 30, height: 30).overlay(Text(String(guest.name.prefix(2)).uppercased()).font(.fc(10.5, .bold)))
             VStack(alignment: .leading, spacing: 1) {
                 Text(guest.name).font(.fc(12.5, .semibold))
-                Text(guest.status == .stage ? "On air" : (guest.status == .lobby ? "Ready, off air" : "Asking to join"))
-                    .font(.fc(10.5)).foregroundStyle(Theme.text3)
+                Text(stateText).font(.fc(10.5)).foregroundStyle(guest.status != .waiting && !guest.connected ? Theme.warning : Theme.text3)
             }
             Spacer()
             switch guest.status {
             case .waiting: PillButton(title: "Let in", prominent: true) { room.admit(guest.id) }
-            case .lobby: PillButton(title: "Put on air", prominent: true) { room.bringOnStage(guest.id) }
+            case .lobby: PillButton(title: "Put on air", prominent: true) { room.bringOnStage(guest.id) }.disabled(!guest.connected)
             case .stage: PillButton(title: "Take off air") { room.takeOffStage(guest.id) }
             }
         }
@@ -249,5 +282,12 @@ struct GuestRow: View {
             Button(guest.mutedByHost ? "Unmute" : "Mute") { room.toggleMute(guest.id) }
             Button("Remove from room", role: .destructive) { room.remove(guest.id) }
         }
+    }
+
+    /// Where they are: asking, let in but still connecting, in the room, or dropped and rejoining.
+    var stateText: String {
+        if guest.status == .waiting { return "Asking to join" }
+        if !guest.connected { return guest.everConnected ? "Dropped out, rejoining…" : "Let in, connecting…" }
+        return guest.status == .stage ? "On air" : "Ready, off air"
     }
 }

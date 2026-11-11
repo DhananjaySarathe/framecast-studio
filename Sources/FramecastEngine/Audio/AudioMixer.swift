@@ -95,6 +95,8 @@ public final class AudioMixer: @unchecked Sendable {
     private var voiceIDs: Set<UUID> = []
     /// 1 = not lowered; drops to about −12 dB while someone talks.
     public private(set) var duckLevel: Float = 1
+    /// Loudest voice in the program in the latest block (0…1): camera-angle cuts wait for pauses in it.
+    public private(set) var voicePeak: Float = 0
     private var duckHold = 0
     private var consumers: [ObjectIdentifier: AudioBlockConsumer] = [:]
     private var nextIndex: Int64
@@ -135,18 +137,42 @@ public final class AudioMixer: @unchecked Sendable {
     public func push(_ id: UUID, samples: UnsafePointer<Float>, frames: Int, pts: CMTime) {
         lock.lock()
         guard let ring = rings[id] else { lock.unlock(); return }
-        let delay = Int64(((settings[id]?.delayMs ?? 0) / 1000) * AudioBlock.sampleRate)
+        let held = hold.ids.contains(id) ? hold.ms : 0
+        let delay = Int64((((settings[id]?.delayMs ?? 0) + held) / 1000) * AudioBlock.sampleRate)
         ring.write(samples, frames: frames, at: timelineIndex(for: pts) + delay)
         let tap = listenTap?.id == id && settings[id]?.isMuted != true ? listenTap?.handler : nil
+        let measure = measureTaps[id]
+        let caption = captionTap?.id == id && settings[id]?.isMuted != true ? captionTap?.handler : nil
         lock.unlock()
         tap?(samples, frames)
+        measure?(samples, frames, pts)
+        caption?(samples, frames, pts)
     }
+
+    /// Holds these sources (the presenter's microphones) back by `ms` on top of their own delay, so their sound lines
+    /// up with a camera angle whose picture arrives later (a phone). Changed in a pause, the jump isn't heard.
+    public func setHold(_ ms: Double, for ids: Set<UUID>) { lock.lock(); hold = (ids, max(0, ms)); lock.unlock() }
+    public var holdMs: Double { lock.lock(); defer { lock.unlock() }; return hold.ms }
+    private var hold: (ids: Set<UUID>, ms: Double) = ([], 0)
+
+    /// Hands a source's samples, as captured and with their capture time, to a measurement (lining up a phone's sound).
+    public func setMeasureTap(_ id: UUID, _ handler: ((UnsafePointer<Float>, Int, CMTime) -> Void)?) {
+        lock.lock(); measureTaps[id] = handler; lock.unlock()
+    }
+    private var measureTaps: [UUID: (UnsafePointer<Float>, Int, CMTime) -> Void] = [:]
 
     /// Also hands one source's samples, as captured, to a listener (live transcription). Nothing while it's muted.
     public func setListenTap(_ id: UUID?, _ handler: ((UnsafePointer<Float>, Int) -> Void)?) {
         lock.lock(); listenTap = id.flatMap { i in handler.map { (i, $0) } }; lock.unlock()
     }
     private var listenTap: (id: UUID, handler: (UnsafePointer<Float>, Int) -> Void)?
+
+    /// Live captions' own tap, beside the listen tap (so captions, Listen and the angles' ears each keep hearing),
+    /// with each block's capture time. Nothing while the source is muted.
+    public func setCaptionTap(_ id: UUID?, _ handler: ((UnsafePointer<Float>, Int, CMTime) -> Void)?) {
+        lock.lock(); captionTap = id.flatMap { i in handler.map { (i, $0) } }; lock.unlock()
+    }
+    private var captionTap: (id: UUID, handler: (UnsafePointer<Float>, Int, CMTime) -> Void)?
 
     public func addConsumer(_ c: AudioBlockConsumer) { lock.lock(); consumers[ObjectIdentifier(c)] = c; lock.unlock() }
     public func removeConsumer(_ c: AudioBlockConsumer) { lock.lock(); consumers[ObjectIdentifier(c)] = nil; lock.unlock() }
@@ -252,6 +278,7 @@ public final class AudioMixer: @unchecked Sendable {
         levels = newLevels
         masterLevel = AudioLevel(peak: mp, rms: sqrt(ms / Float(n)))
         duckLevel = duckEnd
+        self.voicePeak = voicePeak
         lock.unlock()
 
         let block = AudioBlock(pts: pts(forIndex: index), timelineIndex: index, tracks: tracks)

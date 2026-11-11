@@ -3,6 +3,7 @@ import ImageIO
 import AppKit
 import Carbon.HIToolbox
 import ScreenCaptureKit
+import AVFoundation
 import FramecastEngine
 
 @main
@@ -44,9 +45,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var hotkeys: GlobalHotkeys?
 
     override init() {
+        Self.refuseUntestedTestCopy()
         settings = AppSettings()
         studio = Studio(settings: settings)
+        // Test launches with a fake camera: stand-ins replace every device before anything starts.
+        FakeDevices.install(on: studio.engine)
         super.init()
+    }
+
+    /// A copy built for automated tests (its Info.plist has FramecastTestCopy) only runs as a test launch. It has its
+    /// own bundle id, but macOS can still open it by its path (Spotlight, a double-click), and a plain launch would use
+    /// your own studio, cameras and microphone, so it quits at once, before anything starts, and leaves a note in the
+    /// temporary folder.
+    private static func refuseUntestedTestCopy() {
+        guard Bundle.main.object(forInfoDictionaryKey: "FramecastTestCopy") as? Bool == true,
+              ProcessInfo.processInfo.environment["FRAMECAST_UI"] == nil else { return }
+        let note = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("framecast-test-copy-refused.log")
+        let line = "\(Date()) pid \(getpid()) parent \(getppid()): test copy opened without FRAMECAST_UI, quit before starting\n"
+        if let h = try? FileHandle(forWritingTo: note) { h.seekToEndOfFile(); h.write(Data(line.utf8)); try? h.close() }
+        else { try? line.write(to: note, atomically: true, encoding: .utf8) }
+        exit(0)
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -130,6 +148,8 @@ struct FramecastCommands: Commands {
                 }
             }
             Button("Change Background…") { studio.chooseBackground() }.keyboardShortcut("b", modifiers: [.command, .shift])
+            Button(studio.captions.isOn ? "Turn Off Live Captions (⌃⌥⌘L)" : "Turn On Live Captions (⌃⌥⌘L)") { studio.captions.toggle() }
+                .disabled(!studio.captions.canCaption)
             Divider()
             // The rundown's shortcuts are global (⌃⌥⌘T, ⌃⌥⌘U), so they also work from your slides or browser.
             Button("Show Rundown") { studio.rail = .rundown }
@@ -169,10 +189,20 @@ final class GlobalHotkeys {
         Binding(id: 4, key: kVK_ANSI_V, mods: cmdKey | optionKey | controlKey, title: "Show or hide the 9:16 canvas"),
         Binding(id: 5, key: kVK_ANSI_T, mods: cmdKey | optionKey | controlKey, title: "Take the suggested or next rundown part"),
         Binding(id: 6, key: kVK_ANSI_U, mods: cmdKey | optionKey | controlKey, title: "Undo the director's last switch"),
+        Binding(id: 7, key: kVK_ANSI_Z, mods: cmdKey | optionKey | controlKey, title: "Zoom the screen share to the cursor"),
+        Binding(id: 8, key: kVK_ANSI_X, mods: cmdKey | optionKey | controlKey, title: "Whole screen, and no zooms for 30 s"),
+        Binding(id: 9, key: kVK_ANSI_C, mods: cmdKey | optionKey | controlKey, title: "Camera moves on or off"),
     ] + (1...9).map { Binding(id: UInt32(10 + $0), key: [kVK_ANSI_1, kVK_ANSI_2, kVK_ANSI_3, kVK_ANSI_4, kVK_ANSI_5, kVK_ANSI_6, kVK_ANSI_7, kVK_ANSI_8, kVK_ANSI_9][$0 - 1],
                                       mods: controlKey | optionKey, title: "Switch to scene \($0)") }
       + (1...9).map { Binding(id: UInt32(20 + $0), key: [kVK_ANSI_1, kVK_ANSI_2, kVK_ANSI_3, kVK_ANSI_4, kVK_ANSI_5, kVK_ANSI_6, kVK_ANSI_7, kVK_ANSI_8, kVK_ANSI_9][$0 - 1],
                                       mods: optionKey | cmdKey, title: "Show or hide overlay \($0)") }
+      // Camera angles, from any app (while another window is shared, viewers see only the cut).
+      + (1...6).map { Binding(id: UInt32(30 + $0), key: [kVK_ANSI_1, kVK_ANSI_2, kVK_ANSI_3, kVK_ANSI_4, kVK_ANSI_5, kVK_ANSI_6][$0 - 1],
+                                      mods: controlKey | optionKey | cmdKey, title: "Camera angle \($0) (again: let go)") }
+      + [Binding(id: 30, key: kVK_ANSI_0, mods: controlKey | optionKey | cmdKey, title: "Back to your own camera"),
+         Binding(id: 37, key: kVK_ANSI_S, mods: controlKey | optionKey | cmdKey, title: "Camera angle shuffle on or off"),
+         Binding(id: 38, key: kVK_ANSI_K, mods: controlKey | optionKey | cmdKey, title: "Switching keys on or off"),
+         Binding(id: 39, key: kVK_ANSI_L, mods: controlKey | optionKey | cmdKey, title: "Live captions on or off")]
 
     func register() {
         Self.shared = self
@@ -183,9 +213,22 @@ final class GlobalHotkeys {
         actions[4] = { s.setVertical(!s.isVerticalOn) }
         actions[5] = { s.director.takeSuggestionOrNext() }
         actions[6] = { s.director.undoAuto() }
+        actions[7] = { s.liveEditor.zoomToCursor() }
+        actions[8] = { s.liveEditor.resetAndPause() }
+        actions[9] = { s.liveEditor.toggleMoves() }
         for i in 1...9 {
             actions[UInt32(10 + i)] = { if s.scenes.indices.contains(i - 1) { s.switchTo(s.scenes[i - 1].id) } }
             actions[UInt32(20 + i)] = { s.toggleElement(number: i) }
+        }
+        for i in 1...6 { actions[UInt32(30 + i)] = { s.angles.pick(number: i) } }
+        actions[30] = { s.angles.backToOwnCamera() }
+        actions[37] = { s.angles.toggleShuffle() }
+        actions[39] = { s.captions.toggle(); s.notice = s.captions.isOn ? "Live captions on" : "Live captions off" }
+        actions[38] = {
+            var set = s.angles.settings; set.keysOn.toggle(); s.angles.settings = set
+            if !set.keysOn { s.notice = "Switching keys off" }
+            else if s.angles.keyProblems.isEmpty { s.notice = "Switching keys on: \(s.angles.keysSummary)" }
+            else { s.notice = "Switching keys on, but these are taken by another app or shortcut: \(s.angles.keyProblems.joined(separator: ", "))." }
         }
         var spec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
         InstallEventHandler(GetApplicationEventTarget(), { _, event, _ in
@@ -195,12 +238,61 @@ final class GlobalHotkeys {
             DispatchQueue.main.async { GlobalHotkeys.shared?.actions[hk.id]?() }
             return noErr
         }, 1, &spec, nil, nil)
+        let taken = registerFixed()
+        // Another app holding a shortcut: say so instead of failing quietly.
+        s.liveEditor.hotkeyProblems = taken
+        if !taken.isEmpty { s.notice = "Another app already uses these shortcuts, so they won't work in Framecast: \(taken.joined(separator: "; "))." }
+        registerAngleKeys()
+    }
+
+    /// The fixed ⌃⌥⌘ / ⌃⌥ / ⌥⌘ shortcuts. Returns the ones another app holds.
+    private func registerFixed() -> [String] {
+        var taken: [String] = []
         for b in Self.defaults {
             var ref: EventHotKeyRef?
-            RegisterEventHotKey(UInt32(b.key), UInt32(b.mods), EventHotKeyID(signature: OSType(0x4643_5354), id: b.id),
-                                GetApplicationEventTarget(), 0, &ref)
+            let status = RegisterEventHotKey(UInt32(b.key), UInt32(b.mods), EventHotKeyID(signature: OSType(0x4643_5354), id: b.id),
+                                             GetApplicationEventTarget(), 0, &ref)
+            if status != noErr { taken.append("\(Self.describe(b)) \(b.title.lowercased())") }
             refs.append(ref)
         }
+        return taken
+    }
+
+    // MARK: Switching keys (camera angles)
+
+    /// Ids 100… : the switching keys, registered only while they're on (a single key then stops typing in other
+    /// apps, which is why they can be turned off) and never while one is being recorded.
+    private var angleRefs: [EventHotKeyRef?] = []
+    private var recording = false
+
+    static func applyAngleKeys() { shared?.registerAngleKeys() }
+    /// While a key is being recorded every Framecast hot key steps aside, so the press reaches the recorder
+    /// (⌃⌥⌘1 is recorded, not run).
+    static func pauseAngleKeys(_ on: Bool) {
+        guard let h = shared, h.recording != on else { return }
+        h.recording = on
+        if on { for r in h.refs { if let r { UnregisterEventHotKey(r) } }; h.refs = [] } else { _ = h.registerFixed() }
+        h.registerAngleKeys()
+    }
+
+    private func registerAngleKeys() {
+        for r in angleRefs { if let r { UnregisterEventHotKey(r) } }
+        angleRefs = []
+        let set = studio.angles.settings
+        studio.angles.keyProblems = []
+        guard set.keysOn, !recording else { return }
+        var problems: [String] = []
+        for (i, a) in AngleKeyAction.allCases.enumerated() {
+            guard let k = set.key(a) else { continue }
+            let id = UInt32(100 + i)
+            actions[id] = { [weak studio] in studio?.angles.perform(a) }
+            var ref: EventHotKeyRef?
+            let status = RegisterEventHotKey(k.key, k.mods, EventHotKeyID(signature: OSType(0x4643_414B), id: id), GetApplicationEventTarget(), 0, &ref)
+            if status != noErr { problems.append("\(k.title) (\(a.title.lowercased()))") }
+            angleRefs.append(ref)
+        }
+        studio.angles.keyProblems = problems
+        if !problems.isEmpty { studio.notice = "These switching keys are taken by another app or another shortcut: \(problems.joined(separator: ", "))." }
     }
 
     static func describe(_ b: Binding) -> String {
@@ -209,8 +301,10 @@ final class GlobalHotkeys {
         if b.mods & optionKey != 0 { s += "⌥" }
         if b.mods & shiftKey != 0 { s += "⇧" }
         if b.mods & cmdKey != 0 { s += "⌘" }
-        let keys: [Int: String] = [kVK_ANSI_R: "R", kVK_ANSI_P: "P", kVK_ANSI_M: "M", kVK_ANSI_V: "V", kVK_ANSI_T: "T", kVK_ANSI_U: "U", kVK_ANSI_1: "1", kVK_ANSI_2: "2",
-                                   kVK_ANSI_3: "3", kVK_ANSI_4: "4", kVK_ANSI_5: "5", kVK_ANSI_6: "6", kVK_ANSI_7: "7", kVK_ANSI_8: "8", kVK_ANSI_9: "9"]
+        let keys: [Int: String] = [kVK_ANSI_R: "R", kVK_ANSI_P: "P", kVK_ANSI_M: "M", kVK_ANSI_V: "V", kVK_ANSI_T: "T", kVK_ANSI_U: "U",
+                                   kVK_ANSI_Z: "Z", kVK_ANSI_X: "X", kVK_ANSI_C: "C", kVK_ANSI_1: "1", kVK_ANSI_2: "2",
+                                   kVK_ANSI_3: "3", kVK_ANSI_4: "4", kVK_ANSI_5: "5", kVK_ANSI_6: "6", kVK_ANSI_7: "7", kVK_ANSI_8: "8", kVK_ANSI_9: "9",
+                                   kVK_ANSI_0: "0", kVK_ANSI_S: "S"]
         return s + (keys[b.key] ?? "?")
     }
 }
@@ -291,6 +385,40 @@ enum AutoTest {
 final class TestControl {
     static let shared = TestControl()
     private var observer: NSObjectProtocol?
+    static var localStream: StreamOutput?
+    static func point(_ s: String) -> CGPoint? {
+        let v = s.split(separator: ",").compactMap { Double($0) }
+        return v.count == 2 ? CGPoint(x: v[0], y: v[1]) : nil
+    }
+    static func write<T: Encodable>(_ value: T, to path: String) {
+        let e = JSONEncoder(); e.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try? e.encode(value).write(to: URL(fileURLWithPath: path))
+    }
+    /// The camera the angles-from-one-camera hooks act on: the marked frame's, else the first camera.
+    static func angleCamera(_ studio: Studio) -> UUID? {
+        let cams = studio.collection.sources.filter { if case .camera = $0.kind { return true }; return false }.map(\.id)
+        if let m = studio.angles.markedFrame?.item.sourceID, cams.contains(m) { return m }
+        return cams.first
+    }
+    /// Keeps every crop drawn for `seconds`, then writes one JSON line per draw: t, angle, key, x, y, w, h (camera
+    /// picture, top-left 0...1), zoom, the followed face, and its last reading unsmoothed with that picture's time.
+    static func traceCrops(_ studio: Studio, to url: URL, seconds: Double) {
+        let rigs = Array(studio.angles.rigs.values)
+        rigs.forEach { $0.startTrace() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + seconds) {
+            let rows = rigs.flatMap { rig in rig.stopTrace().map { (rig.cameraID, $0) } }.sorted { $0.1.t < $1.1.t }
+            var out = Data()
+            for (cam, e) in rows {
+                let key = switch e.key { case .program(let c): c.rawValue; case .iso: "iso" }
+                var d: [String: Any] = ["t": e.t, "angle": CameraAngles.virtualID(cam, e.shot), "key": key,
+                                        "x": e.rect.minX, "y": e.rect.minY, "w": e.rect.width, "h": e.rect.height, "zoom": e.zoom]
+                if let f = e.face { d["face"] = [f.minX, f.minY, f.width, f.height] }
+                if let r = e.raw, let at = e.rawAt { d["raw"] = [r.minX, r.minY, r.width, r.height]; d["rawAt"] = at }
+                if let line = try? JSONSerialization.data(withJSONObject: d, options: [.sortedKeys]) { out.append(line); out.append(0x0A) }
+            }
+            try? out.write(to: url)
+        }
+    }
     func listen(_ studio: Studio) {
         observer = DistributedNotificationCenter.default().addObserver(forName: Notification.Name("app.framecast.test"), object: nil, queue: .main) { n in
             guard let cmd = n.object as? String else { return }
@@ -325,6 +453,10 @@ final class TestControl {
                 case "prompter": (AnyView(PrompterView().environment(studio).environment(studio.settings)), NSSize(width: 980, height: 620))
                 case "presenter": (AnyView(PrompterView().environment(studio).environment(studio.settings)), NSSize(width: 1100, height: 760))
                 case "rundown": (AnyView(RundownPanel().environment(studio).environment(studio.settings).background(Theme.panel)), NSSize(width: 340, height: 1300))
+                case "angles": (AnyView(AnglesPanel().environment(studio).background(Theme.panel)), NSSize(width: 340, height: 1500))
+                case "captions": (AnyView(CaptionsPanel().environment(studio).background(Theme.panel)), NSSize(width: 340, height: 900))
+                case "inspector": (AnyView(Inspector().environment(studio)), NSSize(width: 340, height: 700))
+                case "program": (AnyView(ProgramArea().environment(studio)), NSSize(width: 560, height: 420))
                 case "ai-settings": (AnyView(ScrollView { VStack(alignment: .leading, spacing: 18) { AIPane() }.padding(24) }
                     .environment(studio).environment(studio.settings).background(Theme.panel)), NSSize(width: 680, height: 1000))
                 default: (AnyView(BackgroundPickerSheet(target: .scene).environment(studio)), NSSize(width: 1040, height: 680))
@@ -458,6 +590,42 @@ final class TestControl {
             case "clip": studio.saveClip()
             case "undo": studio.undo()
             case "redo": studio.redo()
+            // Live editor (screen auto-zoom). Points are desktop points, top-left origin.
+            case "moves": if let m = CameraMoves(rawValue: arg) { studio.liveEditor.setMoves(m) }
+            case "moves-intensity": if let i = MoveIntensity(rawValue: arg) { studio.liveEditor.settings.intensity = i }
+            case "moves-idle": if let s = Double(arg) { studio.liveEditor.settings.idleSeconds = s }
+            case "focus-click": if let p = TestControl.point(arg) { studio.liveEditor.testClick(p) }
+            case "focus-cursor": studio.liveEditor.testCursor(TestControl.point(arg))
+            case "focus-secure": studio.liveEditor.testSecure(arg == "auto" ? nil : arg == "on")
+            case "focus-zoom-here": studio.liveEditor.zoomToCursor()
+            case "focus-reset": studio.liveEditor.resetAndPause()
+            case "focus-trace": if arg == "stop" { studio.engine.focus.stopTrace() } else { studio.engine.focus.startTrace(to: URL(fileURLWithPath: arg)) }
+            case "focus-dump": TestControl.write(studio.engine.focus.state(), to: arg)
+            case "never-zoom": studio.liveEditor.settings.neverZoom = arg.isEmpty ? [] : arg.split(separator: ",").map(String.init)
+            case "hide-password-managers": studio.liveEditor.settings.hidesPasswordManagers = arg == "on"
+            case "click-rings": studio.liveEditor.settings.clickRings = arg == "on"
+            case "metrics-dump": TestControl.write(Gate0.snapshot(studio), to: arg)
+            case "metrics-reset": studio.engine.resetTickStats()
+            case "inject-tick-ms": studio.engine.testMinTickMs = Double(arg) ?? 0
+            case "governor-baseline": studio.liveEditor.settings.baselineP95Ms = Double(arg)
+            case "moves-performance": if let m = PerformanceMode(rawValue: arg) { studio.liveEditor.settings.performance = m }
+            case "mask-cameras":
+                // Long test runs: a stand-in picture instead of the camera (not saved), so the camera stays off.
+                for src in studio.collection.sources { if case .camera = src.kind { studio.engine.setExternalSource(src.id, StaticImageSource(id: src.id, image: DemoContent.cameraStandIn())) } }
+            // It captures its own test window for real, so never with stand-in devices.
+            case "live-editor-selftest": if !FakeDevices.isOn { LiveEditorSelfTest.run(studio, out: arg) }
+            case "scene-tour": LiveEditorSelfTest.sceneTour(studio, out: arg)
+            case "stream-local":
+                // "<rtmp url>|<key>" to a test receiver on this Mac only (never a destination), or "stop".
+                if arg == "stop" { if let s = TestControl.localStream { studio.engine.stopStream(s); TestControl.localStream = nil } }
+                else {
+                    let p = arg.split(separator: "|", maxSplits: 1).map(String.init)
+                    guard let first = p.first, let host = URL(string: first)?.host, ["127.0.0.1", "localhost"].contains(host), TestControl.localStream == nil else { break }
+                    let h = studio.settings.s.horizontal
+                    let spec = StreamSpec(name: "Local test", url: first, key: p.count > 1 ? p[1] : "", canvas: .horizontal,
+                                          width: h.width, height: h.height, fps: h.fps, videoKbps: 6_000, autoReconnect: false, adaptiveBitrate: false)
+                    TestControl.localStream = try? studio.engine.startStream(spec)
+                }
             case "move-selected":
                 // "dx,dy" in canvas fractions, applied to the selected layer (or the camera layer).
                 let d = arg.split(separator: ",").compactMap { Double($0) }
@@ -469,6 +637,12 @@ final class TestControl {
                 let id = studio.selectedItemID ?? studio.editingItems.first { $0.role == .camera }?.id
                 let m: ItemMask = arg == "circle" ? .circle : (arg == "rect" ? .roundedRect(radius: 0.12) : .none)
                 if let id { studio.updateItem(id) { $0.mask = m } }
+            case "set-crop":
+                // "left,top,right,bottom" (0...1 of the picture) on the selected layer, or the camera layer, of the
+                // canvas being edited; "none" takes the crop off.
+                let v = arg.split(separator: ",").compactMap { Double($0) }
+                let id = studio.selectedItemID ?? studio.editingItems.first { $0.role == .camera }?.id
+                if let id { studio.updateItem(id) { $0.crop = v.count == 4 ? ItemCrop(left: v[0], top: v[1], right: v[2], bottom: v[3]) : ItemCrop() } }
             case "mirror":
                 let id = studio.selectedItemID ?? studio.editingItems.first { $0.role == .camera }?.id
                 if let id { studio.updateItem(id) { $0.isMirrored.toggle() } }
@@ -488,18 +662,125 @@ final class TestControl {
                 // Writes what the program shows on each canvas to <arg>-horizontal.png / <arg>-vertical.png.
                 for c in CanvasKind.allCases {
                     guard let scene = studio.programScene(c),
-                          let img = studio.engine.snapshot(items: scene.items(for: c), canvas: c, width: c == .horizontal ? 1920 : 1080),
+                          let img = studio.engine.snapshot(items: studio.airItems[c] ?? scene.items(for: c), canvas: c, width: c == .horizontal ? 1920 : 1080),
+                          let dest = CGImageDestinationCreateWithURL(URL(fileURLWithPath: "\(arg)-\(c.rawValue).png") as CFURL, "public.png" as CFString, 1, nil)
+                    else { continue }
+                    CGImageDestinationAddImage(dest, img, nil); CGImageDestinationFinalize(dest)
+                }
+            case "window-png":
+                // The studio window as drawn (Metal previews may come out blank), for checking panels.
+                if let w = NSApp.windows.filter({ $0.isVisible && $0.contentView != nil }).max(by: { $0.frame.width < $1.frame.width }),
+                   let v = w.contentView, let rep = v.bitmapImageRepForCachingDisplay(in: v.bounds) {
+                    v.cacheDisplay(in: v.bounds, to: rep)
+                    try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: arg))
+                }
+            case "program-snapshot":
+                // The program as it goes out (framing included), unlike "snapshot".
+                for c in CanvasKind.allCases {
+                    guard let img = studio.engine.programSnapshot(c, width: c == .horizontal ? 1280 : 720),
                           let dest = CGImageDestinationCreateWithURL(URL(fileURLWithPath: "\(arg)-\(c.rawValue).png") as CFURL, "public.png" as CFString, 1, nil)
                     else { continue }
                     CGImageDestinationAddImage(dest, img, nil); CGImageDestinationFinalize(dest)
                 }
             case "guests-host-mic-off": studio.guests.shareHostMic = false
+            // Camera angles: the same actions as ⌃⌥⌘1–6, ⌃⌥⌘0 and ⌃⌥⌘S, a scripted voice, and a JSON dump.
+            case "angle-pick": if let n = Int(arg) { studio.angles.pick(number: n) }
+            case "angle-back": studio.angles.backToOwnCamera()
+            case "angle-shuffle": studio.angles.toggleShuffle()
+            case "angle-test-voice": studio.angles.testVoice = arg != "off"
+            case "angle-device-audio": if let a = studio.angles.angles.first(where: { $0.name == arg }) { studio.angles.setDeviceAudio(a.id, !a.audioAllowed) }
+            case "angle-lineup":
+                // "2" lines up angle 2; "2:180" tests it against its own sound moved 180 ms earlier.
+                let p = arg.split(separator: ":").compactMap { Double($0) }
+                if let n = p.first.map(Int.init), studio.angles.angles.indices.contains(n - 1) {
+                    studio.angles.cancelLining()
+                    studio.angles.testLineUpShift = p.count > 1 ? p[1] : nil
+                    studio.angles.lineUp(studio.angles.angles[n - 1].id)
+                }
+            case "angle-sync":
+                let p = arg.split(separator: ":").compactMap { Double($0) }
+                if p.count == 2, studio.angles.angles.indices.contains(Int(p[0]) - 1) { studio.angles.setSync(studio.angles.angles[Int(p[0]) - 1].id, ms: p[1]) }
+            case "angle-mark-camera": studio.angles.markCameraOnAir()
+            case "angle-unmark": studio.angles.unmark()
+            case "angle-set":
+                let kv = arg.split(separator: "=", maxSplits: 1).map(String.init)
+                // Angles from one camera, for the marked frame's camera (else the first camera):
+                // "virtual=on|both|medium|close|off" and "use4k=on|off".
+                if kv.count == 2, kv[0] == "virtual" || kv[0] == "use4k" {
+                    guard let cam = TestControl.angleCamera(studio) else { break }
+                    if kv[0] == "use4k" { studio.angles.use4K(camera: cam, kv[1] == "on") }
+                    else {
+                        let shots: VirtualShots? = switch kv[1] {
+                        case "on", "both": VirtualShots()
+                        case "medium": VirtualShots(medium: true, close: false)
+                        case "close": VirtualShots(medium: false, close: true)
+                        default: nil
+                        }
+                        studio.angles.setVirtual(camera: cam, shots: shots)
+                    }
+                } else if kv.count == 2 {
+                    var s = studio.angles.settings
+                    let on = kv[1] == "on"
+                    switch kv[0] {
+                    case "followLook": s.followLook = on
+                    case "keepFramed": s.keepFramed = on
+                    case "lipSync": s.lipSync = on
+                    case "aiPicks": s.aiPicks = on
+                    case "recordAngles": s.recordAngles = on
+                    case "keysOn": s.keysOn = on
+                    case "useAPIKey": s.useAPIKey = on
+                    case "recordCrops": s.virtual.recordCrops = on
+                    case "pace": if let p = ShufflePace(rawValue: kv[1]) { s.pace = p }
+                    default: break
+                    }
+                    studio.angles.settings = s
+                }
+            case "angle-tiles": studio.angles.tilesShown = arg == "on" ? 1 : 0
+            // A switching key's action, as if its key were pressed ("angle2", "ownCamera", "shuffle", "next"…).
+            case "angle-key": if let a = AngleKeyAction(rawValue: arg) { studio.angles.perform(a) }
+            case "angle-hear": studio.angles.hear(arg, isFinal: true)   // as if Listen heard it (no speech permission needed)
+            case "angle-analyse": studio.angles.analyse()
+            case "angle-test-look":
+                // "2": the presenter looks into angle 2; "off": back to what Vision sees.
+                if let n = Int(arg), studio.angles.angles.indices.contains(n - 1) { studio.angles.testFacing = studio.angles.angles[n - 1].id }
+                else { studio.angles.testFacing = nil }
+            case "angle-test-face":
+                // "cx,cy,h[,yaw]": cameras with crops see a face centred there (camera picture, top-left 0...1, h of
+                // its height, square in pixels) instead of what Vision sees; "off": Vision again.
+                let v = arg.split(separator: ",").compactMap { Double($0) }
+                if v.count >= 3, let cam = TestControl.angleCamera(studio) {
+                    let size = studio.engine.nativeSize(of: cam) ?? CGSize(width: 1920, height: 1080)
+                    let w = v[2] * size.height / max(1, size.width)
+                    studio.angles.testFace = (CGRect(x: v[0] - w / 2, y: v[1] - v[2] / 2, width: w, height: v[2]), v.count > 3 ? v[3] : nil)
+                } else { studio.angles.testFace = nil }
+            case "angle-trace":
+                // "<file>:<seconds>": every crop drawn on air or into a recording for that long, as JSON lines.
+                guard let colon = arg.lastIndex(of: ":"), let secs = Double(arg[arg.index(after: colon)...]) else { break }
+                TestControl.traceCrops(studio, to: URL(fileURLWithPath: String(arg[..<colon])), seconds: secs)
+            case "captions": if arg == "off" { studio.captions.stop() } else if !studio.captions.isOn { studio.captions.start() }
+            case "captions-language": studio.captions.settings.language = arg == "default" ? "" : arg
+            case "captions-size": if let v = CaptionSize(rawValue: arg) { studio.captions.settings.size = v }
+            case "captions-position": if let v = CaptionPosition(rawValue: arg) { studio.captions.settings.position = v }
+            case "captions-feed": studio.captions.start(file: URL(fileURLWithPath: arg))
+            case "captions-correct":
+                // "<line number, 1 first, or last>:<new text>"
+                let p = arg.split(separator: ":", maxSplits: 1).map(String.init)
+                let t = studio.captions.transcript
+                if p.count == 2, let line = p[0] == "last" ? t.last : Int(p[0]).flatMap({ t.indices.contains($0 - 1) ? t[$0 - 1] : nil }) {
+                    studio.captions.correct(line.id, p[1])
+                }
+            case "captions-clear": studio.captions.clearTranscript()
+            case "angles-dump":
+                if let d = try? JSONSerialization.data(withJSONObject: studio.angles.dump(), options: [.prettyPrinted]) {
+                    try? d.write(to: URL(fileURLWithPath: arg))
+                }
             case "guest-reach": if let r = GuestReach(rawValue: arg) { studio.guests.testOverride = true; studio.guests.reach = r }
             case "guest-remote-local-test":
                 // The remote-guest protocol against the LiveKit server on this Mac (not saved).
                 studio.guests.testOverride = true; studio.guests.reach = .internet; studio.guests.cloud = .localTest
             case "stage-all": for g in studio.guests.guests where g.status == .lobby { studio.guests.bringOnStage(g.id) }
             case "unstage-all": for g in studio.guests.guests where g.status == .stage { studio.guests.takeOffStage(g.id) }
+            case "stage-guest": if let g = studio.guests.guests.first(where: { $0.name == arg }) { studio.guests.bringOnStage(g.id) }
             case "mute-guests": for g in studio.guests.guests { studio.guests.toggleMute(g.id) }
             case "backstage": studio.chat.backstageDraft = arg; studio.chat.sendBackstage()
             case "layout": if let i = Int(arg), studio.scenes.indices.contains(i - 1) { studio.switchTo(studio.scenes[i - 1].id) }
@@ -525,11 +806,13 @@ final class TestControl {
                     "invite": studio.guests.inviteURL ?? "", "guestStatus": studio.guests.status,
                     "guestReach": studio.guests.reach.rawValue, "cloudReady": studio.guests.cloud.problem ?? "ok",
                     "guests": studio.guests.guests.map { ["name": $0.name, "status": $0.status.rawValue, "connected": $0.connected, "sharing": $0.sharingScreen] },
+                    "stageSlots": studio.guests.stageNames,
                     "backstage": studio.chat.backstage.map { ["user": $0.user, "text": $0.text] },
                     "recording": studio.isRecording, "lastRecordings": studio.lastRecordings.map(\.path),
                     "streamPhase": "\(studio.streaming.phase)", "health": studio.health.text,
                     "streams": studio.streaming.statuses.map { ["id": $0.key.uuidString, "status": "\($0.value)"] },
-                    "sources": studio.collection.sources.map { s in ["name": s.name, "state": "\(studio.sourceStates[s.id].map { "\($0)" } ?? "none")"] },
+                    "sources": studio.collection.sources.map { s in ["name": s.name, "state": "\(studio.sourceStates[s.id].map { "\($0)" } ?? "none")",
+                                                                       "type": studio.engine.sourceTypeName(of: s.id) ?? "none"] },
                     "background": studio.editingBackground.flatMap { b in studio.source(b.sourceID).map { s -> String in
                         if case .wallpaper(let w) = s.kind { return "\(s.name) [\(w)] in \(studio.sceneCount(using: s.id)) scenes" }; return s.name } } ?? "",
                     "backgroundChoices": BackgroundCatalog.all.count,
@@ -586,6 +869,7 @@ final class TestControl {
                 st["audio"] = studio.audioSources.map { ["name": $0.name, "inStream": $0.audio?.isInProgram ?? true, "muted": $0.audio?.isMuted ?? false] }
                 st["screenPreflight"] = CGPreflightScreenCaptureAccess()
                 st["bundlePath"] = Bundle.main.bundlePath
+                st["captions"] = studio.captions.dump()
                 if let d = try? JSONSerialization.data(withJSONObject: st, options: [.prettyPrinted, .sortedKeys]) {
                     try? d.write(to: URL(fileURLWithPath: arg.isEmpty ? "/tmp/framecast-state.json" : arg))
                 }
@@ -621,6 +905,133 @@ final class TestControl {
             case "quit": NSApp.terminate(nil)
             default: break
             }
+        }
+    }
+}
+
+/// Test launches (FRAMECAST_UI set) with FRAMECAST_FAKE_CAMERA=<clip>: every source that would open a device gets a
+/// stand-in from the moment the engine starts, so the camera, the screen and the microphone are never opened. Cameras
+/// play the clip on a loop (FRAMECAST_FAKE_CAMERA_4K when 4K is asked for), screens show a drawn editor, and
+/// microphones and system or app sound are silent, or, with FRAMECAST_FAKE_MIC=<audio file>, microphones play that
+/// file on a loop into the mixer like a voice. Ignored outside test launches.
+enum FakeDevices {
+    private(set) static var isOn = false
+    /// A 4K clip was given: the stand-in cameras "can send 4K" (the real camera is never asked).
+    private(set) static var has4K = false
+
+    static func install(on engine: Engine) {
+        let env = ProcessInfo.processInfo.environment
+        guard DestinationsStore.isTestLaunch, let clip = env["FRAMECAST_FAKE_CAMERA"], !clip.isEmpty else { return }
+        let given4K = env["FRAMECAST_FAKE_CAMERA_4K"].flatMap { $0.isEmpty ? nil : $0 }
+        let clip4K = given4K ?? clip
+        let micFile = env["FRAMECAST_FAKE_MIC"].flatMap { $0.isEmpty ? nil : $0 }
+        let mixer = engine.mixer
+        isOn = true
+        has4K = given4K != nil
+        // Every kind is listed, so a new kind of source has to be decided on here.
+        engine.standIn = { s in
+            switch s.kind {
+            case .camera(_, let w, let h, _):
+                return .video(FakeCameraSource(id: s.id, path: w >= 3840 ? clip4K : clip, width: w, height: h, mixer: mixer))
+            case .display, .window, .application:
+                return .video(StaticImageSource(id: s.id, image: DemoContent.screenStandIn()))
+            case .microphone:
+                return micFile.map { .audio(FakeMicSource(id: s.id, path: $0, mixer: mixer)) } ?? .silent
+            case .systemAudio, .appAudio:
+                return .silent
+            case .image, .color, .wallpaper, .packImage, .countdown, .text, .testPattern, .media, .soundPad, .tone,
+                 .guest, .guestScreen, .guestGrid:
+                return nil
+            }
+        }
+    }
+}
+
+/// A test camera: a clip playing on a loop. It wraps the file player rather than being one, so the engine never
+/// treats it as a media file (sync would turn its loop off). Without the clip it shows black: never nothing, so a
+/// test can't end up on the real camera.
+final class FakeCameraSource: VideoSource {
+    let id: UUID
+    private let clip: MediaFileSource?
+    private let black: CIImage
+
+    init(id: UUID, path: String, width: Int, height: Int, mixer: AudioMixer) {
+        self.id = id
+        black = CIImage(color: .black).cropped(to: CGRect(x: 0, y: 0, width: max(16, width), height: max(9, height)))
+        if FileManager.default.fileExists(atPath: path) {
+            let m = MediaFileSource(id: id, url: URL(fileURLWithPath: path), mixer: mixer)
+            m.loop = true
+            clip = m
+        } else { clip = nil }
+    }
+
+    var state: SourceState { clip?.state ?? .running }
+    var nativeSize: CGSize { clip?.nativeSize ?? black.extent.size }
+    func image(at time: CMTime) -> CIImage? { clip?.image(at: time) ?? black }
+    func start() { clip?.start(); clip?.play() }
+    func stop() { clip?.stop() }
+}
+
+/// A test microphone: an audio file played on a loop (three seconds of quiet between plays, so the last words settle
+/// and the captions fade), pushed into the mixer in real time with capture times like a real microphone. An unreadable
+/// file is silence: never the real microphone.
+final class FakeMicSource: AudioCaptureSource {
+    let id: UUID
+    let state: SourceState = .running
+    let deviceName = "Stand-in (test audio file)"
+    private let mixer: AudioMixer
+    private let samples: [Float]          // interleaved stereo, 48 kHz
+    private let queue = DispatchQueue(label: "framecast.fakemic", qos: .userInitiated)
+    private var timer: DispatchSourceTimer?
+    private var t0 = 0.0
+    private var pushed: Int64 = 0
+
+    init(id: UUID, path: String, mixer: AudioMixer) {
+        self.id = id; self.mixer = mixer
+        samples = Self.load(path) + [Float](repeating: 0, count: 2 * 3 * 48_000)
+    }
+
+    private static func load(_ path: String) -> [Float] {
+        let target = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 48_000, channels: 2, interleaved: false)!
+        guard let f = try? AVAudioFile(forReading: URL(fileURLWithPath: path)),
+              let all = AVAudioPCMBuffer(pcmFormat: f.processingFormat, frameCapacity: AVAudioFrameCount(f.length)),
+              (try? f.read(into: all)) != nil,
+              let conv = AVAudioConverter(from: f.processingFormat, to: target),
+              let out = AVAudioPCMBuffer(pcmFormat: target, frameCapacity: AVAudioFrameCount(Double(all.frameLength) * 48_000 / f.processingFormat.sampleRate) + 4_096)
+        else { return [] }
+        var given = false
+        conv.convert(to: out, error: nil) { _, st in
+            if given { st.pointee = .endOfStream; return nil }
+            given = true; st.pointee = .haveData; return all
+        }
+        let n = Int(out.frameLength), l = out.floatChannelData![0], r = out.floatChannelData![1]
+        var v = [Float](repeating: 0, count: n * 2)
+        for i in 0..<n { v[2 * i] = l[i]; v[2 * i + 1] = r[i] }
+        return v
+    }
+
+    func start() {
+        guard timer == nil else { return }
+        t0 = HostClock.seconds(); pushed = 0
+        let t = DispatchSource.makeTimerSource(queue: queue)
+        t.schedule(deadline: .now(), repeating: .milliseconds(10), leeway: .milliseconds(2))
+        t.setEventHandler { [weak self] in self?.tick() }
+        timer = t
+        t.resume()
+    }
+    func stop() { timer?.cancel(); timer = nil }
+
+    // Pushes everything due up to now, 480 frames (10 ms) at a time, each stamped with when it "was captured".
+    private func tick() {
+        let frames = samples.count / 2
+        guard frames > 0 else { return }
+        let due = Int64((HostClock.seconds() - t0) * 48_000)
+        var chunk = [Float](repeating: 0, count: 480 * 2)
+        while pushed + 480 <= due {
+            for i in 0..<480 { let j = Int((pushed + Int64(i)) % Int64(frames)); chunk[2 * i] = samples[2 * j]; chunk[2 * i + 1] = samples[2 * j + 1] }
+            let pts = CMTime(seconds: t0 + Double(pushed) / 48_000, preferredTimescale: 1_000_000_000)
+            chunk.withUnsafeBufferPointer { mixer.push(id, samples: $0.baseAddress!, frames: 480, pts: pts) }
+            pushed += 480
         }
     }
 }

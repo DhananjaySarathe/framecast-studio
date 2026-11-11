@@ -89,6 +89,12 @@ final class AppSettings {
         var writeWithAPI: Bool?
         /// The language Listen recognises (nil: the Mac's language).
         var listenLanguage: ListenLanguage?
+        /// Screen auto-zoom (camera moves are off until switched on).
+        var liveEditor: LiveEditorSettings?
+        /// Camera angles: shuffle pace, AI picks, recording each angle.
+        var cameraAngles: CameraAngleSettings?
+        /// Live captions: language, size and position (whether they're on isn't saved).
+        var captions: CaptionSettings?
     }
     static var defaultFolder: String {
         (FileManager.default.urls(for: .moviesDirectory, in: .userDomainMask).first ?? URL(fileURLWithPath: NSHomeDirectory()))

@@ -9,10 +9,28 @@ runs, in the Guests panel under **Who can join**:
 | **People on my Wi-Fi** | Phones and computers on the same Wi-Fi | `brew install livekit` | Seen by devices on your Wi-Fi only |
 | **Anyone with a link (LiveKit Cloud)** | Anyone, anywhere | Your own LiveKit Cloud project + the guest page on a static host | Seen by LiveKit, not by guests |
 
+The room also gives you a **camera link**: phones and other computers join as extra camera angles of you, switched
+in Angles. See [ANGLES.md](ANGLES.md).
+
+Guests choose their camera before joining (Front or Back on phones; every camera by name on computers with more
+than one) and can switch while in the show (**Switch camera**: same connection, sound unaffected).
+
 In every mode guests only need a browser: they open the invite link, type their name, check their camera and mic,
 and ask to join. You **Let in**, then **Put on air** (their camera fills the next guest slot and their voice goes
 into the mix), **Take off air**, **Mute** or **Remove**. Green room chat runs over LiveKit data messages and never
 reaches viewers. Guest scenes added on first open: Conversation, Panel, Screen with guests.
+
+When connections break:
+- **A guest or camera drops** (Wi-Fi blip, phone locked, page reloaded): the page rejoins by itself with the same
+  pass, and Framecast keeps their place for three minutes. An on-air guest's tile goes to the next guest meanwhile;
+  they go back on air in the tile they had, still muted if you muted them, and a camera gets its sound setting and
+  red on-air frame back.
+- **Leave**: the guest or camera is gone at once (no three-minute place), and joining again is a fresh knock.
+- **Remove**: their pass stops working. A removed guest or camera that reloads is told "The host removed you or
+  didn't let you in" instead of knocking again. A page whose place Framecast let go (it slept past a minute while
+  waiting, or the room or Framecast restarted) knocks again by itself.
+- **Framecast loses the room** (LiveKit Cloud and the Mac's internet goes away longer than LiveKit's own retries):
+  it keeps reconnecting to the same room with the same links, and guests who rejoined meanwhile are found again.
 
 ## This Mac only
 
@@ -38,8 +56,23 @@ Same as above, plus:
 - **Guests see a warning once** ("Your connection is not private" in Chrome, "This Connection Is Not Private" in
   Safari). They choose Advanced / Show Details, then continue to the address. That's expected: no public
   authority can vouch for an address on your own network.
-- Media uses UDP 7882 on loopback and the Wi-Fi address. Nothing listens on a public or wildcard address; if the
-  Mac's own address is public (no router in between), Wi-Fi mode refuses to open.
+- **Video and sound go over a TCP connection the device opens**, to port **7884** on the Wi-Fi address. Framecast
+  passes it to LiveKit's TURN relay (plain TCP on 7883, on loopback in practice), and the relay talks to LiveKit's
+  media on `127.0.0.1:7882`. The pages point LiveKit's TURN entry (with the device's own credentials) at 7884 and
+  use only the relay. LiveKit's media is never on the Wi-Fi address.
+- Why: macOS's **Local Network permission** stops Framecast, and the LiveKit server it starts, from sending to
+  other devices on the Wi-Fi, and its answer isn't saved for Framecast. Seen on 2026-11-01 with a real phone on
+  home Wi-Fi: the page and the knock worked (connections the phone opened), but LiveKit's socket on the Wi-Fi
+  address received the phone's packets and sent 0 bytes; clicking Allow helped only the server already running,
+  and switching Framecast on in System Settings changed nothing. A socket on the Wi-Fi address sent nothing even
+  to the Mac's own address, while loopback sockets worked. Answering connections a device opened is never
+  blocked, so the relay works without the permission. It also gets through Wi-Fi networks that block UDP between
+  devices (common in offices), which the old TCP 7881 fallback was for; that's gone.
+- The relay serves only devices that were let in (TURN credentials signed with the room's own secret, made fresh
+  each time the room opens), and relays only to `127.0.0.1` (LiveKit refuses private addresses by default; that's
+  the one exception). LiveKit's relay port listens on every network of the Mac; relayed UDP uses ports
+  30000–30099. Everything else listens on the Wi-Fi address or loopback only; if the Mac's own address is public
+  (no router in between), Wi-Fi mode refuses to open.
 - Anyone on the same Wi-Fi can open the page, so keep **Ask before letting guests in** on (the default) on shared
   networks. If the macOS firewall is on, allow incoming connections for Framecast and `livekit-server` when asked.
 - Guest networks that isolate devices from each other (common in offices, hotels and cafés) block this mode.
@@ -50,7 +83,8 @@ Nothing runs on your Mac except Framecast itself. Your own LiveKit Cloud project
 copy of the guest page is on a static web host. Each invite link holds a LiveKit token that can only knock: the
 guest joins a waiting state, asks to join over a LiveKit data message, and Framecast lets them in with a fresh
 token for a new identity, so a forwarded or reused link can't take their place. Each link lets **one person** in;
-a new link appears in the panel as soon as one is used. The token sits after the `#` in the link, which browsers
+a new link appears in the panel as soon as one is used. A guest let in who reloads (or misses the admission) can
+knock again with the same link and is let back in. The token sits after the `#` in the link, which browsers
 never send to the web host.
 
 ### Set-up (once)

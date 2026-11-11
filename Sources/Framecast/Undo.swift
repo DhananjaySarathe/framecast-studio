@@ -47,16 +47,16 @@ extension Studio {
         commitPendingUndo()
         guard let step = undoSteps.popLast() else { return }
         redoSteps.append(UndoStep(before: collection, label: step.label))
-        restoreUndo(step.before)
-        showFlash("Undo: \(step.label)")
+        let kept = restoreUndo(step.before)
+        showFlash("Undo: \(step.label)" + (kept ? ". The camera's size changes after the show." : ""))
     }
 
     func redo() {
         commitPendingUndo()
         guard let step = redoSteps.popLast() else { return }
         undoSteps.append(UndoStep(before: collection, label: step.label))
-        restoreUndo(step.before)
-        showFlash("Redo: \(step.label)")
+        let kept = restoreUndo(step.before)
+        showFlash("Redo: \(step.label)" + (kept ? ". The camera's size changes after the show." : ""))
     }
 
     /// ⌘Z: text being typed in a field undoes there first; otherwise the studio undoes.
@@ -69,10 +69,22 @@ extension Studio {
         redo()
     }
 
-    private func restoreUndo(_ snapshot: SceneCollection) {
+    /// Returns whether a camera kept its size because the show is live or recording.
+    @discardableResult private func restoreUndo(_ snapshot: SceneCollection) -> Bool {
         let old = collection
         var s = snapshot
         s.pointers = old.pointers
+        // A camera's size (Use 4K) changes only off air: changing it restarts the camera (CameraAngles.use4K).
+        var keptSize = false
+        if angles.liveOrRecording {
+            for i in s.sources.indices {
+                guard case .camera(let dev, let w, let h, let fps) = s.sources[i].kind,
+                      case .camera(_, let cw, let ch, _)? = old.sources.first(where: { $0.id == s.sources[i].id })?.kind,
+                      w != cw || h != ch else { continue }
+                s.sources[i].kind = .camera(deviceID: dev, width: cw, height: ch, fps: fps)
+                keptSize = true
+            }
+        }
         var cut: [CanvasKind] = []
         if let h = s.pointers.horizontalProgram, !s.scenes.contains(where: { $0.id == h }) { s.pointers.horizontalProgram = s.scenes.first?.id; cut.append(.horizontal) }
         if let v = s.pointers.verticalProgram, !s.scenes.contains(where: { $0.id == v }) { s.pointers.verticalProgram = s.scenes.first?.id; cut.append(.vertical) }
@@ -88,6 +100,7 @@ extension Studio {
         for c in cut { pushProgram(c, transition: .cut) }
         refreshProgram()
         if let sel = selectedItemID, !editingItems.contains(where: { $0.id == sel }) { selectedItemID = nil }
+        return keptSize
     }
 
     func showFlash(_ text: String) {
